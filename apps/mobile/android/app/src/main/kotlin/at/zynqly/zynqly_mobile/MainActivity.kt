@@ -1,0 +1,5 @@
+package at.zynqly.zynqly_mobile
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()

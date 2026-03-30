@@ -1,0 +1,21 @@
+# Zynqly
+
+## What is it about?
+
+The goal of this project is to create a modern register system initially designed for taxi companies.
+In the future, the system will be expanded and adapted for other business sectors.
+
+### Key Features
+
+- **Registering Rides**
+- **Map with navigation**
+- **All rides documented and saved in a database**
+  - **Sorting functionality**
+- **Dynamically generated invoice that gets saved in a storage**
+- **All invoices documented**
+  - **PDF Viewer in App**
+  - **Scannable QR Code to access invoice via an URL**
+  - **Downloadable**
+- **Dashboard with Analytics**
+- **Safe Authentication System**
+- **Mobile App for both iOS and Android**
