@@ -1,0 +1,48 @@
+import { configureStore } from "@reduxjs/toolkit";
+import toastSlice from "./slices/toastSlice";
+import userSlice from "./slices/userSlice";
+import authSlice from "./slices/authSlice";
+import footerLinkSlice from "./slices/footerLinksSlice";
+import notificationsSlice from "./slices/notificationsSlice";
+import avatarSlice from "./slices/avatarSlice";
+import { invoicesApi } from "./api/invoiceApi";
+import { rideApi } from "./api/rideApi";
+
+export const store = configureStore({
+  reducer: {
+    toastState: toastSlice,
+    user: userSlice,
+    authState: authSlice,
+    setFooterLink: footerLinkSlice,
+    notificationsState: notificationsSlice,
+    avatarState: avatarSlice,
+    [invoicesApi.reducerPath]: invoicesApi.reducer,
+    [rideApi.reducerPath]: rideApi.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(invoicesApi.middleware, rideApi.middleware),
+  devTools: import.meta.env.NODE_ENV !== "production",
+});
+
+store.subscribe(() => {
+  const notifications = store.getState().notificationsState.items;
+  const notifications_archived =
+    store.getState().notificationsState.items_archived;
+  const notifications_settings =
+    store.getState().notificationsState.activeSettings;
+
+  localStorage.setItem("notifications", JSON.stringify(notifications));
+  localStorage.setItem(
+    "notifications_archived",
+    JSON.stringify(notifications_archived),
+  );
+  localStorage.setItem(
+    "notifications_settings",
+    JSON.stringify(notifications_settings),
+  );
+});
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>;
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch;
