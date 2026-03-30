@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:18
+    container_name: zynqly-db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=zynqly
+      - POSTGRES_DB=zynqly
+    ports:
+      - "5432:5432"
+    volumes:
+      - zynqly_v18_data:/var/lib/postgresql 
+
+volumes:
+  zynqly_v18_data:

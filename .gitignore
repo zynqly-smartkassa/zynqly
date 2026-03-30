@@ -1,0 +1,40 @@
+# --- IDE & Editors ---
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+bin/
+
+# --- Operating System ---
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+
+# --- Docker & Databases ---
+# This ignores the actual data stored by your database
+postgres_data/
+mysql_data/
+mongo_data/
+
+# --- Secrets & Environment ---
+# Crucial: Never commit passwords or API keys!
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.secret
+*.pem
+*.key
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
