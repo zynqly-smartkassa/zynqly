@@ -1,8 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Register from "./pages/auth/Register";
-import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
-import RootLayout from "./components/providers/RootLayout";
 import Settings from "./pages/Settings";
 import { useEffect } from "react";
 import { StatusBar } from "@capacitor/status-bar";
@@ -10,11 +8,12 @@ import Ride from "./pages/rides/Ride";
 import AllRides from "./pages/rides/AllRides";
 import { isMobile } from "./hooks/layout/use-mobile";
 import Invoices from "./pages/invoices/Invoices";
-import { ProtectedRoute } from "./components/providers/ProtectedRoute";
 import Payment from "./pages/invoices/Payment";
 import Documentation from "./pages/Documentation";
 import Help from "./pages/Help";
 import SingleInvoice from "./pages/invoices/SingleInvoice";
+import Home from "./pages/Home";
+import RootLayout from "./components/providers/RootLayout";
 
 /**
  * The Routes are all declared here
@@ -36,13 +35,15 @@ function App() {
       <Routes>
         {/* This will ensure, that each Route has the same Header */}
 
-        <Route
+        {/* <Route
           element={
             <ProtectedRoute>
               <RootLayout />
             </ProtectedRoute>
           }
-        >
+        > */}
+        <Route
+          element={<RootLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/documentation" element={<Documentation />} />
           <Route path="/help" element={<Help />} />
@@ -58,6 +59,7 @@ function App() {
             <Route path=":id" element={<Payment />} />
           </Route>
         </Route>
+
 
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
