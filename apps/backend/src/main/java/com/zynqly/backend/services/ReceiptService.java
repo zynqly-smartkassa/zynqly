@@ -8,11 +8,10 @@ import com.zynqly.backend.domain.dtos.responses.Receipt;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public class ReceiptService {
 
-    private List<Receipt> receiptList = List.of(
+    private final List<Receipt> receiptList = List.of(
             new Receipt(1, 101, 201, LocalDateTime.of(2026, 1, 15, 10, 30),
                     PaymentMethod.CARD, PaymentStatus.PAID,
                     new BigDecimal("18.50"), new BigDecimal("0.20"), new BigDecimal("3.70"),
