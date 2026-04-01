@@ -8,7 +8,7 @@ import { AuthStorage } from "../../src/utils/secureStorage";
 import { refreshAccessToken } from "../../src/utils/auth/jwttokens";
 
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_API_URL as string,
+  baseUrl: `http://localhost:8080/api/v1/ride/`,
 });
 
 export const baseQueryWithReauth: BaseQueryFn<

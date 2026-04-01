@@ -1,7 +1,4 @@
 import axios, { AxiosError } from "axios";
-import { refreshAccessToken } from "../auth/jwttokens";
-import { AuthStorage } from "../secureStorage";
-
 /**
  * Fetches all rides for a specific user from the backend API.
  *
@@ -15,17 +12,10 @@ import { AuthStorage } from "../secureStorage";
  */
 export async function getAllRides(cursor: string | undefined, retry: boolean = false) {
   try {
-    let accessToken;
-    if (retry) {
-      accessToken = await refreshAccessToken();
-    } else {
-      accessToken = await AuthStorage.getAccessToken();
-    }
 
-    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/rides`, {
+    const { data } = await axios.get(`http://localhost:8080/api/v1/ride`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
       params: {
         cursor: cursor,

@@ -8,8 +8,7 @@ export const rideApi = createApi({
   endpoints: (builder) => ({
     getRides: builder.query({
       query: (arg) => ({
-        url: "/rides",
-        params: { limit: 12, cursor: arg.cursor, date: arg.date },
+        url: "/",
         method: "GET",
       }),
       providesTags: ["Ride"],
