@@ -3,6 +3,7 @@ package com.zynqly.backend.controllers;
 import com.zynqly.backend.domain.dtos.responses.Receipt;
 import com.zynqly.backend.services.ReceiptService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,17 +17,17 @@ public class ReceiptController {
     private final ReceiptService receiptService = new ReceiptService();
 
     @GetMapping
-    public List<Receipt> getReceipts() {
-        return receiptService.getReceipts();
+    public ResponseEntity<List<Receipt>> getReceipts() {
+        return ResponseEntity.ok(receiptService.getReceipts());
     }
 
     @GetMapping("/{id}")
-    public Receipt getReceiptById(@PathVariable int id) {
+    public ResponseEntity<Receipt> getReceiptById(@PathVariable int id) {
         Receipt receipt = receiptService.getReceiptById(id);
         if (receipt == null) {
-            return null;
+            return ResponseEntity.notFound().build();
         }
-        return receipt;
+        return ResponseEntity.ok(receipt);
     }
 
 }
