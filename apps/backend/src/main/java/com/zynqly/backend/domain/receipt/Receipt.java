@@ -24,6 +24,9 @@ public class Receipt {
     private BigDecimal taxAmount;
     private BigDecimal discountAmount;
     private BigDecimal total;
+    private BigDecimal tip;
+    private BigDecimal amountPaid;
+    private BigDecimal change;
     private Currency currency;
     private String receiptNumber;
     private String notes;
