@@ -1,9 +1,10 @@
 package com.zynqly.backend.services;
 
-import com.zynqly.backend.domain.dtos.responses.Currency;
-import com.zynqly.backend.domain.dtos.responses.PaymentMethod;
-import com.zynqly.backend.domain.dtos.responses.PaymentStatus;
-import com.zynqly.backend.domain.dtos.responses.Receipt;
+import com.zynqly.backend.domain.receipt.Currency;
+import com.zynqly.backend.domain.receipt.PaymentMethod;
+import com.zynqly.backend.domain.receipt.PaymentStatus;
+import com.zynqly.backend.domain.receipt.Receipt;
+import com.zynqly.backend.domain.receipt.dto.ReceiptDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -43,11 +44,19 @@ public class ReceiptService {
                     Currency.EUR, "REC-2026-00005", null)
     );
 
+    private final List<ReceiptDto> receiptDtoList = List.of(
+            new ReceiptDto(1, "Beleg #1", LocalDateTime.of(2026, 1, 8, 23, 9), PaymentMethod.CASH, PaymentStatus.PAID, new BigDecimal("5.91"), Currency.EUR),
+            new ReceiptDto(2, "Beleg #2", LocalDateTime.of(2026, 1, 8, 23, 10), PaymentMethod.CARD, PaymentStatus.PAID, new BigDecimal("5.80"), Currency.EUR),
+            new ReceiptDto(3, "Beleg #3", LocalDateTime.of(2026, 1, 9, 0, 14), PaymentMethod.CARD, PaymentStatus.PAID, new BigDecimal("5.72"), Currency.EUR),
+            new ReceiptDto(4, "Beleg #4", LocalDateTime.of(2026, 1, 9, 10, 5), PaymentMethod.CASH, PaymentStatus.PENDING, new BigDecimal("4.80"), Currency.EUR),
+            new ReceiptDto(5, "Beleg #5", LocalDateTime.of(2026, 1, 10, 14, 33), PaymentMethod.CARD, PaymentStatus.CANCELLED, new BigDecimal("10.37"), Currency.EUR)
+    );
+
     public ReceiptService() {
     }
 
-    public List<Receipt> getReceipts() {
-        return this.receiptList;
+    public List<ReceiptDto> getReceipts() {
+        return this.receiptDtoList;
     }
 
     public Receipt getReceiptById(int id) {

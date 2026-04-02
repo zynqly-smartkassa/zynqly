@@ -3,7 +3,7 @@ package com.zynqly.backend.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zynqly.backend.domain.dtos.responses.Rides;
+import com.zynqly.backend.domain.Rides;
 import com.zynqly.backend.services.RideService;
 
 import lombok.RequiredArgsConstructor;

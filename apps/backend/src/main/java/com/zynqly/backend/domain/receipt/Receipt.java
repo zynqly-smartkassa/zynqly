@@ -1,4 +1,4 @@
-package com.zynqly.backend.domain.dtos.responses;
+package com.zynqly.backend.domain.receipt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

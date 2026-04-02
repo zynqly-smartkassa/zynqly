@@ -1,4 +1,4 @@
-package com.zynqly.backend.domain.dtos.responses;
+package com.zynqly.backend.domain;
 
 import java.util.List;
 
