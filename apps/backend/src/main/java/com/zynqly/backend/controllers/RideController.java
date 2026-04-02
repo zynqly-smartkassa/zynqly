@@ -1,5 +1,6 @@
 package com.zynqly.backend.controllers;
 
+import lombok.NonNull;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,20 +13,18 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
-@RequestMapping(path = "/api/v1/ride")
+@RequestMapping(path = "/ride")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
 public class RideController {
 
   private final RideService rideService;
 
 @GetMapping(path = "/")
-public ResponseEntity<List<Rides>> getRides() {
+public ResponseEntity<@NonNull List<Rides>> getRides() {
 
   List<Rides> rides = rideService.getRides();
 
