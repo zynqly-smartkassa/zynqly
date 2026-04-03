@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
   useSidebar,
-} from "../components/ui/sidebar";
+} from "./ui/sidebar";
 import { useState, useEffect } from "react";
 import {
   Home,
