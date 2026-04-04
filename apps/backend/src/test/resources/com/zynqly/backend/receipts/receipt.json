@@ -1,0 +1,19 @@
+{
+  "id": 1,
+  "ride_id": 101,
+  "user_id": 201,
+  "issuedAt": "2026-01-15T10:30:00",
+  "paymentMethod": "CARD",
+  "status": "PAID",
+  "subtotal": 18.50,
+  "taxRate": 0.20,
+  "taxAmount": 3.70,
+  "discountAmount": 0.00,
+  "total": 22.20,
+  "tip": 0.00,
+  "amountPaid": 22.20,
+  "change": 0.00,
+  "currency": "EUR",
+  "receiptNumber": "REC-2026-00001",
+  "notes": null
+}

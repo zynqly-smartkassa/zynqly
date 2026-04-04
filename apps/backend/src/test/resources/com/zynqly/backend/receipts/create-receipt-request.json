@@ -1,0 +1,9 @@
+{
+  "ride_id": 101,
+  "paymentMethod": "CARD",
+  "discountAmount": 0.00,
+  "notes": null,
+  "currency": "EUR",
+  "tip": 0.00,
+  "amountPaid": 22.20
+}
