@@ -17,9 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 public class JsonSerializeTest {
-    private final String receiptFile = "receipt.json";
-    private final String receiptListDtoFile = "list-receipt-response.json";
-    private final String receiptCreateDtoFile = "create-receipt-request.json";
 
     @Autowired
     private JacksonTester<@NonNull Receipt> receiptJacksonTester;
@@ -35,7 +32,7 @@ public class JsonSerializeTest {
         Receipt receipt = ReceiptTestFactory.getReceipt();
         JsonContent<@NonNull Receipt> json = receiptJacksonTester.write(receipt);
 
-        assertThat(json).isStrictlyEqualToJson(receiptFile);
+        assertThat(json).isStrictlyEqualToJson(FileNames.RECEIPT_FILE);
 
         assertThat(json).extractingJsonPathNumberValue("$.id").isEqualTo(receipt.getId());
         assertThat(json).extractingJsonPathNumberValue("$.ride_id").isEqualTo(receipt.getRide_id());
@@ -61,7 +58,7 @@ public class JsonSerializeTest {
         CreateReceiptDto dto = ReceiptTestFactory.getCreateReceiptDto();
         JsonContent<@NonNull CreateReceiptDto> json = createReceiptDtoJacksonTester.write(dto);
 
-        assertThat(json).isStrictlyEqualToJson(receiptCreateDtoFile);
+        assertThat(json).isStrictlyEqualToJson(FileNames.CREATE_RECEIPT_FILE);
 
         assertThat(json).extractingJsonPathNumberValue("$.ride_id").isEqualTo(dto.getRide_id());
         assertThat(json).extractingJsonPathStringValue("$.paymentMethod").isEqualTo(dto.getPaymentMethod().name());
@@ -77,7 +74,7 @@ public class JsonSerializeTest {
         List<ListReceiptDto> list = ReceiptTestFactory.getListReceiptDtoList();
         JsonContent<@NonNull List<ListReceiptDto>> json = listReceiptDtoJacksonTester.write(list);
 
-        assertThat(json).isStrictlyEqualToJson(receiptListDtoFile);
+        assertThat(json).isStrictlyEqualToJson(FileNames.LIST_RECEIPT_FILE);
 
         for (int i = 0; i < list.size(); i++) {
             ListReceiptDto dto = list.get(i);
