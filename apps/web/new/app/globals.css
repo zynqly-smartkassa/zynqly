@@ -1,26 +1,87 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════
+   Zynqly Design Tokens — Web (CSS Custom Properties)
+   Single source of truth for the web platform.
+   Cross-platform reference: design-values.json (root of project)
+   ═══════════════════════════════════════════════════════════════ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Violet Scale ─────────────────────────────────────────── */
+  --z-violet-50:  #F5F3FF;
+  --z-violet-100: #EDE9FE;  /* Badge backgrounds, subtle highlights */
+  --z-violet-200: #DDD6FE;
+  --z-violet-300: #C4B5FD;
+  --z-violet-400: #A78BFA;
+  --z-violet-500: #7C3AED;  /* Main — brand color, accents, key text */
+  --z-violet-600: #6D28D9;  /* Main hover / pressed state */
+  --z-violet-700: #5B21B6;
+  --z-violet-800: #4C1D95;
+  --z-violet-900: #2E1065;
+
+  /* ── Neutral Scale (cool, slightly violet-tinted) ─────────── */
+  --z-neutral-50:  #F8F7FF;  /* Main page background */
+  --z-neutral-100: #F0EFF8;  /* Card / surface on background */
+  --z-neutral-200: #E3E1F0;  /* Borders, dividers, input outlines */
+  --z-neutral-300: #CAC6DE;
+  --z-neutral-400: #A8A3BE;  /* Muted / placeholder text */
+  --z-neutral-500: #847E9E;
+  --z-neutral-600: #625D7E;  /* Secondary / supporting text */
+  --z-neutral-700: #484269;
+  --z-neutral-800: #2E2947;
+  --z-neutral-900: #1A1628;  /* Main text, headings */
+
+  /* ── Status ───────────────────────────────────────────────── */
+  --z-success:       #22C55E;
+  --z-success-light: #DCFCE7;
+  --z-error:         #EF4444;
+  --z-error-light:   #FEE2E2;
+
+  /* ── Semantic Aliases (use these in components) ───────────── */
+  --z-bg-page:            var(--z-neutral-50);
+  --z-bg-surface:         #FFFFFF;
+  --z-bg-card:            var(--z-neutral-100);
+  --z-color-main:         var(--z-violet-500);
+  --z-color-main-hover:   var(--z-violet-600);
+  --z-color-main-light:   var(--z-violet-100);
+  --z-text-main:          var(--z-neutral-900);
+  --z-text-secondary:     var(--z-neutral-600);
+  --z-text-muted:         var(--z-neutral-400);
+  --z-border:             var(--z-neutral-200);
 }
 
+/* Register brand colors as Tailwind v4 utility classes
+   Usage: bg-z-violet-500, text-z-violet-100, border-z-neutral-200 … */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-z-violet-50:  var(--z-violet-50);
+  --color-z-violet-100: var(--z-violet-100);
+  --color-z-violet-200: var(--z-violet-200);
+  --color-z-violet-300: var(--z-violet-300);
+  --color-z-violet-400: var(--z-violet-400);
+  --color-z-violet-500: var(--z-violet-500);
+  --color-z-violet-600: var(--z-violet-600);
+  --color-z-violet-700: var(--z-violet-700);
+  --color-z-violet-800: var(--z-violet-800);
+  --color-z-violet-900: var(--z-violet-900);
+
+  --color-z-neutral-50:  var(--z-neutral-50);
+  --color-z-neutral-100: var(--z-neutral-100);
+  --color-z-neutral-200: var(--z-neutral-200);
+  --color-z-neutral-300: var(--z-neutral-300);
+  --color-z-neutral-400: var(--z-neutral-400);
+  --color-z-neutral-500: var(--z-neutral-500);
+  --color-z-neutral-600: var(--z-neutral-600);
+  --color-z-neutral-700: var(--z-neutral-700);
+  --color-z-neutral-800: var(--z-neutral-800);
+  --color-z-neutral-900: var(--z-neutral-900);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--z-bg-page);
+  color: var(--z-text-main);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
+
