@@ -91,14 +91,14 @@ export default function Home() {
           {/* Auth buttons */}
           <div className="flex items-center gap-3 flex-shrink-0">
             <Link
-              href="/login"
+              href="/sign-in"
               className="hidden sm:inline-block text-sm font-medium px-4 py-1.5 rounded-full transition-opacity hover:opacity-60"
               style={{ color: "var(--z-text-main)" }}
             >
               Sign In
             </Link>
             <Link
-              href="/register"
+              href="/sign-up"
               className="text-sm font-semibold px-5 py-2 rounded-full text-white shadow-sm transition-opacity hover:opacity-90"
               style={{ background: "var(--z-color-main)" }}
             >
@@ -154,7 +154,7 @@ export default function Home() {
               {/* CTA buttons */}
               <div className="flex flex-wrap items-center gap-3">
                 <Link
-                  href="/register"
+                  href="/sign-up"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold text-sm shadow-md transition-all hover:opacity-90 active:scale-[0.97]"
                   style={{ background: "var(--z-color-main)" }}
                 >
@@ -292,7 +292,7 @@ export default function Home() {
 
       {/* ─────────────────────── Footer ──────────────────────── */}
       <footer
-        className="mt-auto border-t"
+        className="mt-auto border-t w-full"
         style={{ borderColor: "var(--z-border)", background: "var(--z-bg-page)" }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
