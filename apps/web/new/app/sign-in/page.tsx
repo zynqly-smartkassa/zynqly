@@ -3,6 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -27,6 +30,8 @@ export default function SignInPage() {
           Zurück
         </Link>
 
+        <div className="w-full max-w-md mx-auto">
+
         {/* Mobile-only logo */}
         <Link href="/" className="flex items-center justify-center mb-10 lg:hidden">
           <Image
@@ -50,9 +55,10 @@ export default function SignInPage() {
         </div>
 
         {/* Google button */}
-        <button
+        <Button
           type="button"
-          className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-xl border text-sm font-medium transition hover:bg-neutral-50 active:scale-[0.98]"
+          variant="outline"
+          className="flex items-center justify-center gap-3 w-full h-auto px-4 py-3 rounded-xl text-sm font-medium active:scale-[0.98]"
           style={{ borderColor: "var(--z-border)", color: "var(--z-text-main)", background: "var(--z-bg-surface)" }}
         >
           {/* Google icon */}
@@ -63,7 +69,7 @@ export default function SignInPage() {
             <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58Z" fill="#EA4335"/>
           </svg>
           Mit Google fortfahren
-        </button>
+        </Button>
 
         {/* Divider */}
         <div className="flex items-center gap-3 my-6">
@@ -77,11 +83,11 @@ export default function SignInPage() {
 
           {/* Email */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium" style={{ color: "var(--z-text-main)" }}>
+            <Label className="text-sm font-medium" style={{ color: "var(--z-text-main)" }}>
               E-Mail
-            </label>
+            </Label>
             <div
-              className="flex items-center gap-2.5 px-3.5 py-3 rounded-xl border text-sm"
+              className="flex items-center gap-2.5 px-3.5 rounded-xl border text-sm"
               style={{ borderColor: "var(--z-border)", background: "var(--z-bg-surface)" }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
@@ -89,11 +95,11 @@ export default function SignInPage() {
                 <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z" />
                 <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z" />
               </svg>
-              <input
+              <Input
                 type="email"
                 placeholder="name@example.com"
                 autoComplete="email"
-                className="flex-1 bg-transparent outline-none text-sm placeholder:text-[var(--z-text-muted)]"
+                className="flex-1 h-auto py-3 border-0 bg-transparent rounded-none text-sm placeholder:text-[var(--z-text-muted)] focus-visible:ring-0 focus-visible:border-0"
                 style={{ color: "var(--z-text-main)" }}
               />
             </div>
@@ -102,9 +108,9 @@ export default function SignInPage() {
           {/* Password */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium" style={{ color: "var(--z-text-main)" }}>
+              <Label className="text-sm font-medium" style={{ color: "var(--z-text-main)" }}>
                 Passwort
-              </label>
+              </Label>
               <Link
                 href="/forgot-password"
                 className="text-xs font-medium hover:opacity-70 transition-opacity"
@@ -114,24 +120,26 @@ export default function SignInPage() {
               </Link>
             </div>
             <div
-              className="flex items-center gap-2.5 px-3.5 py-3 rounded-xl border text-sm"
+              className="flex items-center gap-2.5 px-3.5 rounded-xl border text-sm"
               style={{ borderColor: "var(--z-border)", background: "var(--z-bg-surface)" }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                 className="w-4 h-4 flex-shrink-0" style={{ color: "var(--z-text-muted)" }}>
                 <path fillRule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clipRule="evenodd" />
               </svg>
-              <input
+              <Input
                 type={showPassword ? "text" : "password"}
                 placeholder="Mindestens 8 Zeichen"
                 autoComplete="current-password"
-                className="flex-1 bg-transparent outline-none text-sm placeholder:text-[var(--z-text-muted)]"
+                className="flex-1 h-auto py-3 border-0 bg-transparent rounded-none text-sm placeholder:text-[var(--z-text-muted)] focus-visible:ring-0 focus-visible:border-0"
                 style={{ color: "var(--z-text-main)" }}
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => setShowPassword((p) => !p)}
-                className="flex-shrink-0 opacity-50 hover:opacity-80 transition-opacity"
+                className="flex-shrink-0 opacity-50 hover:opacity-80 h-auto w-auto p-0 hover:bg-transparent"
               >
                 {showPassword ? (
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" style={{ color: "var(--z-text-main)" }}>
@@ -144,21 +152,21 @@ export default function SignInPage() {
                     <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41Z" clipRule="evenodd" />
                   </svg>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* Submit */}
-          <button
+          <Button
             type="submit"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-white font-semibold text-sm shadow-md transition-all hover:opacity-90 active:scale-[0.98] mt-1"
+            className="flex items-center justify-center gap-2 w-full h-auto py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:opacity-90 active:scale-[0.98] mt-1"
             style={{ background: "var(--z-color-main)" }}
           >
             Anmelden
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
               <path fillRule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clipRule="evenodd" />
             </svg>
-          </button>
+          </Button>
         </form>
 
         {/* Switch to register */}
@@ -172,6 +180,7 @@ export default function SignInPage() {
             Kostenlos registrieren
           </Link>
         </p>
+        </div>
       </main>
 
       {/* ── Right panel — brand panel (desktop only) ──────── */}

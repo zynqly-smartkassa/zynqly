@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const NAV_LINKS = [
   { label: "Features",     href: "#features" },
@@ -90,20 +91,21 @@ export default function Home() {
 
           {/* Auth buttons */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            <Link
-              href="/sign-in"
-              className="hidden sm:inline-block text-sm font-medium px-4 py-1.5 rounded-full transition-opacity hover:opacity-60"
+            <Button
+              asChild
+              variant="ghost"
+              className="hidden sm:inline-flex text-sm font-medium px-4 py-1.5 rounded-full hover:opacity-60"
               style={{ color: "var(--z-text-main)" }}
             >
-              Sign In
-            </Link>
-            <Link
-              href="/sign-up"
-              className="text-sm font-semibold px-5 py-2 rounded-full text-white shadow-sm transition-opacity hover:opacity-90"
+              <Link href="/sign-in">Sign In</Link>
+            </Button>
+            <Button
+              asChild
+              className="text-sm font-semibold px-5 py-2 rounded-full text-white shadow-sm hover:opacity-90"
               style={{ background: "var(--z-color-main)" }}
             >
-              Get Started
-            </Link>
+              <Link href="/sign-up">Get Started</Link>
+            </Button>
           </div>
         </div>
       </header>
@@ -153,19 +155,22 @@ export default function Home() {
 
               {/* CTA buttons */}
               <div className="flex flex-wrap items-center gap-3">
-                <Link
-                  href="/sign-up"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold text-sm shadow-md transition-all hover:opacity-90 active:scale-[0.97]"
+                <Button
+                  asChild
+                  className="inline-flex items-center gap-2 h-auto px-6 py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:opacity-90 active:scale-[0.97]"
                   style={{ background: "var(--z-color-main)" }}
                 >
-                  Kostenlos starten
-                  {/* Arrow right icon */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                    <path fillRule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clipRule="evenodd" />
-                  </svg>
-                </Link>
-                <button
-                  className="inline-flex items-center px-6 py-3 rounded-xl text-sm font-semibold border-2 transition-all hover:opacity-70 active:scale-[0.97]"
+                  <Link href="/sign-up">
+                    Kostenlos starten
+                    {/* Arrow right icon */}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                      <path fillRule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clipRule="evenodd" />
+                    </svg>
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="inline-flex items-center h-auto px-6 py-3 rounded-xl text-sm font-semibold border-2 hover:opacity-70 active:scale-[0.97]"
                   style={{
                     borderColor: "var(--z-border)",
                     color: "var(--z-text-main)",
@@ -173,7 +178,7 @@ export default function Home() {
                   }}
                 >
                   Mehr erfahren
-                </button>
+                </Button>
               </div>
 
               {/* Social proof */}
