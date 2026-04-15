@@ -13,13 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController()
-@RequestMapping(name = "/api/v1/dashboard")
+@RequestMapping(path = "/api/v1/dashboard")
 @RequiredArgsConstructor
 public class DashboardController {
 
   private final DashboardService dashboardService;
 
-  @GetMapping("/")
+  @GetMapping
   public ResponseEntity<DashboardDto> getDashboard() {
 
     DashboardDto dashboardDto = dashboardService.getDashboard();
