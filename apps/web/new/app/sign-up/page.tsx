@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,6 +38,9 @@ export default function SignUpPage() {
           </svg>
           Zurück
         </Link>
+        <div className="absolute top-6 right-6">
+          <ThemeToggle />
+        </div>
 
         <div className="w-full max-w-md mx-auto">
 

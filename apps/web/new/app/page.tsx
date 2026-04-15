@@ -236,7 +236,7 @@ export default function Home() {
                     <div
                       className="rounded-md px-3 py-0.5 text-xs text-center"
                       style={{
-                        background: "white",
+                        background: "var(--z-bg-surface)",
                         color: "var(--z-text-muted)",
                         border: `1px solid var(--z-border)`,
                       }}
@@ -259,7 +259,7 @@ export default function Home() {
                   {/* Floating earnings card */}
                   <div
                     className="absolute bottom-5 left-5 rounded-2xl px-4 py-3 shadow-xl"
-                    style={{ background: "white", minWidth: 170 }}
+                    style={{ background: "var(--z-bg-surface)", minWidth: 170 }}
                   >
                     <p className="text-xs font-medium" style={{ color: "var(--z-text-secondary)" }}>
                       Heutige Einnahmen

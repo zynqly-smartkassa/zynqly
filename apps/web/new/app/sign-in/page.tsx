@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,6 +30,9 @@ export default function SignInPage() {
           </svg>
           Zurück
         </Link>
+        <div className="absolute top-6 right-6">
+          <ThemeToggle />
+        </div>
 
         <div className="w-full max-w-md mx-auto">
 
