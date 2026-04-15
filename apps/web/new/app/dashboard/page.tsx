@@ -41,6 +41,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { StatCard } from "@/components/stat-card";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
 
 /* ── Mock data ────────────────────────────────────────────── */
@@ -110,17 +112,17 @@ const WEEKLY_DATA = [
   { day: "Sun", brutto: 310, netto: 230 },
 ];
 
-const PAYMENT_DATA = [
+const SETTLEMENT_DATA = [
   { name: "Kartenzahlung", value: 62, color: "var(--z-violet-500)" },
   { name: "Barzahlung", value: 38, color: "var(--z-violet-200)" },
 ];
 
 const TOP_DRIVERS = [
-  { name: "Mehmet K.", rides: 89, revenue: "2.430 €", rating: 4.9 },
-  { name: "Ali R.", rides: 76, revenue: "2.080 €", rating: 4.8 },
+  { name: "Lel K.", rides: 89, revenue: "2.430 €", rating: 4.9 },
+  { name: "Russan R.", rides: 76, revenue: "2.080 €", rating: 4.8 },
   { name: "Thomas W.", rides: 71, revenue: "1.940 €", rating: 4.7 },
   { name: "Sarah L.", rides: 65, revenue: "1.780 €", rating: 4.9 },
-  { name: "Yusuf A.", rides: 58, revenue: "1.590 €", rating: 4.6 },
+  { name: "Susuf A.", rides: 58, revenue: "1.590 €", rating: 4.6 },
 ];
 
 const monthlyChartConfig: ChartConfig = {
@@ -142,7 +144,7 @@ export default function DashboardPage() {
       <header
         className="sticky top-0 z-50 border-b"
         style={{
-          background: "rgba(255,255,255,0.92)",
+          background: "var(--z-bg-glass)",
           borderColor: "var(--z-border)",
           backdropFilter: "blur(12px)",
         }}
@@ -166,16 +168,12 @@ export default function DashboardPage() {
           </div>
 
           {/* Right: icons + avatar */}
-          <div className="flex items-center gap-3">
-            {/* Dark mode toggle placeholder */}
-            <button className="p-1.5 rounded-lg transition-colors hover:bg-[var(--z-neutral-100)]">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                className="w-5 h-5" style={{ color: "var(--z-text-secondary)" }}>
-                <path fillRule="evenodd" d="M7.455 2.004a.75.75 0 0 1 .26.77 7 7 0 0 0 9.958 7.967.75.75 0 0 1 1.067.853A8.5 8.5 0 1 1 6.647 1.921a.75.75 0 0 1 .808.083Z" clipRule="evenodd" />
-              </svg>
-            </button>
+          <div className="flex items-center gap-1">
+            {/* Dark / light mode toggle */}
+            <ThemeToggle />
+
             {/* Notification */}
-            <button className="relative p-1.5 rounded-lg transition-colors hover:bg-[var(--z-neutral-100)]">
+            <button className="relative p-1.5 rounded-lg transition-colors hover:bg-[var(--z-neutral-100)] dark:hover:bg-[var(--z-neutral-800)]">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                 className="w-5 h-5" style={{ color: "var(--z-text-secondary)" }}>
                 <path fillRule="evenodd" d="M10 2a6 6 0 0 0-6 6c0 1.887-.454 3.665-1.257 5.234a.75.75 0 0 0 .515 1.076 32.91 32.91 0 0 0 3.256.508.75.75 0 0 0 .677-.678A3.465 3.465 0 0 0 7.19 14h5.62c0 .127-.006.252-.018.376a.75.75 0 0 0 .677.678 32.903 32.903 0 0 0 3.256-.508.75.75 0 0 0 .515-1.076A11.448 11.448 0 0 1 16 8a6 6 0 0 0-6-6ZM8.05 14.943a1.5 1.5 0 0 0 2.9-.001 32.4 32.4 0 0 1-2.9 0Z" clipRule="evenodd" />
@@ -186,14 +184,14 @@ export default function DashboardPage() {
             {/* User dropdown */}
             <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border transition-colors hover:bg-[var(--z-neutral-100)]"
+                <button className="flex items-center gap-2 ml-1 pl-1 pr-2 py-1 rounded-full border transition-colors hover:bg-[var(--z-neutral-100)] dark:hover:bg-[var(--z-neutral-800)]"
                   style={{ borderColor: "var(--z-border)" }}>
                   <Avatar className="w-7 h-7">
                     <AvatarFallback className="text-xs font-semibold text-white" style={{ background: "var(--z-violet-500)" }}>
-                      MK
+                      LK
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium hidden sm:inline" style={{ color: "var(--z-text-main)" }}>Mehmet K.</span>
+                  <span className="text-sm font-medium hidden sm:inline" style={{ color: "var(--z-text-main)" }}>Leyl K.</span>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                     className="w-4 h-4" style={{ color: "var(--z-text-muted)" }}>
                     <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
@@ -225,36 +223,14 @@ export default function DashboardPage() {
         {/* ── KPI cards ──────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {STATS.map((stat) => (
-            <Card key={stat.label} className="rounded-xl border shadow-none" style={{ borderColor: "var(--z-border)", background: "var(--z-bg-surface)" }}>
-              <CardHeader className="flex-row items-center justify-between pb-1">
-                <span className="text-xs font-medium" style={{ color: "var(--z-text-secondary)" }}>{stat.label}</span>
-                <span style={{ color: "var(--z-text-muted)" }}>{stat.icon}</span>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-2xl font-bold tracking-tight" style={{ color: "var(--z-text-main)" }}>
-                  {stat.value}
-                </p>
-                <p className="text-xs mt-1 flex items-center gap-1" style={{ color: stat.positive ? "var(--z-success)" : "var(--z-error)" }}>
-                  {stat.positive ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
-                      <path fillRule="evenodd" d="M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z" clipRule="evenodd" />
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
-                      <path fillRule="evenodd" d="M8 2a.75.75 0 0 1 .75.75v8.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.22 3.22V2.75A.75.75 0 0 1 8 2Z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                  {stat.change}
-                </p>
-              </CardContent>
-            </Card>
+            <StatCard key={stat.label} {...stat} />
           ))}
         </div>
 
         {/* ── Row: Area chart + Donut ────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 mb-6">
           {/* Monthly Revenue & Rides */}
-          <Card className="rounded-xl border shadow-none" style={{ borderColor: "var(--z-border)", background: "var(--z-bg-surface)" }}>
+          <Card className="rounded-xl shadow-none">
             <CardHeader>
               <CardTitle className="text-base font-bold" style={{ color: "var(--z-text-main)" }}>
                 Monthly Revenue &amp; Rides
@@ -269,7 +245,7 @@ export default function DashboardPage() {
                       <stop offset="100%" stopColor="var(--z-violet-400)" stopOpacity={0.02} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid vertical={false} stroke="var(--z-neutral-200)" strokeDasharray="3 3" />
+                  <CartesianGrid vertical={false} stroke="var(--z-border)" strokeDasharray="3 3" />
                   <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "var(--z-text-muted)" }} />
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "var(--z-text-muted)" }} />
                   <ChartTooltip content={<ChartTooltipContent />} />
@@ -285,11 +261,11 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Payment Methods */}
-          <Card className="rounded-xl border shadow-none" style={{ borderColor: "var(--z-border)", background: "var(--z-bg-surface)" }}>
+          {/* Settlement Methods */}
+          <Card className="rounded-xl shadow-none">
             <CardHeader>
               <CardTitle className="text-base font-bold" style={{ color: "var(--z-text-main)" }}>
-                Payment Methods
+                Settlement Methods
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center">
@@ -297,7 +273,7 @@ export default function DashboardPage() {
                 <ChartContainer config={{ card: { label: "Karte", color: "var(--z-violet-500)" }, cash: { label: "Bar", color: "var(--z-violet-200)" } }} className="w-full h-full">
                   <PieChart>
                     <Pie
-                      data={PAYMENT_DATA}
+                      data={SETTLEMENT_DATA}
                       cx="50%"
                       cy="50%"
                       innerRadius={55}
@@ -306,7 +282,7 @@ export default function DashboardPage() {
                       dataKey="value"
                       strokeWidth={0}
                     >
-                      {PAYMENT_DATA.map((entry, index) => (
+                      {SETTLEMENT_DATA.map((entry, index) => (
                         <Cell key={index} fill={entry.color} />
                       ))}
                     </Pie>
@@ -315,7 +291,7 @@ export default function DashboardPage() {
                 </ChartContainer>
               </div>
               <div className="flex flex-col gap-2 mt-4 w-full">
-                {PAYMENT_DATA.map((entry) => (
+                {SETTLEMENT_DATA.map((entry) => (
                   <div key={entry.name} className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
                       <span className="w-3 h-3 rounded-sm" style={{ background: entry.color }} />
@@ -332,7 +308,7 @@ export default function DashboardPage() {
         {/* ── Row: Bar chart + Table ─────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Weekly Earnings */}
-          <Card className="rounded-xl border shadow-none" style={{ borderColor: "var(--z-border)", background: "var(--z-bg-surface)" }}>
+          <Card className="rounded-xl shadow-none">
             <CardHeader>
               <CardTitle className="text-base font-bold" style={{ color: "var(--z-text-main)" }}>
                 Weekly Earnings (Brutto vs Netto)
@@ -341,7 +317,7 @@ export default function DashboardPage() {
             <CardContent>
               <ChartContainer config={weeklyChartConfig} className="h-[260px] w-full">
                 <BarChart data={WEEKLY_DATA} margin={{ top: 8, right: 8, bottom: 0, left: -10 }}>
-                  <CartesianGrid vertical={false} stroke="var(--z-neutral-200)" strokeDasharray="3 3" />
+                  <CartesianGrid vertical={false} stroke="var(--z-border)" strokeDasharray="3 3" />
                   <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "var(--z-text-muted)" }} />
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "var(--z-text-muted)" }} />
                   <ChartTooltip content={<ChartTooltipContent />} />
@@ -353,7 +329,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Top Drivers */}
-          <Card className="rounded-xl border shadow-none" style={{ borderColor: "var(--z-border)", background: "var(--z-bg-surface)" }}>
+          <Card className="rounded-xl shadow-none">
             <CardHeader>
               <CardTitle className="text-base font-bold" style={{ color: "var(--z-text-main)" }}>
                 Top Drivers

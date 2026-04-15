@@ -52,6 +52,7 @@
   --z-text-secondary:     var(--z-neutral-600);
   --z-text-muted:         var(--z-neutral-400);
   --z-border:             var(--z-neutral-200);
+  --z-bg-glass:           rgba(255, 255, 255, 0.92);
   --background:  oklch(1 0 0);
   --foreground:  oklch(0.145 0 0);
   --card:  oklch(1 0 0);
@@ -162,37 +163,51 @@ body {
 }
 
 .dark {
-  --background:  oklch(0.145 0 0);
-  --foreground:  oklch(0.985 0 0);
-  --card:  oklch(0.205 0 0);
-  --card-foreground:  oklch(0.985 0 0);
-  --popover:  oklch(0.205 0 0);
-  --popover-foreground:  oklch(0.985 0 0);
-  --primary:  oklch(0.922 0 0);
-  --primary-foreground:  oklch(0.205 0 0);
-  --secondary:  oklch(0.269 0 0);
-  --secondary-foreground:  oklch(0.985 0 0);
-  --muted:  oklch(0.269 0 0);
-  --muted-foreground:  oklch(0.708 0 0);
-  --accent:  oklch(0.269 0 0);
-  --accent-foreground:  oklch(0.985 0 0);
-  --destructive:  oklch(0.704 0.191 22.216);
-  --border:  oklch(1 0 0 / 10%);
-  --input:  oklch(1 0 0 / 15%);
-  --ring:  oklch(0.556 0 0);
-  --chart-1:  oklch(0.87 0 0);
-  --chart-2:  oklch(0.556 0 0);
-  --chart-3:  oklch(0.439 0 0);
-  --chart-4:  oklch(0.371 0 0);
-  --chart-5:  oklch(0.269 0 0);
-  --sidebar:  oklch(0.205 0 0);
-  --sidebar-foreground:  oklch(0.985 0 0);
-  --sidebar-primary:  oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground:  oklch(0.985 0 0);
-  --sidebar-accent:  oklch(0.269 0 0);
-  --sidebar-accent-foreground:  oklch(0.985 0 0);
-  --sidebar-border:  oklch(1 0 0 / 10%);
-  --sidebar-ring:  oklch(0.556 0 0);
+  /* ── shadcn system vars mapped to Zynqly violet dark palette ── */
+  --background:           #1A1628;
+  --foreground:           #F5F3FF;
+  --card:                 #241D3B;
+  --card-foreground:      #F5F3FF;
+  --popover:              #2E2947;
+  --popover-foreground:   #F5F3FF;
+  --primary:              #A78BFA;
+  --primary-foreground:   #1A1628;
+  --secondary:            #2E2947;
+  --secondary-foreground: #F5F3FF;
+  --muted:                #2E2947;
+  --muted-foreground:     #847E9E;
+  --accent:               #2E2947;
+  --accent-foreground:    #F5F3FF;
+  --destructive:          oklch(0.704 0.191 22.216);
+  --border:               rgba(255, 255, 255, 0.08);
+  --input:                rgba(255, 255, 255, 0.10);
+  --ring:                 #7C3AED;
+  --chart-1:              #A78BFA;
+  --chart-2:              #7C3AED;
+  --chart-3:              #C4B5FD;
+  --chart-4:              #DDD6FE;
+  --chart-5:              #EDE9FE;
+  --sidebar:              #241D3B;
+  --sidebar-foreground:   #F5F3FF;
+  --sidebar-primary:      #A78BFA;
+  --sidebar-primary-foreground: #1A1628;
+  --sidebar-accent:       #2E2947;
+  --sidebar-accent-foreground: #F5F3FF;
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-ring:         #7C3AED;
+
+  /* ── Zynqly z-* token overrides for dark mode ─────────────── */
+  --z-bg-page:            #1A1628;
+  --z-bg-surface:         #241D3B;
+  --z-bg-card:            #2E2947;
+  --z-color-main:         #A78BFA;
+  --z-color-main-hover:   #C4B5FD;
+  --z-color-main-light:   rgba(167, 139, 250, 0.15);
+  --z-text-main:          #F5F3FF;
+  --z-text-secondary:     #C4B5FD;
+  --z-text-muted:         #847E9E;
+  --z-border:             rgba(255, 255, 255, 0.08);
+  --z-bg-glass:           rgba(26, 22, 40, 0.92);
 }
 
 @layer base {

@@ -1,0 +1,68 @@
+{
+  "stats": [
+    {
+      "label": "Total Revenue",
+      "value": "11.340,00 €",
+      "rawValue": 11340.00,
+      "change": "+14,9% vs last month",
+      "changePercent": 14.9,
+      "positive": true,
+      "icon": "revenue"
+    },
+    {
+      "label": "Total Rides",
+      "value": "415",
+      "rawValue": 415,
+      "change": "+8,3% vs last month",
+      "changePercent": 8.3,
+      "positive": true,
+      "icon": "rides"
+    },
+    {
+      "label": "Active Drivers",
+      "value": "12",
+      "rawValue": 12,
+      "change": "+2 vs last month",
+      "changePercent": null,
+      "positive": true,
+      "icon": "drivers"
+    },
+    {
+      "label": "Avg. Fare",
+      "value": "27,32 €",
+      "rawValue": 27.32,
+      "change": "−1,2% vs last month",
+      "changePercent": -1.2,
+      "positive": false,
+      "icon": "fare"
+    }
+  ],
+  "monthlyData": [
+    { "month": "Jan", "revenue": 7800, "rides": 280 },
+    { "month": "Feb", "revenue": 8200, "rides": 310 },
+    { "month": "Mar", "revenue": 8600, "rides": 340 },
+    { "month": "Apr", "revenue": 9400, "rides": 360 },
+    { "month": "May", "revenue": 10200, "rides": 390 },
+    { "month": "Jun", "revenue": 11340, "rides": 415 }
+  ],
+  "weeklyData": [
+    { "day": "Mon", "brutto": 220, "netto": 165 },
+    { "day": "Tue", "brutto": 290, "netto": 215 },
+    { "day": "Wed", "brutto": 180, "netto": 130 },
+    { "day": "Thu", "brutto": 380, "netto": 290 },
+    { "day": "Fri", "brutto": 480, "netto": 360 },
+    { "day": "Sat", "brutto": 450, "netto": 340 },
+    { "day": "Sun", "brutto": 310, "netto": 230 }
+  ],
+  "settlementData": [
+    { "name": "Kartenzahlung", "value": 62 },
+    { "name": "Barzahlung",    "value": 38 }
+  ],
+  "topDrivers": [
+    { "name": "Lel K.",     "rides": 89, "revenue": "2.430 €", "revenueRaw": 2430.00, "rating": 4.9 },
+    { "name": "Russan R.",  "rides": 76, "revenue": "2.080 €", "revenueRaw": 2080.00, "rating": 4.8 },
+    { "name": "Thomas W.",  "rides": 71, "revenue": "1.940 €", "revenueRaw": 1940.00, "rating": 4.7 },
+    { "name": "Sarah L.",   "rides": 65, "revenue": "1.780 €", "revenueRaw": 1780.00, "rating": 4.9 },
+    { "name": "Susuf A.",   "rides": 58, "revenue": "1.590 €", "revenueRaw": 1590.00, "rating": 4.6 }
+  ]
+}

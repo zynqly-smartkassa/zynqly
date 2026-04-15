@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_LINKS = [
   { label: "Features",     href: "#features" },
@@ -55,7 +56,7 @@ export default function Home() {
       <header
         className="sticky top-0 z-50 border-b"
         style={{
-          background: "rgba(255,255,255,0.92)",
+          background: "var(--z-bg-glass)",
           borderColor: "var(--z-border)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
@@ -90,7 +91,8 @@ export default function Home() {
           </nav>
 
           {/* Auth buttons */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <ThemeToggle />
             <Button
               asChild
               variant="ghost"
