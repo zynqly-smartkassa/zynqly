@@ -1,7 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import {
   Card,
   CardContent,
@@ -42,11 +41,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatCard } from "@/components/stat-card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useState } from "react";
 import { useGetDashboardQuery } from "@/redux/api/apis/dashboard";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ── Icon map: API key → JSX ─────────────────────────────── */
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -87,7 +88,10 @@ const weeklyChartConfig: ChartConfig = {
 /* ── Component ────────────────────────────────────────────── */
 export default function DashboardPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { data, isLoading } = useGetDashboardQuery();
+
+  const {isMobile} = useSidebar();
 
   const settlementWithColors = data?.settlementData.map((s, i) => ({
     ...s,
@@ -107,17 +111,29 @@ export default function DashboardPage() {
       >
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex h-14 items-center justify-between gap-4">
           {/* Search */}
+          <div className="flex flex-row gap-1 items-center">
+            <SidebarTrigger className={`p-0 m-0 justify-start ${!isMobile ? "hidden" : ""}`}></SidebarTrigger>
 
-          <div
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm w-40 sm:w-56"
-            style={{ borderColor: "var(--z-border)", background: "var(--z-bg-surface)" }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-              className="w-4 h-4 flex-shrink-0" style={{ color: "var(--z-text-muted)" }}>
-              <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clipRule="evenodd" />
-            </svg>
-            <span style={{ color: "var(--z-text-muted)" }}>Suchen...</span>
+            <div className="relative flex items-center w-40 sm:w-56">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="absolute left-2.5 w-4 h-4 pointer-events-none shrink-0"
+                style={{ color: "var(--z-text-muted)" }}
+              >
+                <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clipRule="evenodd" />
+              </svg>
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Suchen..."
+                className="pl-8 h-8 text-sm"
+                style={{ borderColor: "var(--z-border)", background: "var(--z-bg-surface)" }}
+              />
+            </div>
           </div>
+
 
           {/* Right: icons + avatar */}
           <div className="flex items-center gap-1">

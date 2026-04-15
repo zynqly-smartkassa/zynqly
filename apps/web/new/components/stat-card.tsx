@@ -10,7 +10,7 @@ interface StatCardProps {
 
 export function StatCard({ label, value, change, positive, icon }: StatCardProps) {
   return (
-    <Card className="rounded-xl shadow-none">
+    <Card className="rounded-xl shadow-none transition-all duration-150 hover:shadow-md hover:border-[var(--z-violet-200)] hover:-translate-y-0.5 cursor-default">
       <CardHeader className="flex flex-row items-center justify-between pb-1">
         <span className="text-xs font-medium" style={{ color: "var(--z-text-secondary)" }}>
           {label}
