@@ -11,7 +11,7 @@ interface StatCardProps {
 export function StatCard({ label, value, change, positive, icon }: StatCardProps) {
   return (
     <Card className="rounded-xl shadow-none">
-      <CardHeader className="flex-row items-center justify-between pb-1">
+      <CardHeader className="flex flex-row items-center justify-between pb-1">
         <span className="text-xs font-medium" style={{ color: "var(--z-text-secondary)" }}>
           {label}
         </span>
