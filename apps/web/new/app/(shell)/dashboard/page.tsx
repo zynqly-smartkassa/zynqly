@@ -36,6 +36,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { StatCard } from "@/components/stat-card";
 import { useGetDashboardQuery } from "@/redux/api/apis/dashboard";
+import { PageHeader } from "@/components/page-header";
 
 /* ── Icon map: API key → JSX ─────────────────────────────── */
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -86,16 +87,9 @@ export default function DashboardPage() {
     <div className="min-h-screen" style={{ background: "var(--z-bg-page)" }}>
 
       {/* ── Main content ─────────────────────────────────── */}
-      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-7">
+      <div className="max-w-[1440px] mx-auto">
         {/* Heading */}
-        <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ color: "var(--z-text-main)" }}>
-            Dashboard
-          </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--z-text-secondary)" }}>
-            Übersicht über diesen Monat
-          </p>
-        </div>
+        <PageHeader title="Dashboard" subtitle="Übersicht über diesen Monat" />
 
         {/* ── KPI cards ──────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -282,7 +276,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
