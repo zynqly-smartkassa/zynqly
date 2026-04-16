@@ -236,3 +236,133 @@ class MapPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+class RideBottomSheet extends StatelessWidget {
+  final bool isPassenger;
+  final VoidCallback onPassengerSelected;
+  final VoidCallback onCourierSelected;
+
+  const RideBottomSheet({
+    super.key,
+    required this.isPassenger,
+    required this.onPassengerSelected,
+    required this.onCourierSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16, 12, 16,18),
+      decoration: BoxDecoration(
+        color: Color(0xFFF5F1EA),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 12,
+            offset: Offset(0, -3),
+          )
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children:[
+          Container(
+            width: 34,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          Row(
+            children:[
+              Expanded(
+                child: RideTypeButton(
+                  title: 'passagierfahrt',
+                  icon: Icons.person_outline,
+                  isSelected: isPassenger,
+                  onTap: onPassengerSelected,
+                ),
+              ),
+              const SizedBox(width:10),
+              Expanded(
+                child: RideTypeButton(
+                  title: 'Botenfahrt',
+                  icon: Icons.inventory_2_outlined,
+                  isSelected: !isPassengerRide,
+                  onTap: onCourierSelected,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height:14),
+          const LocationField(
+            dotColor: colors.green,
+            label: 'Abholort',
+            value: 'Hauptbahnhof, Graz',
+          ),
+          const SizedBox(height:10),
+          const LocationField(
+            dotColor: colors.red,
+            label: 'Zielort',
+            value: 'Ziel eingeben oder auf Karte tippen',
+            isPlaceholder: true,
+          ),
+          const SizedBox(height:14),
+          const Row(
+            children:[
+              Expanded(
+                child: PriceBox(
+                  label: 'Fahrtkosten',
+                  value: '30,00 €',
+                ),
+              ),
+              sizedBox(width:10),
+              Expanded(
+                child: PriceBox(
+                  title: 'pro km',
+                  value: '2,50 €',
+                ),
+              ),
+              sizedBox(width:10),
+              Expanded(
+                child: PriceBox(
+                  title: 'pro min',
+                  value: '0,50 €',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height:14),
+          sizedbox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton.icon(
+              onPressed: (){},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFDD7A00),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: const Text(
+                'Fahrt starten',
+                 style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+  
