@@ -365,4 +365,155 @@ class RideBottomSheet extends StatelessWidget {
     );
   }
 }
-  
+
+
+class RideTypeButton extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const RideTypeButton({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Container(
+        height: 44,
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFDD7A00) : const Color(0xffE4DeD6),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:[
+            Icon(icon, size: 18, color: isSelected ? Colors.white : Colors.black87),
+            const SizedBox(width:8),
+            Text(
+              title,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black87,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LocationField extends StatelessWidget {
+  final Color dotColor;
+  final String label;
+  final String value;
+  final bool isPlaceholder;
+
+  const LocationField({
+    super.key,
+    required this.dotColor,
+    required this.label,
+    required this.value,
+    this.isPlaceholder = false,
+  });
+
+  @override
+  Widget build(BuildContext context){
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children:[
+        container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: dotColor,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width:10),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal:14, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE3DED6),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:[
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 11,
+                    letterSpacing: 0.6,
+                  ),
+                ),
+                const SizedBox(height:4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: isPlaceholder ? Colors.grey : Colors.black87,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}  
+
+class PriceBox extends StatelessWidget {
+  final String title;
+  final String value;
+
+  const PriceBox({
+    super.key,
+    required this.title,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 66,
+      decoration: BoxDecoration(
+        color: const Color(0xFFEAE5DE),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.grey.shade700,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
