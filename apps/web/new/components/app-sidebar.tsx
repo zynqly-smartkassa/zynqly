@@ -29,7 +29,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Link href="/" className="hidden sm:block w-28">
+        <Link href="/" className="block w-28">
           <Image src="/Logo.svg" alt="Zynqly" width={200} height={100} className="h-14 w-full" priority />
         </Link>
       </SidebarHeader>
