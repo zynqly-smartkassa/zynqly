@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
@@ -18,80 +19,26 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
 import { useGetRideHistoryQuery } from "@/redux/api/apis/ride-history";
+import type { Ride } from "@/types/RideHistory";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-type RideType = "Passagier" | "Boten";
-type PaymentMethod = "card" | "cash";
+type RideType   = "Passagier" | "Boten";
+type Settlement = "card" | "cash";
 type RideStatus = "completed" | "cancelled" | "pending";
-
-interface Ride {
-  id: string;
-  dateTime: string;
-  type: RideType;
-  from: string;
-  to: string;
-  amount: number;
-  payment: PaymentMethod;
-  status: RideStatus;
-}
-
-// ── Dummy data ─────────────────────────────────────────────────────────────────
-
-const DUMMY_RIDES: Ride[] = [
-  { id: "R-1042", dateTime: "2026-04-11 08:15", type: "Passagier", from: "Hauptbahnhof",    to: "Flughafen",        amount: 42.50, payment: "card", status: "completed"  },
-  { id: "R-1041", dateTime: "2026-04-11 07:30", type: "Boten",     from: "Friedrichstr. 12", to: "Alexanderplatz 5", amount: 18.90, payment: "cash", status: "completed"  },
-  { id: "R-1040", dateTime: "2026-04-10 19:45", type: "Passagier", from: "Potsdamer Platz", to: "Charlottenburg",   amount: 28.60, payment: "card", status: "completed"  },
-  { id: "R-1039", dateTime: "2026-04-10 17:20", type: "Boten",     from: "Kreuzberg",        to: "Mitte",            amount: 15.40, payment: "cash", status: "completed"  },
-  { id: "R-1038", dateTime: "2026-04-10 14:00", type: "Passagier", from: "Tempelhof",        to: "Spandau",          amount: 35.20, payment: "card", status: "completed"  },
-  { id: "R-1037", dateTime: "2026-04-09 22:10", type: "Passagier", from: "Neukölln",         to: "Prenzlauer Berg",  amount: 22.80, payment: "card", status: "cancelled"  },
-  { id: "R-1036", dateTime: "2026-04-09 16:30", type: "Boten",     from: "Schöneberg",       to: "Wedding",          amount: 19.50, payment: "cash", status: "completed"  },
-  { id: "R-1035", dateTime: "2026-04-09 12:00", type: "Passagier", from: "Lichtenberg",      to: "Steglitz",         amount: 31.70, payment: "card", status: "completed"  },
-  { id: "R-1034", dateTime: "2026-04-08 09:45", type: "Boten",     from: "Pankow",           to: "Friedrichshain",   amount: 12.30, payment: "cash", status: "completed"  },
-  { id: "R-1033", dateTime: "2026-04-08 08:00", type: "Passagier", from: "Mitte",            to: "Zehlendorf",       amount: 38.90, payment: "card", status: "completed"  },
-  { id: "R-1032", dateTime: "2026-04-07 21:30", type: "Passagier", from: "Tempelhof",        to: "Reinickendorf",    amount: 44.10, payment: "card", status: "cancelled"  },
-  { id: "R-1031", dateTime: "2026-04-07 18:15", type: "Boten",     from: "Treptow",          to: "Spandau",          amount: 21.60, payment: "cash", status: "completed"  },
-  { id: "R-1030", dateTime: "2026-04-07 14:50", type: "Passagier", from: "Charlottenburg",   to: "Marzahn",          amount: 52.40, payment: "card", status: "completed"  },
-  { id: "R-1029", dateTime: "2026-04-06 11:20", type: "Boten",     from: "Wedding",          to: "Neukölln",         amount: 16.80, payment: "cash", status: "completed"  },
-  { id: "R-1028", dateTime: "2026-04-06 09:00", type: "Passagier", from: "Steglitz",         to: "Hauptbahnhof",     amount: 27.50, payment: "card", status: "completed"  },
-  { id: "R-1027", dateTime: "2026-04-05 20:45", type: "Passagier", from: "Flughafen",        to: "Mitte",            amount: 48.30, payment: "card", status: "completed"  },
-  { id: "R-1026", dateTime: "2026-04-05 17:00", type: "Boten",     from: "Lichtenberg",      to: "Pankow",           amount: 13.70, payment: "cash", status: "cancelled"  },
-  { id: "R-1025", dateTime: "2026-04-05 13:30", type: "Passagier", from: "Spandau",          to: "Kreuzberg",        amount: 39.20, payment: "card", status: "completed"  },
-  { id: "R-1024", dateTime: "2026-04-04 10:15", type: "Boten",     from: "Prenzlauer Berg",  to: "Tempelhof",        amount: 17.90, payment: "cash", status: "completed"  },
-  { id: "R-1023", dateTime: "2026-04-04 08:30", type: "Passagier", from: "Zehlendorf",       to: "Flughafen",        amount: 55.60, payment: "card", status: "completed"  },
-  { id: "R-1022", dateTime: "2026-04-03 22:00", type: "Passagier", from: "Friedrichshain",   to: "Charlottenburg",   amount: 24.10, payment: "card", status: "cancelled"  },
-  { id: "R-1021", dateTime: "2026-04-03 19:45", type: "Boten",     from: "Mitte",            to: "Reinickendorf",    amount: 23.40, payment: "cash", status: "completed"  },
-  { id: "R-1020", dateTime: "2026-04-03 15:20", type: "Passagier", from: "Reinickendorf",    to: "Steglitz",         amount: 33.80, payment: "card", status: "completed"  },
-  { id: "R-1019", dateTime: "2026-04-02 12:00", type: "Boten",     from: "Schöneberg",       to: "Marzahn",          amount: 20.50, payment: "cash", status: "completed"  },
-  { id: "R-1018", dateTime: "2026-04-02 09:30", type: "Passagier", from: "Neukölln",         to: "Spandau",          amount: 36.90, payment: "card", status: "completed"  },
-  { id: "R-1017", dateTime: "2026-04-01 20:15", type: "Passagier", from: "Hauptbahnhof",     to: "Prenzlauer Berg",  amount: 19.70, payment: "card", status: "completed"  },
-  { id: "R-1016", dateTime: "2026-04-01 17:40", type: "Boten",     from: "Kreuzberg",        to: "Pankow",           amount: 14.20, payment: "cash", status: "completed"  },
-  { id: "R-1015", dateTime: "2026-04-01 11:00", type: "Passagier", from: "Mitte",            to: "Zehlendorf",       amount: 41.30, payment: "card", status: "cancelled"  },
-  { id: "R-1014", dateTime: "2026-03-31 18:50", type: "Boten",     from: "Treptow",          to: "Wedding",          amount: 11.80, payment: "cash", status: "completed"  },
-  { id: "R-1013", dateTime: "2026-03-31 14:30", type: "Passagier", from: "Charlottenburg",   to: "Lichtenberg",      amount: 45.60, payment: "card", status: "completed"  },
-  { id: "R-1012", dateTime: "2026-03-30 21:00", type: "Passagier", from: "Friedrichshain",   to: "Flughafen",        amount: 50.20, payment: "card", status: "completed"  },
-  { id: "R-1011", dateTime: "2026-03-30 16:15", type: "Boten",     from: "Steglitz",         to: "Neukölln",         amount: 18.40, payment: "cash", status: "completed"  },
-  { id: "R-1010", dateTime: "2026-03-30 10:45", type: "Passagier", from: "Spandau",          to: "Mitte",            amount: 37.10, payment: "card", status: "cancelled"  },
-  { id: "R-1009", dateTime: "2026-03-29 19:00", type: "Boten",     from: "Pankow",           to: "Kreuzberg",        amount: 16.30, payment: "cash", status: "completed"  },
-  { id: "R-1008", dateTime: "2026-03-29 13:30", type: "Passagier", from: "Reinickendorf",    to: "Charlottenburg",   amount: 29.80, payment: "card", status: "completed"  },
-  { id: "R-1007", dateTime: "2026-03-28 22:45", type: "Passagier", from: "Marzahn",          to: "Hauptbahnhof",     amount: 43.70, payment: "card", status: "completed"  },
-  { id: "R-1006", dateTime: "2026-03-28 18:00", type: "Boten",     from: "Prenzlauer Berg",  to: "Schöneberg",       amount: 22.10, payment: "cash", status: "completed"  },
-  { id: "R-1005", dateTime: "2026-03-28 11:30", type: "Passagier", from: "Zehlendorf",       to: "Spandau",          amount: 47.50, payment: "card", status: "completed"  },
-  { id: "R-1004", dateTime: "2026-03-27 20:00", type: "Boten",     from: "Wedding",          to: "Lichtenberg",      amount: 15.90, payment: "cash", status: "cancelled"  },
-  { id: "R-1003", dateTime: "2026-03-27 14:15", type: "Passagier", from: "Tempelhof",        to: "Friedrichshain",   amount: 26.40, payment: "card", status: "completed"  },
-  { id: "R-1002", dateTime: "2026-03-27 09:00", type: "Boten",     from: "Neukölln",         to: "Charlottenburg",   amount: 24.80, payment: "cash", status: "completed"  },
-  { id: "R-1001", dateTime: "2026-03-26 17:30", type: "Passagier", from: "Hauptbahnhof",     to: "Zehlendorf",       amount: 34.60, payment: "card", status: "completed"  },
-];
 
 const RIDES_PER_PAGE = 8;
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
+/** Handles both ISO-8601 (T separator) and space-separated dateTime strings */
 function formatDateTime(dt: string) {
-  const [date, time] = dt.split(" ");
+  const [date, timePart] = dt.includes("T") ? dt.split("T") : dt.split(" ");
+  const time = timePart?.slice(0, 5) ?? "";
   return (
     <span className="flex flex-col gap-0.5">
       <span>{date}</span>
@@ -122,7 +69,7 @@ function TypeBadge({ type }: { type: RideType }) {
   );
 }
 
-function PaymentBadge({ method }: { method: PaymentMethod }) {
+function SettlementBadge({ method }: { method: Settlement }) {
   const isCard = method === "card";
   return (
     <span
@@ -172,7 +119,7 @@ function exportToCSV(rides: Ride[]) {
     r.from,
     r.to,
     r.amount.toFixed(2),
-    r.payment === "card" ? "Karte" : "Bar",
+    r.settlement === "card" ? "Karte" : "Bar",
     r.status === "completed" ? "Abgeschlossen" : r.status === "cancelled" ? "Storniert" : "Ausstehend",
   ]);
 
@@ -189,6 +136,44 @@ function exportToCSV(rides: Ride[]) {
   URL.revokeObjectURL(url);
 }
 
+// ── Skeleton helpers ──────────────────────────────────────────────────────────
+
+function TableSkeletonRows() {
+  return (
+    <>
+      {Array.from({ length: RIDES_PER_PAGE }).map((_, i) => (
+        <TableRow key={i} className="border-b border-z-neutral-200 dark:border-z-neutral-700">
+          {[60, 80, 70, 90, 90, 50, 45, 75].map((w, j) => (
+            <TableCell key={j} className="py-4 px-4">
+              <Skeleton className="h-4 rounded" style={{ width: `${w}px` }} />
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
+    </>
+  );
+}
+
+function MobileSkeletonCards() {
+  return (
+    <div className="flex flex-col divide-y divide-z-neutral-200 dark:divide-z-neutral-700">
+      {Array.from({ length: RIDES_PER_PAGE }).map((_, i) => (
+        <div key={i} className="flex items-center gap-3 py-3.5 px-4">
+          <Skeleton className="w-9 h-9 rounded-full shrink-0" />
+          <div className="flex-1 min-w-0 space-y-1.5">
+            <Skeleton className="h-3.5 w-36 rounded" />
+            <Skeleton className="h-3 w-24 rounded" />
+          </div>
+          <div className="flex flex-col items-end gap-1.5 shrink-0">
+            <Skeleton className="h-3.5 w-16 rounded" />
+            <Skeleton className="h-4 w-20 rounded" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function RideHistoryPage() {
@@ -198,25 +183,27 @@ export default function RideHistoryPage() {
   const [filterStatus, setFilterStatus]   = useState<string>("all");
   const [currentPage, setCurrentPage]     = useState(1);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  const {data: rideHistory, isLoading} = useGetRideHistoryQuery();
+  const { data: rideHistory, isLoading } = useGetRideHistoryQuery();
 
-  useEffect(() => {
-    console.log(rideHistory);
-  }, [rideHistory])
+  // Show skeletons until client is mounted (prevents SSR/client hydration mismatch)
+  const showSkeleton = !mounted || isLoading;
 
-  // Only search is wired up — filter logic left for the developer
+  // Search filter — filter/sort logic left for developer to extend
   const filtered = useMemo(() => {
-    if (!search.trim()) return DUMMY_RIDES;
+    const rides = rideHistory?.rides ?? [];
+    if (!search.trim()) return rides;
     const q = search.toLowerCase();
-    return DUMMY_RIDES.filter(
+    return rides.filter(
       (ride) =>
         ride.id.toLowerCase().includes(q) ||
         ride.from.toLowerCase().includes(q) ||
         ride.to.toLowerCase().includes(q) ||
         ride.dateTime.includes(q)
     );
-  }, [search]);
+  }, [search, rideHistory?.rides]);
 
   // Pagination
   const totalPages      = Math.max(1, Math.ceil(filtered.length / RIDES_PER_PAGE));
@@ -256,6 +243,7 @@ export default function RideHistoryPage() {
           size="sm"
           className="gap-1.5 h-9 px-3 text-sm shrink-0 bg-z-violet-500 hover:bg-z-violet-600 text-white dark:bg-z-violet-500 dark:hover:bg-z-violet-600"
           onClick={() => exportToCSV(filtered)}
+          disabled={showSkeleton || filtered.length === 0}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
             <path d="M8.75 2.75a.75.75 0 0 0-1.5 0v5.69L5.03 6.22a.75.75 0 0 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 0 0-1.06-1.06L8.75 8.44V2.75Z" />
@@ -307,7 +295,7 @@ export default function RideHistoryPage() {
             </SelectContent>
           </Select>
 
-          {/* Payment filter */}
+          {/* Settlement filter */}
           <Select value={filterPayment} onValueChange={setFilterPayment}>
             <SelectTrigger className="h-9 text-sm w-full sm:w-auto sm:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
               <SelectValue placeholder="Zahlung" />
@@ -334,8 +322,70 @@ export default function RideHistoryPage() {
         </div>
       </div>
 
-      {/* ── Table ── */}
-      <div className="rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+      {/* ── Mobile card list (sm: and above hidden) ── */}
+      <div className="sm:hidden rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+        {showSkeleton ? (
+          <MobileSkeletonCards />
+        ) : paginated.length === 0 ? (
+          <p className="text-center py-12 text-sm text-z-neutral-400 dark:text-z-neutral-500">
+            Keine Fahrten gefunden.
+          </p>
+        ) : (
+          <div className="flex flex-col divide-y divide-z-neutral-200 dark:divide-z-neutral-700">
+            {paginated.map((ride) => {
+              const isPassagier = ride.type === "Passagier";
+              const [date, timePart] = ride.dateTime.includes("T")
+                ? ride.dateTime.split("T")
+                : ride.dateTime.split(" ");
+              const time = timePart?.slice(0, 5) ?? "";
+              return (
+                <div key={ride.id} className="flex items-center gap-3 py-3.5 px-4">
+                  {/* Type icon */}
+                  <div
+                    className={cn(
+                      "w-9 h-9 rounded-full flex items-center justify-center shrink-0",
+                      isPassagier
+                        ? "bg-z-violet-100 dark:bg-violet-950/50"
+                        : "bg-green-50 dark:bg-green-950/40"
+                    )}
+                  >
+                    {isPassagier ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-z-violet-500">
+                        <path d="M6.5 3c-1.051 0-2.093.04-3.125.117A1.49 1.49 0 0 0 2 4.607V10.5h-.5a.5.5 0 0 0 0 1H2v2.5a1.5 1.5 0 0 0 1.5 1.5h1A1.5 1.5 0 0 0 6 14v-.5h8v.5a1.5 1.5 0 0 0 1.5 1.5h1a1.5 1.5 0 0 0 1.5-1.5V11.5h.5a.5.5 0 0 0 0-1H18V4.607a1.49 1.49 0 0 0-1.375-1.49A44.07 44.07 0 0 0 13.5 3h-7Z" />
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-green-600">
+                        <path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h9.73a1.5 1.5 0 0 0 1.442-1.086l1.414-4.926a.75.75 0 0 0-.826-.95l-3.453 1.026c-.726.214-1.494.214-2.22 0L10 3.04l-1.222.308a5.74 5.74 0 0 1-2.22 0L3.105 2.288ZM4.5 11.25a.75.75 0 0 0 0 1.5h11a.75.75 0 0 0 0-1.5h-11ZM3.75 16a.75.75 0 0 1 .75-.75h11a.75.75 0 0 1 0 1.5h-11a.75.75 0 0 1-.75-.75Z" />
+                      </svg>
+                    )}
+                  </div>
+
+                  {/* Route + meta */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-z-neutral-900 dark:text-z-neutral-50 truncate">
+                      {ride.from} → {ride.to}
+                    </p>
+                    <p className="text-xs text-z-neutral-400 dark:text-z-neutral-500 mt-0.5">
+                      {date}&nbsp;&nbsp;{time}
+                    </p>
+                  </div>
+
+                  {/* Amount + status */}
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <span className="text-sm font-semibold text-z-neutral-900 dark:text-z-neutral-50">
+                      {ride.amount.toFixed(2)} €
+                    </span>
+                    <StatusBadge status={ride.status as RideStatus} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── Desktop table (hidden on mobile) ── */}
+      <div className="hidden sm:block rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
         <Table>
           <TableHeader>
             <TableRow className="border-b border-z-neutral-200 dark:border-z-neutral-700 bg-z-neutral-100 dark:bg-z-neutral-800 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-800">
@@ -347,7 +397,9 @@ export default function RideHistoryPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginated.length === 0 ? (
+            {showSkeleton ? (
+              <TableSkeletonRows />
+            ) : paginated.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-12 text-sm text-z-neutral-400 dark:text-z-neutral-500">
                   Keine Fahrten gefunden.
@@ -371,7 +423,7 @@ export default function RideHistoryPage() {
                     {formatDateTime(ride.dateTime)}
                   </TableCell>
                   <TableCell className="py-4 px-4">
-                    <TypeBadge type={ride.type} />
+                    <TypeBadge type={ride.type as RideType} />
                   </TableCell>
                   <TableCell className="py-4 px-4 text-sm text-z-neutral-900 dark:text-z-neutral-100">
                     {ride.from}
@@ -383,10 +435,10 @@ export default function RideHistoryPage() {
                     {ride.amount.toFixed(2)} €
                   </TableCell>
                   <TableCell className="py-4 px-4">
-                    <PaymentBadge method={ride.payment} />
+                    <SettlementBadge method={ride.settlement as Settlement} />
                   </TableCell>
                   <TableCell className="py-4 px-4">
-                    <StatusBadge status={ride.status} />
+                    <StatusBadge status={ride.status as RideStatus} />
                   </TableCell>
                 </TableRow>
               ))
@@ -396,26 +448,32 @@ export default function RideHistoryPage() {
       </div>
 
       {/* ── Footer: count + pagination ── */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <p className="text-xs text-z-neutral-400 dark:text-z-neutral-500">
-          {filtered.length === 0
-            ? "Keine Fahrten gefunden"
-            : `${(safeCurrentPage - 1) * RIDES_PER_PAGE + 1}–${Math.min(safeCurrentPage * RIDES_PER_PAGE, filtered.length)} von ${filtered.length} Fahrten`}
-        </p>
+      <div className="flex items-center justify-center md:justify-between gap-4 flex-wrap">
+        <span className="text-xs text-z-neutral-400 dark:text-z-neutral-500">
+          {showSkeleton ? (
+            <Skeleton className="h-3 w-40 rounded" />
+          ) : filtered.length === 0 ? (
+            "Keine Fahrten gefunden"
+          ) : (
+            `${(safeCurrentPage - 1) * RIDES_PER_PAGE + 1}–${Math.min(safeCurrentPage * RIDES_PER_PAGE, filtered.length)} von ${filtered.length} Fahrten`
+          )}
+        </span>
 
-        {totalPages > 1 && (
+        {!showSkeleton && totalPages > 1 && (
           <div className="flex items-center gap-1">
             {/* Prev */}
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               disabled={safeCurrentPage === 1}
               onClick={() => setCurrentPage((p) => p - 1)}
-              className="inline-flex items-center justify-center w-8 h-8 rounded text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700 text-z-neutral-600 dark:text-z-neutral-300"
+              className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
               aria-label="Vorherige Seite"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
                 <path fillRule="evenodd" d="M9.78 4.22a.75.75 0 0 1 0 1.06L7.06 8l2.72 2.72a.75.75 0 1 1-1.06 1.06L5.47 8.53a.75.75 0 0 1 0-1.06l3.25-3.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
               </svg>
-            </button>
+            </Button>
 
             {/* Page numbers */}
             {pageNumbers.map((p, i) =>
@@ -427,32 +485,36 @@ export default function RideHistoryPage() {
                   …
                 </span>
               ) : (
-                <button
+                <Button
                   key={p}
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setCurrentPage(p as number)}
                   className={cn(
-                    "inline-flex items-center justify-center w-8 h-8 rounded text-sm font-medium transition-colors",
+                    "w-8 h-8 text-sm font-medium",
                     p === safeCurrentPage
-                      ? "bg-z-violet-500 text-white dark:bg-z-violet-500 dark:text-white"
+                      ? "bg-z-violet-500 text-white hover:bg-z-violet-600 dark:bg-z-violet-500 dark:text-white dark:hover:bg-z-violet-600"
                       : "text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
                   )}
                 >
                   {p}
-                </button>
+                </Button>
               )
             )}
 
             {/* Next */}
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               disabled={safeCurrentPage === totalPages}
               onClick={() => setCurrentPage((p) => p + 1)}
-              className="inline-flex items-center justify-center w-8 h-8 rounded text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700 text-z-neutral-600 dark:text-z-neutral-300"
+              className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
               aria-label="Nächste Seite"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
                 <path fillRule="evenodd" d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06L7.28 11.78a.75.75 0 0 1-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
               </svg>
-            </button>
+            </Button>
           </div>
         )}
       </div>
