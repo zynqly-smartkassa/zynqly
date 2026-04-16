@@ -1,0 +1,332 @@
+openapi: 3.0.0
+info:
+  title: Taxi-Registrierkasse API
+  description: API zur Verwaltung von Fahrten und Dashboard-Statistiken für ein Taxiunternehmen.
+  version: 1.0.0
+
+security:
+  -bearerAuth: []
+
+paths:
+  /ride:
+    get:
+      summary: Liste aller Fahrten abrufen
+      responses:
+        '200':
+          description: Eine Liste von Fahrten
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ride'
+    post:
+      summary: Eine neue Fahrt speichern
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RideInput'
+      responses:
+        '201':
+          description: Fahrt erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ride'
+
+  /ride/{id}:
+    get:
+      summary: Details einer bestimmten Fahrt abrufen
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Details der Fahrt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ride'
+        '404':
+          description: Fahrt nicht gefunden
+
+  /dashboard:
+    get:
+      summary: Statistiken für das Dashboard abrufen
+      description: Liefert aggregierte Daten wie Gesamtumsatz und Anzahl der Fahrten.
+      responses:
+        '200':
+          description: Dashboard-Daten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+
+/receipt:
+    get:
+      summary: Liste aller Rechnungen abrufen (Übersicht)
+      description: Liefert eine Liste von Rechnungen mit den wichtigsten Eckdaten für Tabellen oder Listenansichten.
+      responses:
+        '200':
+          description: Eine Liste von Rechnungs-Zusammenfassungen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReceiptSummary'
+
+/receipt/{ride_id}:
+    get:
+      summary: Rechnung zu einer bestimmten Fahrt abrufen
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Die Rechnungsdetails
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+        '404':
+          description: Keine Rechnung für diese Ride-ID gefunden
+
+/receipt:
+    post:
+      summary: Eine neue Rechnung erstellen
+      description: Erzeugt basierend auf einer Fahrt-ID eine offizielle Quittung.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReceiptDto'
+      responses:
+        '201':
+          description: Rechnung erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+        '400':
+          description: Validierungsfehler (z.B. fehlende Pflichtfelder)
+
+  /receipt/{ride_id}:
+    get:
+      summary: Rechnung zu einer bestimmten Fahrt abrufen
+
+# COMPONENTS
+components:
+
+securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Gib deinen JWT-Token hier ein. Format: Bearer <token>"
+
+  schemas:
+    Ride:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "123-abc-456"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-05-20T14:30:00Z"
+        distance_km:
+          type: number
+          format: float
+          example: 12.5
+        duration_min:
+          type: integer
+          example: 20
+
+    RideInput:
+      type: object
+      required:
+        - distance_km
+        - total_amount
+        - payment_method
+      properties:
+        distance_km:
+          type: number
+          example: 12.5
+        duration_min:
+          type: integer
+          example: 20
+        total_amount:
+          type: number
+          example: 35.50
+        payment_method:
+          type: string
+          enum: [cash, card, app]
+
+    DashboardStats:
+      type: object
+      properties:
+        total_revenue:
+          type: number
+          example: 1540.80
+        total_rides:
+          type: integer
+          example: 42
+        average_ride_value:
+          type: number
+          example: 36.68
+        revenue_by_payment_method:
+          type: object
+          properties:
+            cash:
+              type: number
+            card:
+              type: number
+            app:
+              type: number
+
+Receipt:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1001
+        ride_id:
+          type: integer
+          example: 500
+        user_id:
+          type: integer
+          example: 10
+        issuedAt:
+          type: string
+          format: date-time
+          example: "2024-05-20T14:35:00Z"
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        subtotal:
+          type: number
+          format: decimal
+          example: 29.58
+        taxRate:
+          type: number
+          format: decimal
+          example: 0.19
+        taxAmount:
+          type: number
+          format: decimal
+          example: 5.62
+        discountAmount:
+          type: number
+          format: decimal
+          example: 0.00
+        total:
+          type: number
+          format: decimal
+          example: 35.20
+        tip:
+          type: number
+          format: decimal
+          example: 2.00
+        amountPaid:
+          type: number
+          format: decimal
+          example: 40.00
+        change:
+          type: number
+          format: decimal
+          example: 2.80
+        currency:
+          type: string
+          example: "EUR"
+        receiptNumber:
+          type: string
+          example: "RE-2024-001"
+        notes:
+          type: string
+          example: "Fahrt zum Flughafen"
+
+CreateReceiptDto:
+      type: object
+      required:
+        - ride_id
+        - paymentMethod
+        - currency
+        - amountPaid
+      properties:
+        ride_id:
+          type: integer
+          example: 500
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+        discountAmount:
+          type: number
+          format: decimal
+          minimum: 0.0
+          default: 0.0
+          example: 0.0
+        notes:
+          type: string
+          maxLength: 255
+          example: "Fahrt zum Flughafen"
+        currency:
+          type: string
+          example: "EUR"
+        tip:
+          type: number
+          format: decimal
+          minimum: 0.0
+          default: 0.0
+          example: 2.50
+        amountPaid:
+          type: number
+          format: decimal
+          minimum: 0.0
+          example: 40.00
+
+ReceiptSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1001
+        receiptNumber:
+          type: string
+          example: "RE-2024-001"
+        issuedAt:
+          type: string
+          format: date-time
+          example: "2024-05-20T14:35:00Z"
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        total:
+          type: number
+          format: decimal
+          example: 35.20
+        currency:
+          type: string
+          example: "EUR"
+
+    # ENUMS
+    PaymentMethod:
+      type: string
+      enum: [CASH, CARD, APP, OTHER]
+      example: "CASH"
+
+    PaymentStatus:
+      type: string
+      enum: [PENDING, PAID, REFUNDED, CANCELLED]
+      example: "PAID"
