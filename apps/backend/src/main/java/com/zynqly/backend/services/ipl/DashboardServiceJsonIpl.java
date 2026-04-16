@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class DashboardServiceIpl implements DashboardService {
+public class DashboardServiceJsonIpl implements DashboardService {
 
   private final DashboardMapper dashboardMapper;
 

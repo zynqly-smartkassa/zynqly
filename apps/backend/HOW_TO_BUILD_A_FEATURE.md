@@ -57,7 +57,7 @@ Create `src/main/resources/data/rides.json`:
 ]
 ```
 
-> **Important:** The field names in the JSON must match the field names in your DTO exactly. Jackson (the library that reads the JSON) uses them to map values.
+> **Neccessary:** The field names in the JSON must match the field names in your DTO exactly. Jackson (the library that reads the JSON) uses them to map values.
 
 ---
 
