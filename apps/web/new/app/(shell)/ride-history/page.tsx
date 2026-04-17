@@ -25,9 +25,13 @@ import { PageHeader } from "@/components/page-header";
 import { useGetRideHistoryQuery } from "@/redux/api/apis/ride-history";
 import type { Ride } from "@/types/RideHistory";
 
+import { RotateCcw } from 'lucide-react';
+import ResetFiltersButton from "@/components/ResetFiltersButton";
+
+
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-type RideType   = "Passagier" | "Boten";
+type RideType = "Passagier" | "Boten";
 type Settlement = "card" | "cash";
 type RideStatus = "completed" | "cancelled" | "pending";
 
@@ -177,11 +181,11 @@ function MobileSkeletonCards() {
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function RideHistoryPage() {
-  const [search, setSearch]               = useState("");
-  const [filterType, setFilterType]       = useState<string>("all");
-  const [filterPayment, setFilterPayment] = useState<string>("all");
-  const [filterStatus, setFilterStatus]   = useState<string>("all");
-  const [currentPage, setCurrentPage]     = useState(1);
+  const [search, setSearch] = useState<string>("");
+  const [filterType, setFilterType] = useState<string>("all");
+  const [filterSettlement, setFilterSettlement] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -194,21 +198,44 @@ export default function RideHistoryPage() {
   // Search filter — filter/sort logic left for developer to extend
   const filtered = useMemo(() => {
     const rides = rideHistory?.rides ?? [];
-    if (!search.trim()) return rides;
+
     const q = search.toLowerCase();
     return rides.filter(
-      (ride) =>
-        ride.id.toLowerCase().includes(q) ||
-        ride.from.toLowerCase().includes(q) ||
-        ride.to.toLowerCase().includes(q) ||
-        ride.dateTime.includes(q)
+      (ride) => {
+
+        // This if statement will check wether the select is not "all" and if the 
+        // selection matches with the field of the current ride
+
+        if (filterType !== "all" && ride.type !== filterType) return false;
+
+        if (filterSettlement !== "all" && ride.settlement !== filterSettlement) return false;
+
+        if (filterStatus !== "all" && ride.status !== filterStatus) return false;
+
+        if (q.trim() !== "") {
+          const searchTerm = q.toLowerCase();
+
+          // Is there a match in any field?
+          const matchesId = ride.id.toLowerCase().includes(searchTerm);
+          const matchesFrom = ride.from.toLowerCase().includes(searchTerm);
+          const matchesTo = ride.to.toLowerCase().includes(searchTerm);
+          const matchesDate = ride.dateTime.includes(searchTerm);
+
+          // If at least one is not true, then sort the result out
+          if (!matchesId && !matchesFrom && !matchesTo && !matchesDate) {
+            return false;
+          }
+        }
+        // add the ride to the variable
+        return true;
+      }
     );
-  }, [search, rideHistory?.rides]);
+  }, [search, rideHistory?.rides, filterType, filterSettlement, filterStatus]);
 
   // Pagination
-  const totalPages      = Math.max(1, Math.ceil(filtered.length / RIDES_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / RIDES_PER_PAGE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
-  const paginated       = filtered.slice(
+  const paginated = filtered.slice(
     (safeCurrentPage - 1) * RIDES_PER_PAGE,
     safeCurrentPage * RIDES_PER_PAGE
   );
@@ -255,9 +282,9 @@ export default function RideHistoryPage() {
       </div>
 
       {/* ── Toolbar: search full-width on mobile, then filters in 3-col grid on mobile / inline on desktop ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-2 mb-6">
         {/* Search — full width on mobile, flex-1 on desktop */}
-        <div className="relative w-full sm:flex-1">
+        <div className="relative w-full lg:flex-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
@@ -270,22 +297,33 @@ export default function RideHistoryPage() {
               clipRule="evenodd"
             />
           </svg>
-          <Input
+          <div className="flex flex-row items-center gap-2">
+             <Input
             placeholder="Fahrten nach ID, Route oder Datum suchen ..."
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-9 h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
+            className="pl-9 h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 
+            dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 
+            placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
           />
+            <ResetFiltersButton
+            setFilterType={setFilterType}
+            setFilterSettlement={setFilterSettlement}
+            setSearch={setSearch}
+            setFilterStatus={setFilterStatus}
+            classNames="lg:hidden"
+          />
+          </div>
         </div>
 
         {/* Separator — desktop only */}
-        <div className="h-5 w-px bg-z-neutral-200 dark:bg-z-neutral-700 hidden sm:block" />
+        <div className="h-5 w-px bg-z-neutral-200 dark:bg-z-neutral-700 hidden lg:block" />
 
         {/* Filters — equal-width 3-col grid on mobile, inline row on desktop */}
-        <div className="grid grid-cols-3 sm:flex sm:items-center gap-2">
+        <div className="grid grid-cols-3 lg:flex lg:items-center gap-2">
           {/* Type filter */}
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="h-9 text-sm w-full sm:w-auto sm:min-w-[120px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
+            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
               <SelectValue placeholder="Typ" />
             </SelectTrigger>
             <SelectContent>
@@ -296,8 +334,8 @@ export default function RideHistoryPage() {
           </Select>
 
           {/* Settlement filter */}
-          <Select value={filterPayment} onValueChange={setFilterPayment}>
-            <SelectTrigger className="h-9 text-sm w-full sm:w-auto sm:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
+          <Select value={filterSettlement} onValueChange={setFilterSettlement}>
+            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
               <SelectValue placeholder="Zahlung" />
             </SelectTrigger>
             <SelectContent>
@@ -309,7 +347,7 @@ export default function RideHistoryPage() {
 
           {/* Status filter */}
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="h-9 text-sm w-full sm:w-auto sm:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
+            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -319,6 +357,14 @@ export default function RideHistoryPage() {
               <SelectItem value="pending">Ausstehend</SelectItem>
             </SelectContent>
           </Select>
+
+          <ResetFiltersButton
+            setFilterType={setFilterType}
+            setFilterSettlement={setFilterSettlement}
+            setSearch={setSearch}
+            setFilterStatus={setFilterStatus}
+            classNames="hidden lg:flex"
+          />
         </div>
       </div>
 
@@ -370,12 +416,15 @@ export default function RideHistoryPage() {
                     </p>
                   </div>
 
-                  {/* Amount + status */}
+                  {/* Amount + badges */}
                   <div className="flex flex-col items-end gap-1 shrink-0">
                     <span className="text-sm font-semibold text-z-neutral-900 dark:text-z-neutral-50">
                       {ride.amount.toFixed(2)} €
                     </span>
-                    <StatusBadge status={ride.status as RideStatus} />
+                    <div className="flex items-center gap-1 flex-wrap justify-end">
+                      <SettlementBadge method={ride.settlement as Settlement} />
+                      <StatusBadge status={ride.status as RideStatus} />
+                    </div>
                   </div>
                 </div>
               );

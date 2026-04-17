@@ -50,7 +50,7 @@ const FOOTER_LINKS = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "var(--z-bg-page)" }}>
+    <div className="min-h-screen flex flex-col max-w-[2400px] mx-auto w-full" style={{ background: "var(--z-bg-page)" }}>
 
       {/* ─────────────────────── Header ─────────────────────── */}
       <header
