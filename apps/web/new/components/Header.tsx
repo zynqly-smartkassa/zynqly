@@ -30,7 +30,8 @@ const Header = () => {
           backdropFilter: "blur(12px)",
         }}
       >
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex h-14 items-center justify-between gap-4">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="max-w-[1440px] mx-auto flex h-14 items-center justify-between gap-4">
           {/* Search */}
           <div className="flex flex-row gap-1 items-center">
             <SidebarTrigger className={`p-0 m-0 justify-start ${!isMobile ? "hidden" : ""}`}></SidebarTrigger>
@@ -93,6 +94,7 @@ const Header = () => {
                 <DropdownMenuItem className="text-red-500">Abmelden</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          </div>
           </div>
         </div>
       </header>

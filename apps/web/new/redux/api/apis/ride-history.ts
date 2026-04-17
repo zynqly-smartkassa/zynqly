@@ -1,13 +1,13 @@
 
 import { apiSlice } from '../apiSlice';
-import { RideHistory } from '@/types/RideHistory';
+import { SpringPage, Ride } from '@/types/RideHistory';
 
 const rideHistory = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getRideHistory: builder.query<RideHistory, void>({
-      query: () => "/ride-history"
+    getRideHistory: builder.query<SpringPage<Ride>, number>({
+      query: (page) => `/ride-history?page=${page}`
     })
   })
 })
 
-export const {useGetRideHistoryQuery} = rideHistory;
+export const { useGetRideHistoryQuery } = rideHistory;

@@ -1,9 +1,12 @@
 package com.zynqly.backend.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.zynqly.backend.domain.dtos.responses.RideHistoryDto;
 
 public interface RideHistoryService {
 
-  RideHistoryDto getRideHistory();
-  
+  Page<RideHistoryDto.Ride> getRideHistory(Pageable pageable);
+
 }

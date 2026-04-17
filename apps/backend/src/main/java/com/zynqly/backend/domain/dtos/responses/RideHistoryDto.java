@@ -3,6 +3,7 @@ package com.zynqly.backend.domain.dtos.responses;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,10 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RideHistoryDto {
 
-  private List<Ride>  rides;
-  private Pagination  pagination;
+  private List<Ride> rides;
 
   // ── Single ride entry ─────────────────────────────────────────
   @Data
@@ -41,15 +42,4 @@ public class RideHistoryDto {
     private String        status;
   }
 
-  // ── Pagination metadata ───────────────────────────────────────
-  @Data
-  @Builder
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class Pagination {
-    private int total;
-    private int page;
-    private int pageSize;
-    private int totalPages;
-  }
 }

@@ -5,7 +5,7 @@ import Header from "@/components/Header"
 export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="max-w-[2400px] mx-auto">
       <AppSidebar />
       <div className="w-full flex flex-col gap-0">
         <Header></Header>

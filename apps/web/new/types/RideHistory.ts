@@ -1,6 +1,11 @@
-export interface RideHistory {
-  rides: Ride[];
-  pagination: Pagination;
+export interface SpringPage<T> {
+  content: T[];
+  page: {
+    size: number;
+    number: number;       // 0-based page index
+    totalElements: number;
+    totalPages: number;
+  };
 }
 
 export interface Ride {
@@ -12,11 +17,4 @@ export interface Ride {
   amount: number;
   settlement: "card" | "cash";
   status: "completed" | "cancelled" | "pending";
-}
-
-export interface Pagination {
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
 }

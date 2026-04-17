@@ -25,13 +25,14 @@ import { PageHeader } from "@/components/page-header";
 import { useGetRideHistoryQuery } from "@/redux/api/apis/ride-history";
 import type { Ride } from "@/types/RideHistory";
 
+import ResetFiltersButton from "@/components/ResetFiltersButton";
+
+
 // ── Types ──────────────────────────────────────────────────────────────────────
 
-type RideType   = "Passagier" | "Boten";
+type RideType = "Passagier" | "Boten";
 type Settlement = "card" | "cash";
 type RideStatus = "completed" | "cancelled" | "pending";
-
-const RIDES_PER_PAGE = 8;
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -141,7 +142,7 @@ function exportToCSV(rides: Ride[]) {
 function TableSkeletonRows() {
   return (
     <>
-      {Array.from({ length: RIDES_PER_PAGE }).map((_, i) => (
+        {Array.from({ length: 6 }).map((_, i) => (
         <TableRow key={i} className="border-b border-z-neutral-200 dark:border-z-neutral-700">
           {[60, 80, 70, 90, 90, 50, 45, 75].map((w, j) => (
             <TableCell key={j} className="py-4 px-4">
@@ -157,7 +158,7 @@ function TableSkeletonRows() {
 function MobileSkeletonCards() {
   return (
     <div className="flex flex-col divide-y divide-z-neutral-200 dark:divide-z-neutral-700">
-      {Array.from({ length: RIDES_PER_PAGE }).map((_, i) => (
+      {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="flex items-center gap-3 py-3.5 px-4">
           <Skeleton className="w-9 h-9 rounded-full shrink-0" />
           <div className="flex-1 min-w-0 space-y-1.5">
@@ -177,41 +178,63 @@ function MobileSkeletonCards() {
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function RideHistoryPage() {
-  const [search, setSearch]               = useState("");
-  const [filterType, setFilterType]       = useState<string>("all");
-  const [filterPayment, setFilterPayment] = useState<string>("all");
-  const [filterStatus, setFilterStatus]   = useState<string>("all");
-  const [currentPage, setCurrentPage]     = useState(1);
+  const [search, setSearch] = useState<string>("");
+  const [filterType, setFilterType] = useState<string>("all");
+  const [filterSettlement, setFilterSettlement] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const { data: rideHistory, isLoading } = useGetRideHistoryQuery();
+  const { data: rideHistory, isLoading } = useGetRideHistoryQuery(currentPage - 1);
 
   // Show skeletons until client is mounted (prevents SSR/client hydration mismatch)
   const showSkeleton = !mounted || isLoading;
 
   // Search filter — filter/sort logic left for developer to extend
   const filtered = useMemo(() => {
-    const rides = rideHistory?.rides ?? [];
-    if (!search.trim()) return rides;
+    const rides = rideHistory?.content ?? [];
+
     const q = search.toLowerCase();
     return rides.filter(
-      (ride) =>
-        ride.id.toLowerCase().includes(q) ||
-        ride.from.toLowerCase().includes(q) ||
-        ride.to.toLowerCase().includes(q) ||
-        ride.dateTime.includes(q)
-    );
-  }, [search, rideHistory?.rides]);
+      (ride) => {
 
-  // Pagination
-  const totalPages      = Math.max(1, Math.ceil(filtered.length / RIDES_PER_PAGE));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const paginated       = filtered.slice(
-    (safeCurrentPage - 1) * RIDES_PER_PAGE,
-    safeCurrentPage * RIDES_PER_PAGE
-  );
+        // This if statement will check wether the select is not "all" and if the 
+        // selection matches with the field of the current ride
+
+        if (filterType !== "all" && ride.type !== filterType) return false;
+
+        if (filterSettlement !== "all" && ride.settlement !== filterSettlement) return false;
+
+        if (filterStatus !== "all" && ride.status !== filterStatus) return false;
+
+        if (q.trim() !== "") {
+          const searchTerm = q.toLowerCase();
+
+          // Is there a match in any field?
+          const matchesId = ride.id.toLowerCase().includes(searchTerm);
+          const matchesFrom = ride.from.toLowerCase().includes(searchTerm);
+          const matchesTo = ride.to.toLowerCase().includes(searchTerm);
+          const matchesDate = ride.dateTime.includes(searchTerm);
+
+          // If at least one is not true, then sort the result out
+          if (!matchesId && !matchesFrom && !matchesTo && !matchesDate) {
+            return false;
+          }
+        }
+        // add the ride to the variable
+        return true;
+      }
+    );
+  }, [search, rideHistory?.content, filterType, filterSettlement, filterStatus]);
+
+  // Pagination — all values come directly from the backend
+  const totalPages = rideHistory?.page.totalPages ?? 1;
+  const activePage = (rideHistory?.page.number ?? currentPage - 1) + 1; // backend is 0-based, UI is 1-based
+  const pageStart = rideHistory ? rideHistory.page.number * rideHistory.page.size + 1 : 0;
+  const pageEnd = rideHistory ? Math.min((rideHistory.page.number + 1) * rideHistory.page.size, rideHistory.page.totalElements) : 0;
+  const totalElements = rideHistory?.page.totalElements ?? 0;
 
   const handleSearch = (v: string) => { setSearch(v); setCurrentPage(1); };
 
@@ -219,15 +242,15 @@ export default function RideHistoryPage() {
   const pageNumbers = useMemo(() => {
     if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
     const pages: (number | "…")[] = [];
-    if (safeCurrentPage <= 4) {
+    if (activePage <= 4) {
       pages.push(1, 2, 3, 4, 5, "…", totalPages);
-    } else if (safeCurrentPage >= totalPages - 3) {
+    } else if (activePage >= totalPages - 3) {
       pages.push(1, "…", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
     } else {
-      pages.push(1, "…", safeCurrentPage - 1, safeCurrentPage, safeCurrentPage + 1, "…", totalPages);
+      pages.push(1, "…", activePage - 1, activePage, activePage + 1, "…", totalPages);
     }
     return pages;
-  }, [totalPages, safeCurrentPage]);
+  }, [totalPages, activePage]);
 
   return (
     <div className="max-w-[1440px] mx-auto">
@@ -255,9 +278,9 @@ export default function RideHistoryPage() {
       </div>
 
       {/* ── Toolbar: search full-width on mobile, then filters in 3-col grid on mobile / inline on desktop ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-2 mb-6">
         {/* Search — full width on mobile, flex-1 on desktop */}
-        <div className="relative w-full sm:flex-1">
+        <div className="relative w-full lg:flex-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
@@ -270,22 +293,33 @@ export default function RideHistoryPage() {
               clipRule="evenodd"
             />
           </svg>
-          <Input
+          <div className="flex flex-row items-center gap-2">
+             <Input
             placeholder="Fahrten nach ID, Route oder Datum suchen ..."
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-9 h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
+            className="pl-9 h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 
+            dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 
+            placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
           />
+            <ResetFiltersButton
+            setFilterType={setFilterType}
+            setFilterSettlement={setFilterSettlement}
+            setSearch={setSearch}
+            setFilterStatus={setFilterStatus}
+            classNames="lg:hidden"
+          />
+          </div>
         </div>
 
         {/* Separator — desktop only */}
-        <div className="h-5 w-px bg-z-neutral-200 dark:bg-z-neutral-700 hidden sm:block" />
+        <div className="h-5 w-px bg-z-neutral-200 dark:bg-z-neutral-700 hidden lg:block" />
 
         {/* Filters — equal-width 3-col grid on mobile, inline row on desktop */}
-        <div className="grid grid-cols-3 sm:flex sm:items-center gap-2">
+        <div className="grid grid-cols-3 lg:flex lg:items-center gap-2">
           {/* Type filter */}
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="h-9 text-sm w-full sm:w-auto sm:min-w-[120px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
+            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
               <SelectValue placeholder="Typ" />
             </SelectTrigger>
             <SelectContent>
@@ -296,8 +330,8 @@ export default function RideHistoryPage() {
           </Select>
 
           {/* Settlement filter */}
-          <Select value={filterPayment} onValueChange={setFilterPayment}>
-            <SelectTrigger className="h-9 text-sm w-full sm:w-auto sm:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
+          <Select value={filterSettlement} onValueChange={setFilterSettlement}>
+            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
               <SelectValue placeholder="Zahlung" />
             </SelectTrigger>
             <SelectContent>
@@ -309,7 +343,7 @@ export default function RideHistoryPage() {
 
           {/* Status filter */}
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="h-9 text-sm w-full sm:w-auto sm:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
+            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -319,6 +353,14 @@ export default function RideHistoryPage() {
               <SelectItem value="pending">Ausstehend</SelectItem>
             </SelectContent>
           </Select>
+
+          <ResetFiltersButton
+            setFilterType={setFilterType}
+            setFilterSettlement={setFilterSettlement}
+            setSearch={setSearch}
+            setFilterStatus={setFilterStatus}
+            classNames="hidden lg:flex"
+          />
         </div>
       </div>
 
@@ -326,13 +368,13 @@ export default function RideHistoryPage() {
       <div className="sm:hidden rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
         {showSkeleton ? (
           <MobileSkeletonCards />
-        ) : paginated.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <p className="text-center py-12 text-sm text-z-neutral-400 dark:text-z-neutral-500">
             Keine Fahrten gefunden.
           </p>
         ) : (
           <div className="flex flex-col divide-y divide-z-neutral-200 dark:divide-z-neutral-700">
-            {paginated.map((ride) => {
+            {filtered.map((ride) => {
               const isPassagier = ride.type === "Passagier";
               const [date, timePart] = ride.dateTime.includes("T")
                 ? ride.dateTime.split("T")
@@ -370,12 +412,15 @@ export default function RideHistoryPage() {
                     </p>
                   </div>
 
-                  {/* Amount + status */}
+                  {/* Amount + badges */}
                   <div className="flex flex-col items-end gap-1 shrink-0">
                     <span className="text-sm font-semibold text-z-neutral-900 dark:text-z-neutral-50">
                       {ride.amount.toFixed(2)} €
                     </span>
-                    <StatusBadge status={ride.status as RideStatus} />
+                    <div className="flex items-center gap-1 flex-wrap justify-end">
+                      <SettlementBadge method={ride.settlement as Settlement} />
+                      <StatusBadge status={ride.status as RideStatus} />
+                    </div>
                   </div>
                 </div>
               );
@@ -399,19 +444,19 @@ export default function RideHistoryPage() {
           <TableBody>
             {showSkeleton ? (
               <TableSkeletonRows />
-            ) : paginated.length === 0 ? (
+            ) : filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-12 text-sm text-z-neutral-400 dark:text-z-neutral-500">
                   Keine Fahrten gefunden.
                 </TableCell>
               </TableRow>
             ) : (
-              paginated.map((ride, idx) => (
+              filtered.map((ride, idx) => (
                 <TableRow
                   key={ride.id}
                   className={cn(
                     "transition-colors hover:bg-z-neutral-50 dark:hover:bg-z-neutral-700/40",
-                    idx < paginated.length - 1
+                    idx < filtered.length - 1
                       ? "border-b border-z-neutral-200 dark:border-z-neutral-700"
                       : "border-none"
                   )}
@@ -455,7 +500,7 @@ export default function RideHistoryPage() {
           ) : filtered.length === 0 ? (
             "Keine Fahrten gefunden"
           ) : (
-            `${(safeCurrentPage - 1) * RIDES_PER_PAGE + 1}–${Math.min(safeCurrentPage * RIDES_PER_PAGE, filtered.length)} von ${filtered.length} Fahrten`
+            `${pageStart}–${pageEnd} von ${totalElements} Fahrten`
           )}
         </span>
 
@@ -465,7 +510,7 @@ export default function RideHistoryPage() {
             <Button
               variant="ghost"
               size="icon"
-              disabled={safeCurrentPage === 1}
+              disabled={activePage === 1}
               onClick={() => setCurrentPage((p) => p - 1)}
               className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
               aria-label="Vorherige Seite"
@@ -492,7 +537,7 @@ export default function RideHistoryPage() {
                   onClick={() => setCurrentPage(p as number)}
                   className={cn(
                     "w-8 h-8 text-sm font-medium",
-                    p === safeCurrentPage
+                    p === activePage
                       ? "bg-z-violet-500 text-white hover:bg-z-violet-600 dark:bg-z-violet-500 dark:text-white dark:hover:bg-z-violet-600"
                       : "text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
                   )}
@@ -506,7 +551,7 @@ export default function RideHistoryPage() {
             <Button
               variant="ghost"
               size="icon"
-              disabled={safeCurrentPage === totalPages}
+              disabled={activePage === totalPages}
               onClick={() => setCurrentPage((p) => p + 1)}
               className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
               aria-label="Nächste Seite"
