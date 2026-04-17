@@ -1,19 +1,25 @@
 openapi: 3.0.0
 info:
-  title: Taxi-Registrierkasse API
-  description: API zur Verwaltung von Fahrten und Dashboard-Statistiken für ein Taxiunternehmen.
+  title: Taxi Cash Register API
+  description: API for managing rides and dashboard statistics for a taxi company.
   version: 1.0.0
 
+servers:
+  - url: http://localhost:3000
+    description: Local Backend-Server (Java/Spring)
+  - url: https://smart-kassa.vercel.app/
+    description: Production Server
+
 security:
-  -bearerAuth: []
+  - bearerAuth: []
 
 paths:
   /ride:
     get:
-      summary: Liste aller Fahrten abrufen
+      summary: Retrieve list of all rides
       responses:
         '200':
-          description: Eine Liste von Fahrten
+          description: A list of rides
           content:
             application/json:
               schema:
@@ -21,7 +27,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Ride'
     post:
-      summary: Eine neue Fahrt speichern
+      summary: Save a new ride
       requestBody:
         required: true
         content:
@@ -30,7 +36,7 @@ paths:
               $ref: '#/components/schemas/RideInput'
       responses:
         '201':
-          description: Fahrt erfolgreich erstellt
+          description: Ride successfully created
           content:
             application/json:
               schema:
@@ -38,7 +44,7 @@ paths:
 
   /ride/{id}:
     get:
-      summary: Details einer bestimmten Fahrt abrufen
+      summary: Retrieve details of a specific ride
       parameters:
         - name: id
           in: path
@@ -47,33 +53,33 @@ paths:
             type: string
       responses:
         '200':
-          description: Details der Fahrt
+          description: Ride details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ride'
         '404':
-          description: Fahrt nicht gefunden
+          description: Ride not found
 
   /dashboard:
     get:
-      summary: Statistiken für das Dashboard abrufen
-      description: Liefert aggregierte Daten wie Gesamtumsatz und Anzahl der Fahrten.
+      summary: Retrieve statistics for the dashboard
+      description: Provides aggregated data such as total revenue and number of rides.
       responses:
         '200':
-          description: Dashboard-Daten
+          description: Dashboard data
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DashboardStats'
 
-/receipt:
+  /receipt:
     get:
-      summary: Liste aller Rechnungen abrufen (Übersicht)
-      description: Liefert eine Liste von Rechnungen mit den wichtigsten Eckdaten für Tabellen oder Listenansichten.
+      summary: Retrieve list of all receipts (overview)
+      description: Provides a list of receipts with key data for tables or list views.
       responses:
         '200':
-          description: Eine Liste von Rechnungs-Zusammenfassungen
+          description: A list of receipt summaries
           content:
             application/json:
               schema:
@@ -81,29 +87,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/ReceiptSummary'
 
-/receipt/{ride_id}:
-    get:
-      summary: Rechnung zu einer bestimmten Fahrt abrufen
-      parameters:
-        - name: ride_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Die Rechnungsdetails
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Receipt'
-        '404':
-          description: Keine Rechnung für diese Ride-ID gefunden
-
-/receipt:
     post:
-      summary: Eine neue Rechnung erstellen
-      description: Erzeugt basierend auf einer Fahrt-ID eine offizielle Quittung.
+      summary: Create a new receipt
+      description: Generates an official receipt based on a ride ID.
       requestBody:
         required: true
         content:
@@ -112,27 +98,42 @@ paths:
               $ref: '#/components/schemas/CreateReceiptDto'
       responses:
         '201':
-          description: Rechnung erfolgreich erstellt
+          description: Receipt successfully created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Receipt'
         '400':
-          description: Validierungsfehler (z.B. fehlende Pflichtfelder)
+          description: Validation error (e.g. missing mandatory fields)
 
   /receipt/{ride_id}:
     get:
-      summary: Rechnung zu einer bestimmten Fahrt abrufen
+      summary: Retrieve receipt for a specific ride
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The receipt details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+        '404':
+          description: No receipt found for this ride ID
 
 # COMPONENTS
 components:
 
-securitySchemes:
+  securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: "Gib deinen JWT-Token hier ein. Format: Bearer <token>"
+      description: "Enter your JWT token here. Format: Bearer <token>"
 
   schemas:
     Ride:
@@ -195,7 +196,7 @@ securitySchemes:
             app:
               type: number
 
-Receipt:
+    Receipt:
       type: object
       properties:
         id:
@@ -255,9 +256,9 @@ Receipt:
           example: "RE-2024-001"
         notes:
           type: string
-          example: "Fahrt zum Flughafen"
+          example: "Ride to the airport"
 
-CreateReceiptDto:
+    CreateReceiptDto:
       type: object
       required:
         - ride_id
@@ -279,7 +280,7 @@ CreateReceiptDto:
         notes:
           type: string
           maxLength: 255
-          example: "Fahrt zum Flughafen"
+          example: "Ride to the airport"
         currency:
           type: string
           example: "EUR"
@@ -295,7 +296,7 @@ CreateReceiptDto:
           minimum: 0.0
           example: 40.00
 
-ReceiptSummary:
+    ReceiptSummary:
       type: object
       properties:
         id:

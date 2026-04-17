@@ -17,6 +17,7 @@ public class CorsConfig {
                         .allowedOrigins(
                             "http://localhost:3000", // Next.Js Frontend
                             "http://localhost:9100", // Flutter 
+                            "http://localhost:8081", // Swagger UI
                             "app://localhost"        // Can also be used by Flutter
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
