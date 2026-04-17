@@ -25,7 +25,6 @@ import { PageHeader } from "@/components/page-header";
 import { useGetRideHistoryQuery } from "@/redux/api/apis/ride-history";
 import type { Ride } from "@/types/RideHistory";
 
-import { RotateCcw } from 'lucide-react';
 import ResetFiltersButton from "@/components/ResetFiltersButton";
 
 
@@ -34,8 +33,6 @@ import ResetFiltersButton from "@/components/ResetFiltersButton";
 type RideType = "Passagier" | "Boten";
 type Settlement = "card" | "cash";
 type RideStatus = "completed" | "cancelled" | "pending";
-
-const RIDES_PER_PAGE = 8;
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -145,7 +142,7 @@ function exportToCSV(rides: Ride[]) {
 function TableSkeletonRows() {
   return (
     <>
-      {Array.from({ length: RIDES_PER_PAGE }).map((_, i) => (
+        {Array.from({ length: 6 }).map((_, i) => (
         <TableRow key={i} className="border-b border-z-neutral-200 dark:border-z-neutral-700">
           {[60, 80, 70, 90, 90, 50, 45, 75].map((w, j) => (
             <TableCell key={j} className="py-4 px-4">
@@ -161,7 +158,7 @@ function TableSkeletonRows() {
 function MobileSkeletonCards() {
   return (
     <div className="flex flex-col divide-y divide-z-neutral-200 dark:divide-z-neutral-700">
-      {Array.from({ length: RIDES_PER_PAGE }).map((_, i) => (
+      {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="flex items-center gap-3 py-3.5 px-4">
           <Skeleton className="w-9 h-9 rounded-full shrink-0" />
           <div className="flex-1 min-w-0 space-y-1.5">
@@ -190,14 +187,14 @@ export default function RideHistoryPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const { data: rideHistory, isLoading } = useGetRideHistoryQuery();
+  const { data: rideHistory, isLoading } = useGetRideHistoryQuery(currentPage - 1);
 
   // Show skeletons until client is mounted (prevents SSR/client hydration mismatch)
   const showSkeleton = !mounted || isLoading;
 
   // Search filter — filter/sort logic left for developer to extend
   const filtered = useMemo(() => {
-    const rides = rideHistory?.rides ?? [];
+    const rides = rideHistory?.content ?? [];
 
     const q = search.toLowerCase();
     return rides.filter(
@@ -230,15 +227,14 @@ export default function RideHistoryPage() {
         return true;
       }
     );
-  }, [search, rideHistory?.rides, filterType, filterSettlement, filterStatus]);
+  }, [search, rideHistory?.content, filterType, filterSettlement, filterStatus]);
 
-  // Pagination
-  const totalPages = Math.max(1, Math.ceil(filtered.length / RIDES_PER_PAGE));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const paginated = filtered.slice(
-    (safeCurrentPage - 1) * RIDES_PER_PAGE,
-    safeCurrentPage * RIDES_PER_PAGE
-  );
+  // Pagination — all values come directly from the backend
+  const totalPages = rideHistory?.page.totalPages ?? 1;
+  const activePage = (rideHistory?.page.number ?? currentPage - 1) + 1; // backend is 0-based, UI is 1-based
+  const pageStart = rideHistory ? rideHistory.page.number * rideHistory.page.size + 1 : 0;
+  const pageEnd = rideHistory ? Math.min((rideHistory.page.number + 1) * rideHistory.page.size, rideHistory.page.totalElements) : 0;
+  const totalElements = rideHistory?.page.totalElements ?? 0;
 
   const handleSearch = (v: string) => { setSearch(v); setCurrentPage(1); };
 
@@ -246,15 +242,15 @@ export default function RideHistoryPage() {
   const pageNumbers = useMemo(() => {
     if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
     const pages: (number | "…")[] = [];
-    if (safeCurrentPage <= 4) {
+    if (activePage <= 4) {
       pages.push(1, 2, 3, 4, 5, "…", totalPages);
-    } else if (safeCurrentPage >= totalPages - 3) {
+    } else if (activePage >= totalPages - 3) {
       pages.push(1, "…", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
     } else {
-      pages.push(1, "…", safeCurrentPage - 1, safeCurrentPage, safeCurrentPage + 1, "…", totalPages);
+      pages.push(1, "…", activePage - 1, activePage, activePage + 1, "…", totalPages);
     }
     return pages;
-  }, [totalPages, safeCurrentPage]);
+  }, [totalPages, activePage]);
 
   return (
     <div className="max-w-[1440px] mx-auto">
@@ -372,13 +368,13 @@ export default function RideHistoryPage() {
       <div className="sm:hidden rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
         {showSkeleton ? (
           <MobileSkeletonCards />
-        ) : paginated.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <p className="text-center py-12 text-sm text-z-neutral-400 dark:text-z-neutral-500">
             Keine Fahrten gefunden.
           </p>
         ) : (
           <div className="flex flex-col divide-y divide-z-neutral-200 dark:divide-z-neutral-700">
-            {paginated.map((ride) => {
+            {filtered.map((ride) => {
               const isPassagier = ride.type === "Passagier";
               const [date, timePart] = ride.dateTime.includes("T")
                 ? ride.dateTime.split("T")
@@ -448,19 +444,19 @@ export default function RideHistoryPage() {
           <TableBody>
             {showSkeleton ? (
               <TableSkeletonRows />
-            ) : paginated.length === 0 ? (
+            ) : filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-12 text-sm text-z-neutral-400 dark:text-z-neutral-500">
                   Keine Fahrten gefunden.
                 </TableCell>
               </TableRow>
             ) : (
-              paginated.map((ride, idx) => (
+              filtered.map((ride, idx) => (
                 <TableRow
                   key={ride.id}
                   className={cn(
                     "transition-colors hover:bg-z-neutral-50 dark:hover:bg-z-neutral-700/40",
-                    idx < paginated.length - 1
+                    idx < filtered.length - 1
                       ? "border-b border-z-neutral-200 dark:border-z-neutral-700"
                       : "border-none"
                   )}
@@ -504,7 +500,7 @@ export default function RideHistoryPage() {
           ) : filtered.length === 0 ? (
             "Keine Fahrten gefunden"
           ) : (
-            `${(safeCurrentPage - 1) * RIDES_PER_PAGE + 1}–${Math.min(safeCurrentPage * RIDES_PER_PAGE, filtered.length)} von ${filtered.length} Fahrten`
+            `${pageStart}–${pageEnd} von ${totalElements} Fahrten`
           )}
         </span>
 
@@ -514,7 +510,7 @@ export default function RideHistoryPage() {
             <Button
               variant="ghost"
               size="icon"
-              disabled={safeCurrentPage === 1}
+              disabled={activePage === 1}
               onClick={() => setCurrentPage((p) => p - 1)}
               className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
               aria-label="Vorherige Seite"
@@ -541,7 +537,7 @@ export default function RideHistoryPage() {
                   onClick={() => setCurrentPage(p as number)}
                   className={cn(
                     "w-8 h-8 text-sm font-medium",
-                    p === safeCurrentPage
+                    p === activePage
                       ? "bg-z-violet-500 text-white hover:bg-z-violet-600 dark:bg-z-violet-500 dark:text-white dark:hover:bg-z-violet-600"
                       : "text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
                   )}
@@ -555,7 +551,7 @@ export default function RideHistoryPage() {
             <Button
               variant="ghost"
               size="icon"
-              disabled={safeCurrentPage === totalPages}
+              disabled={activePage === totalPages}
               onClick={() => setCurrentPage((p) => p + 1)}
               className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
               aria-label="Nächste Seite"
