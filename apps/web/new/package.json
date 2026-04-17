@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "infisical run --env=dev --path=/web -- next dev",
+    "test": "infisical run --env=staging --path=/web -- next dev -p 3001",
+    "build": "infisical run --env=dev --path=/web -- next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
+    "test:unit": "vitest",
+    "test:unit:ui": "vitest --ui",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
