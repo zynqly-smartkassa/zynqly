@@ -4,6 +4,12 @@ info:
   description: API for managing rides and dashboard statistics for a taxi company.
   version: 1.0.0
 
+servers:
+  - url: http://localhost:3000
+    description: Local Backend-Server (Java/Spring)
+  - url: https://smart-kassa.vercel.app/
+    description: Production Server
+
 security:
   - bearerAuth: []
 
