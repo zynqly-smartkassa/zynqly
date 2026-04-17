@@ -26,88 +26,14 @@ import { useGetRideHistoryQuery } from "@/redux/api/apis/ride-history";
 import type { Ride } from "@/types/RideHistory";
 
 import ResetFiltersButton from "@/components/ResetFiltersButton";
-
+import { TypeBadge, SettlementBadge, StatusBadge, formatDateTime } from "./_components/badges";
+import { TableSkeletonRows, MobileSkeletonCards } from "./_components/skeletons";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 type RideType = "Passagier" | "Boten";
 type Settlement = "card" | "cash";
 type RideStatus = "completed" | "cancelled" | "pending";
-
-// ── Helpers ────────────────────────────────────────────────────────────────────
-
-/** Handles both ISO-8601 (T separator) and space-separated dateTime strings */
-function formatDateTime(dt: string) {
-  const [date, timePart] = dt.includes("T") ? dt.split("T") : dt.split(" ");
-  const time = timePart?.slice(0, 5) ?? "";
-  return (
-    <span className="flex flex-col gap-0.5">
-      <span>{date}</span>
-      <span className="text-xs text-z-neutral-400 dark:text-z-neutral-500">{time}</span>
-    </span>
-  );
-}
-
-function TypeBadge({ type }: { type: RideType }) {
-  const isPassagier = type === "Passagier";
-  return (
-    <span className="inline-flex items-center gap-1.5 text-sm text-z-neutral-900 dark:text-z-neutral-50">
-      {isPassagier ? (
-        <span className="text-z-violet-400">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-            <path d="M6.5 3c-1.051 0-2.093.04-3.125.117A1.49 1.49 0 0 0 2 4.607V10.5h-.5a.5.5 0 0 0 0 1H2v2.5a1.5 1.5 0 0 0 1.5 1.5h1A1.5 1.5 0 0 0 6 14v-.5h8v.5a1.5 1.5 0 0 0 1.5 1.5h1a1.5 1.5 0 0 0 1.5-1.5V11.5h.5a.5.5 0 0 0 0-1H18V4.607a1.49 1.49 0 0 0-1.375-1.49A44.07 44.07 0 0 0 13.5 3h-7Z" />
-          </svg>
-        </span>
-      ) : (
-        <span className="text-green-500">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-            <path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h9.73a1.5 1.5 0 0 0 1.442-1.086l1.414-4.926a.75.75 0 0 0-.826-.95l-3.453 1.026c-.726.214-1.494.214-2.22 0L10 3.04l-1.222.308a5.74 5.74 0 0 1-2.22 0L3.105 2.288ZM4.5 11.25a.75.75 0 0 0 0 1.5h11a.75.75 0 0 0 0-1.5h-11ZM3.75 16a.75.75 0 0 1 .75-.75h11a.75.75 0 0 1 0 1.5h-11a.75.75 0 0 1-.75-.75Z" />
-          </svg>
-        </span>
-      )}
-      {type}
-    </span>
-  );
-}
-
-function SettlementBadge({ method }: { method: Settlement }) {
-  const isCard = method === "card";
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border",
-        isCard
-          ? "bg-z-violet-100 text-z-violet-500 border-z-violet-200 dark:bg-violet-950/50 dark:text-z-violet-300 dark:border-violet-800/60"
-          : "bg-green-50 text-green-700 border-green-200 dark:bg-green-950/40 dark:text-green-400 dark:border-green-800/60"
-      )}
-    >
-      {isCard ? "Karte" : "Bar"}
-    </span>
-  );
-}
-
-function StatusBadge({ status }: { status: RideStatus }) {
-  const classes: Record<RideStatus, { className: string; label: string }> = {
-    completed: {
-      className: "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/40 dark:text-orange-400 dark:border-orange-800/60",
-      label: "Abgeschlossen",
-    },
-    cancelled: {
-      className: "bg-red-50 text-red-600 border-red-200 dark:bg-red-950/40 dark:text-red-400 dark:border-red-800/60",
-      label: "Storniert",
-    },
-    pending: {
-      className: "bg-z-neutral-100 text-z-neutral-600 border-z-neutral-200 dark:bg-z-neutral-800/60 dark:text-z-neutral-400 dark:border-z-neutral-700",
-      label: "Ausstehend",
-    },
-  };
-  const s = classes[status];
-  return (
-    <span className={cn("inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border", s.className)}>
-      {s.label}
-    </span>
-  );
-}
 
 // ── Export CSV ─────────────────────────────────────────────────────────────────
 
@@ -137,44 +63,6 @@ function exportToCSV(rides: Ride[]) {
   URL.revokeObjectURL(url);
 }
 
-// ── Skeleton helpers ──────────────────────────────────────────────────────────
-
-function TableSkeletonRows() {
-  return (
-    <>
-        {Array.from({ length: 6 }).map((_, i) => (
-        <TableRow key={i} className="border-b border-z-neutral-200 dark:border-z-neutral-700">
-          {[60, 80, 70, 90, 90, 50, 45, 75].map((w, j) => (
-            <TableCell key={j} className="py-4 px-4">
-              <Skeleton className="h-4 rounded" style={{ width: `${w}px` }} />
-            </TableCell>
-          ))}
-        </TableRow>
-      ))}
-    </>
-  );
-}
-
-function MobileSkeletonCards() {
-  return (
-    <div className="flex flex-col divide-y divide-z-neutral-200 dark:divide-z-neutral-700">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 py-3.5 px-4">
-          <Skeleton className="w-9 h-9 rounded-full shrink-0" />
-          <div className="flex-1 min-w-0 space-y-1.5">
-            <Skeleton className="h-3.5 w-36 rounded" />
-            <Skeleton className="h-3 w-24 rounded" />
-          </div>
-          <div className="flex flex-col items-end gap-1.5 shrink-0">
-            <Skeleton className="h-3.5 w-16 rounded" />
-            <Skeleton className="h-4 w-20 rounded" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function RideHistoryPage() {
@@ -187,7 +75,10 @@ export default function RideHistoryPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const { data: rideHistory, isLoading } = useGetRideHistoryQuery(currentPage - 1);
+  const { data: rideHistory, isLoading, isFetching } = useGetRideHistoryQuery(currentPage - 1);
+
+  // isFetching is true on every request (including page changes); isLoading only on initial
+  const isPaginating = isFetching && !isLoading;
 
   // Show skeletons until client is mounted (prevents SSR/client hydration mismatch)
   const showSkeleton = !mounted || isLoading;
@@ -298,6 +189,7 @@ export default function RideHistoryPage() {
             placeholder="Fahrten nach ID, Route oder Datum suchen ..."
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
+            data-testid="search-ride-history"
             className="pl-9 h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 
             dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 
             placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
@@ -319,10 +211,12 @@ export default function RideHistoryPage() {
         <div className="grid grid-cols-3 lg:flex lg:items-center gap-2">
           {/* Type filter */}
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
+            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] 
+            bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200"
+            data-testid="ride-history-filter-type-trigger">
               <SelectValue placeholder="Typ" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent data-testid="ride-history-filter-type-content">
               <SelectItem value="all">Alle Typen</SelectItem>
               <SelectItem value="Passagier">Passagier</SelectItem>
               <SelectItem value="Boten">Boten</SelectItem>
@@ -331,10 +225,12 @@ export default function RideHistoryPage() {
 
           {/* Settlement filter */}
           <Select value={filterSettlement} onValueChange={setFilterSettlement}>
-            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
+            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px]
+             bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200"
+             data-testid="ride-history-filter-settlement-trigger">
               <SelectValue placeholder="Zahlung" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent data-testid="ride-history-filter-settlement-content">
               <SelectItem value="all">Alle Zahlungen</SelectItem>
               <SelectItem value="card">Karte</SelectItem>
               <SelectItem value="cash">Bar</SelectItem>
@@ -343,10 +239,12 @@ export default function RideHistoryPage() {
 
           {/* Status filter */}
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
+            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px]
+             bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200"
+             data-testid="ride-history-filter-status-trigger">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent data-testid="ride-history-filter-status-content">
               <SelectItem value="all">Alle Status</SelectItem>
               <SelectItem value="completed">Abgeschlossen</SelectItem>
               <SelectItem value="cancelled">Storniert</SelectItem>
@@ -365,7 +263,15 @@ export default function RideHistoryPage() {
       </div>
 
       {/* ── Mobile card list (sm: and above hidden) ── */}
-      <div className="sm:hidden rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+      <div className="relative sm:hidden rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+        {isPaginating && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 dark:bg-z-neutral-800/70 rounded-lg">
+            <svg className="animate-spin w-6 h-6 text-z-violet-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+            </svg>
+          </div>
+        )}
         {showSkeleton ? (
           <MobileSkeletonCards />
         ) : filtered.length === 0 ? (
@@ -430,7 +336,15 @@ export default function RideHistoryPage() {
       </div>
 
       {/* ── Desktop table (hidden on mobile) ── */}
-      <div className="hidden sm:block rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+      <div className="relative hidden sm:block rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+        {isPaginating && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 dark:bg-z-neutral-800/70 rounded-lg">
+            <svg className="animate-spin w-6 h-6 text-z-violet-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+            </svg>
+          </div>
+        )}
         <Table>
           <TableHeader>
             <TableRow className="border-b border-z-neutral-200 dark:border-z-neutral-700 bg-z-neutral-100 dark:bg-z-neutral-800 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-800">

@@ -161,6 +161,7 @@ body {
   color: var(--z-text-main);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  scrollbar-gutter: stable;
 }
 
 .dark {

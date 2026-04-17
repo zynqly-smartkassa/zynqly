@@ -16,6 +16,7 @@ const ResetFiltersButton = ({ setFilterType, setFilterSettlement,
   setFilterStatus, setSearch, classNames }: ResetFiltersButtonArgs) => {
   return (
     <Button size="lg" className={`text-sm lg:w-auto ${classNames}`}
+    data-testid="ride-history-reset-button"
       onClick={() => {
         setFilterType("all");
         setFilterSettlement("all");
