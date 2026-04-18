@@ -189,7 +189,7 @@ export default function RideHistoryPage() {
             placeholder="Fahrten nach ID, Route oder Datum suchen ..."
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
-            data-testid="search-ride-history"
+            data-testid="ride-history-search-input"
             className="pl-9 h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 
             dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 
             placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
@@ -381,7 +381,7 @@ export default function RideHistoryPage() {
                   <TableCell className="py-4 px-4 text-sm text-z-neutral-600 dark:text-z-neutral-300">
                     {formatDateTime(ride.dateTime)}
                   </TableCell>
-                  <TableCell className="py-4 px-4">
+                  <TableCell className="py-4 px-4" data-testid="ride-history-row-type">
                     <TypeBadge type={ride.type as RideType} />
                   </TableCell>
                   <TableCell className="py-4 px-4 text-sm text-z-neutral-900 dark:text-z-neutral-100">

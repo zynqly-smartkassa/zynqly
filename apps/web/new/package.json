@@ -4,14 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "infisical run --env=dev --path=/web -- next dev",
-    "test": "infisical run --env=staging --path=/web -- next dev -p 3001",
+    "test": "infisical run --env=staging --path=/web -- next dev -p 3000",
     "build": "infisical run --env=dev --path=/web -- next build",
     "start": "next start",
     "lint": "eslint",
     "test:unit": "vitest",
     "test:unit:ui": "vitest --ui",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "e2e:db-up": "docker compose -f ../../../docker-compose.test.yml up -d",
+    "e2e:db-down": "docker compose -f ../../../docker-compose.test.yml down",
+    "e2e:backend": "cd ../../backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=e2e",
+    "test:e2e": "npm run e2e:db-up && concurrently -k -s first \"npm run e2e:backend\" \"npx playwright test --ui\" && (fuser -k 8081/tcp || true) && sleep 2 && npm run e2e:db-down"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -40,6 +42,7 @@
     "@types/react-dom": "^19",
     "@types/testing-library__react": "^10.0.1",
     "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.3",
     "jsdom": "^29.0.2",
