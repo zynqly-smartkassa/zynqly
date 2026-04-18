@@ -11,10 +11,11 @@ class ZynqlyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Zynqly Ride Flow',// könen wir später noch anpassen, wenn wir einen besseren Namen haben
+      title: 'Zynqly Ride Flow', // Placeholder title, könnte später angepasst werden
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: AppColors.scaffoldBackground,
+        fontFamily: 'SF Pro Display',
       ),
       home: const RideStartScreen(),
     );

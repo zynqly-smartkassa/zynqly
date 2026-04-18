@@ -11,7 +11,7 @@ class MapBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: MapPainter(),
-      child: Container(),
+      size: Size.infinite,
     );
   }
 }
@@ -20,88 +20,63 @@ class MapPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final backgroundPaint = Paint()..color = AppColors.mapBackground;
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      backgroundPaint,
-    );
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), backgroundPaint);
 
     final roadPaint = Paint()
-      ..color = Colors.white.withOpacity(0.85)
-      ..strokeWidth = 7;
+      ..color = AppColors.road.withOpacity(0.95)
+      ..strokeWidth = 10
+      ..strokeCap = StrokeCap.round;
 
-    final buildingPaint = Paint()..color = AppColors.building;
+    final buildingPaint = Paint()..color = AppColors.building.withOpacity(0.55);
     final parkPaint = Paint()..color = AppColors.park;
     final waterPaint = Paint()..color = AppColors.water;
 
     canvas.drawCircle(
-      Offset(size.width - 20, 180),
-      130,
+      Offset(size.width - 10, 240),
+      150,
       waterPaint,
     );
 
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        const Rect.fromLTWH(80, 110, 140, 85),
-        const Radius.circular(8),
-      ),
-      parkPaint,
-    );
-
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(size.width - 160, size.height - 150, 150, 70),
-        const Radius.circular(8),
+        Rect.fromLTWH(size.width * 0.20, size.height * 0.17, size.width * 0.30, 92),
+        const Radius.circular(18),
       ),
       parkPaint,
     );
 
     final buildings = [
-      const Rect.fromLTWH(125, 310, 115, 90),
-      const Rect.fromLTWH(250, 110, 80, 70),
-      const Rect.fromLTWH(370, 165, 95, 65),
-      const Rect.fromLTWH(480, 220, 70, 100),
-      const Rect.fromLTWH(420, 465, 70, 88),
-      const Rect.fromLTWH(210, 495, 120, 110),
-      const Rect.fromLTWH(640, 120, 90, 78),
-      const Rect.fromLTWH(640, 460, 105, 88),
+      Rect.fromLTWH(size.width * 0.32, size.height * 0.50, size.width * 0.12, 96),
+      Rect.fromLTWH(size.width * 0.38, size.height * 0.50, size.width * 0.18, 96),
+      Rect.fromLTWH(size.width * 0.64, size.height * 0.17, size.width * 0.20, 110),
+      Rect.fromLTWH(size.width * 0.95, size.height * 0.28, size.width * 0.16, 90),
+      Rect.fromLTWH(size.width * 0.54, size.height * 0.80, size.width * 0.18, 84),
     ];
 
     for (final rect in buildings) {
       canvas.drawRRect(
-        RRect.fromRectAndRadius(rect, const Radius.circular(6)),
+        RRect.fromRectAndRadius(rect, const Radius.circular(16)),
         buildingPaint,
       );
     }
 
     final roads = [
-      [Offset(0, 275), Offset(size.width, 275)],
-      [Offset(0, 420), Offset(size.width, 420)],
-      [Offset(0, 530), Offset(size.width, 530)],
-      [Offset(165, 0), Offset(165, size.height)],
-      [Offset(265, 0), Offset(265, size.height)],
-      [Offset(430, 0), Offset(430, size.height)],
-      [Offset(625, 0), Offset(625, size.height)],
+      [Offset(0, size.height * 0.37), Offset(size.width, size.height * 0.37)],
+      [Offset(0, size.height * 0.57), Offset(size.width, size.height * 0.57)],
+      [Offset(size.width * 0.43, 0), Offset(size.width * 0.43, size.height)],
+      [Offset(size.width * 0.68, 0), Offset(size.width * 0.68, size.height)],
     ];
 
     for (final road in roads) {
       canvas.drawLine(road[0], road[1], roadPaint);
     }
 
-    final routePaint = Paint()
-      ..color = AppColors.route
-      ..strokeWidth = 4;
-
-    const riderPoint = Offset(165, 530);
-    canvas.drawLine(riderPoint, const Offset(250, 585), routePaint);
-
-    final blueDot = Paint()..color = AppColors.blueDot;
-    final whiteDot = Paint()..color = Colors.white;
-
-    canvas.drawCircle(riderPoint, 8, blueDot);
-    canvas.drawCircle(riderPoint, 4, whiteDot);
-
-    canvas.drawCircle(const Offset(300, 355), 5, blueDot);
-    canvas.drawCircle(const Offset(520, 575), 5, blueDot);
+    final blueDotPaint = Paint()..color = AppColors.blueDot;
+    canvas.drawCircle(
+      Offset(size.width * 0.77, size.height * 0.48),
+      10,
+      blueDotPaint,
+    );
   }
 
   @override

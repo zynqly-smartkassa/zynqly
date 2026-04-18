@@ -4,6 +4,7 @@
 // sondern nur hier und dann in den anderen screens einfach die map als hintergrund nutzen kann
 
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../painters/map_painter.dart';
 import '../widgets/ride_bottom_sheet.dart';
 
@@ -16,6 +17,12 @@ class RideStartScreen extends StatefulWidget {
 
 class _RideStartScreenState extends State<RideStartScreen> {
   bool isPassengerRide = true;
+
+  final String pickupAddress = 'Graz HauptBahnhof, graz';
+  final String destinationAddress = 'Ziel eingeben oder auf Karte tippen';
+  final String basePrice = '3,90 €';
+  final String pricePerKm = '2,30 €';
+  final String pricePerMinute = '0,50 €';
 
   void _selectPassengerRide() {
     setState(() {
@@ -34,28 +41,28 @@ class _RideStartScreenState extends State<RideStartScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          const MapBackground(),
+          const Positioned.fill(child: MapBackground()),
           SafeArea(
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
                   child: Row(
                     children: [
-                      _topCircleButton(Icons.arrow_back_ios_new),
+                      _topCircleButton(Icons.arrow_back_ios_new_rounded),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Container(
-                          height: 44,
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          height: 66,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: const [
+                            color: Colors.white.withOpacity(0.96),
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
                               BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, 2),
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 16,
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
@@ -63,15 +70,16 @@ class _RideStartScreenState extends State<RideStartScreen> {
                             children: [
                               Icon(
                                 Icons.location_on_outlined,
-                                color: Colors.grey,
-                                size: 18,
+                                color: AppColors.textSecondary,
+                                size: 28,
                               ),
-                              SizedBox(width: 8),
+                              SizedBox(width: 12),
                               Text(
                                 'Ziel eingeben...',
                                 style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 15,
+                                  color: AppColors.textSecondary,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
                             ],
@@ -86,6 +94,12 @@ class _RideStartScreenState extends State<RideStartScreen> {
                   isPassengerRide: isPassengerRide,
                   onPassengerSelected: _selectPassengerRide,
                   onCourierSelected: _selectCourierRide,
+                  pickupAddress: pickupAddress,
+                  destinationAddress: destinationAddress,
+                  basePrice: basePrice,
+                  pricePerKm: pricePerKm,
+                  pricePerMinute: pricePerMinute,
+                  onStartRide: () {},
                 ),
               ],
             ),
@@ -97,20 +111,24 @@ class _RideStartScreenState extends State<RideStartScreen> {
 
   Widget _topCircleButton(IconData icon) {
     return Container(
-      width: 38,
-      height: 38,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      width: 62,
+      height: 62,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.96),
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Icon(icon, size: 18, color: Colors.black87),
+      child: Icon(
+        icon,
+        size: 28,
+        color: AppColors.textPrimary,
+      ),
     );
   }
 }
