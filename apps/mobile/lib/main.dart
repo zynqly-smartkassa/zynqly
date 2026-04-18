@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const SmartKassa());
+  runApp(const ZynqlyApp());
 }
 
-class SmartKassa extends StatelessWidget {
-  const SmartKassa({super.key});
+class ZynqlyApp extends StatelessWidget {
+  const ZynqlyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Smart Kassa',
+      debugShowCheckedModeBanner: false,
+      title: 'Zynqly Ride Flow',
       theme: ThemeData(
-        
         useMaterial3: true,
-        scaffoldBackgroundColor: Colors(0xfff2EEE8),
+        scaffoldBackgroundColor: const Color(0xFFF2EEE8),
       ),
       home: const RideStartScreen(),
     );
@@ -25,37 +24,28 @@ class SmartKassa extends StatelessWidget {
 class RideStartScreen extends StatefulWidget {
   const RideStartScreen({super.key});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   @override
   State<RideStartScreen> createState() => _RideStartScreenState();
 }
 
 class _RideStartScreenState extends State<RideStartScreen> {
   bool isPassengerRide = true;
-  
+
   @override
-  widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
-        children:[
+        children: [
           const MapBackground(),
-          safeArea(
-            child: column(
-              children:[
-                padding(
-                  padding: const EdgeInsets.formaLTRB(16,12,16,0),
+          SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: Row(
-                    children:[
+                    children: [
                       _topCircleButton(Icons.arrow_back_ios_new),
-                      const SizedBox(width:12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Container(
                           height: 44,
@@ -67,18 +57,18 @@ class _RideStartScreenState extends State<RideStartScreen> {
                               BoxShadow(
                                 color: Colors.black12,
                                 blurRadius: 8,
-                                offset: Offset(0,2),
-                              )
-                            ]
+                                offset: Offset(0, 2),
+                              ),
+                            ],
                           ),
-                          child:const Row(
+                          child: const Row(
                             children: [
                               Icon(
                                 Icons.location_on_outlined,
                                 color: Colors.grey,
-                                size:18,
+                                size: 18,
                               ),
-                              SizedBox(width:8),
+                              SizedBox(width: 8),
                               Text(
                                 'Ziel eingeben...',
                                 style: TextStyle(
@@ -95,13 +85,13 @@ class _RideStartScreenState extends State<RideStartScreen> {
                 ),
                 const Spacer(),
                 RideBottomSheet(
-                  isPassenger: isPassengerRide,
-                  onPassengerSelected: (){
+                  isPassengerRide: isPassengerRide,
+                  onPassengerSelected: () {
                     setState(() {
                       isPassengerRide = true;
                     });
                   },
-                  onCourierSelected: (){
+                  onCourierSelected: () {
                     setState(() {
                       isPassengerRide = false;
                     });
@@ -115,26 +105,25 @@ class _RideStartScreenState extends State<RideStartScreen> {
     );
   }
 
-  widget _topCircleButton(IconData icon){
+  Widget _topCircleButton(IconData icon) {
     return Container(
       width: 38,
       height: 38,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
-            offset: Offset(0,2),
-          )
-        ]
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
-      child: Icon(icon, size: 18, color: Colors.Black87),
+      child: Icon(icon, size: 18, color: Colors.black87),
     );
   }
 }
-
 
 class MapBackground extends StatelessWidget {
   const MapBackground({super.key});
@@ -221,7 +210,7 @@ class MapPainter extends CustomPainter {
       ..strokeWidth = 4;
 
     const riderPoint = Offset(165, 530);
-    canvas.drawLine(riderPoint, Offset(250, 585), routePaint);
+    canvas.drawLine(riderPoint, const Offset(250, 585), routePaint);
 
     final blueDot = Paint()..color = const Color(0xFF5B9DFF);
     final whiteDot = Paint()..color = Colors.white;
@@ -238,13 +227,13 @@ class MapPainter extends CustomPainter {
 }
 
 class RideBottomSheet extends StatelessWidget {
-  final bool isPassenger;
+  final bool isPassengerRide;
   final VoidCallback onPassengerSelected;
   final VoidCallback onCourierSelected;
 
   const RideBottomSheet({
     super.key,
-    required this.isPassenger,
+    required this.isPassengerRide,
     required this.onPassengerSelected,
     required this.onCourierSelected,
   });
@@ -252,22 +241,21 @@ class RideBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16, 12, 16,18),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 18),
+      decoration: const BoxDecoration(
         color: Color(0xFFF5F1EA),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 12,
             offset: Offset(0, -3),
-          )
+          ),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children:[
+        children: [
           Container(
             width: 34,
             height: 4,
@@ -278,70 +266,70 @@ class RideBottomSheet extends StatelessWidget {
             ),
           ),
           Row(
-            children:[
+            children: [
               Expanded(
                 child: RideTypeButton(
-                  title: 'passagierfahrt',
+                  title: 'Passagierfahrt',
                   icon: Icons.person_outline,
-                  isSelected: isPassenger,
+                  selected: isPassengerRide,
                   onTap: onPassengerSelected,
                 ),
               ),
-              const SizedBox(width:10),
+              const SizedBox(width: 10),
               Expanded(
                 child: RideTypeButton(
                   title: 'Botenfahrt',
                   icon: Icons.inventory_2_outlined,
-                  isSelected: !isPassengerRide,
+                  selected: !isPassengerRide,
                   onTap: onCourierSelected,
                 ),
               ),
             ],
           ),
-          const SizedBox(height:14),
+          const SizedBox(height: 14),
           const LocationField(
-            dotColor: colors.green,
-            label: 'Abholort',
-            value: 'Hauptbahnhof, Graz',
+            dotColor: Colors.green,
+            label: 'ABHOLUNG',
+            value: 'Friedrichstraße 42, Berlin',
           ),
-          const SizedBox(height:10),
+          const SizedBox(height: 10),
           const LocationField(
-            dotColor: colors.red,
-            label: 'Zielort',
+            dotColor: Colors.red,
+            label: 'ZIEL',
             value: 'Ziel eingeben oder auf Karte tippen',
             isPlaceholder: true,
           ),
-          const SizedBox(height:14),
+          const SizedBox(height: 14),
           const Row(
-            children:[
+            children: [
               Expanded(
                 child: PriceBox(
-                  label: 'Fahrtkosten',
-                  value: '30,00 €',
+                  title: 'Grundpreis',
+                  value: '3,90 €',
                 ),
               ),
-              sizedBox(width:10),
+              SizedBox(width: 10),
               Expanded(
                 child: PriceBox(
-                  title: 'pro km',
-                  value: '2,50 €',
+                  title: 'Pro km',
+                  value: '2,30 €',
                 ),
               ),
-              sizedBox(width:10),
+              SizedBox(width: 10),
               Expanded(
                 child: PriceBox(
-                  title: 'pro min',
+                  title: 'Pro Min',
                   value: '0,50 €',
                 ),
               ),
             ],
           ),
-          const SizedBox(height:14),
-          sizedbox(
+          const SizedBox(height: 14),
+          SizedBox(
             width: double.infinity,
             height: 48,
             child: ElevatedButton.icon(
-              onPressed: (){},
+              onPressed: () {},
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFDD7A00),
                 foregroundColor: Colors.white,
@@ -353,7 +341,7 @@ class RideBottomSheet extends StatelessWidget {
               icon: const Icon(Icons.play_arrow_rounded),
               label: const Text(
                 'Fahrt starten',
-                 style: TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -366,18 +354,17 @@ class RideBottomSheet extends StatelessWidget {
   }
 }
 
-
 class RideTypeButton extends StatelessWidget {
   final String title;
   final IconData icon;
-  final bool isSelected;
+  final bool selected;
   final VoidCallback onTap;
 
   const RideTypeButton({
     super.key,
     required this.title,
     required this.icon,
-    required this.isSelected,
+    required this.selected,
     required this.onTap,
   });
 
@@ -389,20 +376,24 @@ class RideTypeButton extends StatelessWidget {
       child: Container(
         height: 44,
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFDD7A00) : const Color(0xffE4DeD6),
+          color: selected ? const Color(0xFFDD7A00) : const Color(0xFFE4DED6),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children:[
-            Icon(icon, size: 18, color: isSelected ? Colors.white : Colors.black87),
-            const SizedBox(width:8),
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: selected ? Colors.white : Colors.black54,
+            ),
+            const SizedBox(width: 8),
             Text(
               title,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black87,
-                fontSize: 15,
+                color: selected ? Colors.white : Colors.black54,
                 fontWeight: FontWeight.w600,
+                fontSize: 14,
               ),
             ),
           ],
@@ -427,11 +418,11 @@ class LocationField extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      children:[
-        container(
+      children: [
+        Container(
           width: 10,
           height: 10,
           decoration: BoxDecoration(
@@ -439,32 +430,31 @@ class LocationField extends StatelessWidget {
             shape: BoxShape.circle,
           ),
         ),
-        const SizedBox(width:10),
+        const SizedBox(width: 10),
         Expanded(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal:14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
               color: const Color(0xFFE3DED6),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children:[
+              children: [
                 Text(
                   label,
                   style: TextStyle(
-                    color: Colors.grey,
                     fontSize: 11,
+                    color: Colors.grey.shade600,
                     letterSpacing: 0.6,
                   ),
                 ),
-                const SizedBox(height:4),
+                const SizedBox(height: 4),
                 Text(
                   value,
                   style: TextStyle(
-                    color: isPlaceholder ? Colors.grey : Colors.black87,
                     fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                    color: isPlaceholder ? Colors.grey.shade600 : Colors.black87,
                   ),
                 ),
               ],
@@ -474,7 +464,7 @@ class LocationField extends StatelessWidget {
       ],
     );
   }
-}  
+}
 
 class PriceBox extends StatelessWidget {
   final String title;
