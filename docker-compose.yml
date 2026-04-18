@@ -22,6 +22,25 @@ services:
       # (loads ./docs/openapi.yaml itself, so SWAGGER_JSON is no longer needed).
       - ./docs/swagger/index.html:/usr/share/nginx/html/index.html:ro
     restart: unless-stopped
+  pgadmin:
+    image: dpage/pgadmin4:9
+    container_name: zynqly-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@zynqly.dev
+      - PGADMIN_DEFAULT_PASSWORD=zynqly
+      # Desktop mode: no pgAdmin login form for local development.
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    ports:
+      - "5050:80"
+    volumes:
+      - zynqly_pgadmin_data:/var/lib/pgadmin
+      # Pre-registers the zynqly database; pgAdmin asks for the DB password on first connect.
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      - db
+    restart: unless-stopped
 
 volumes:
   zynqly_v17_data:
+  zynqly_pgadmin_data:
