@@ -1,5 +1,9 @@
 {
   "rides": [
+    { "id": "R-1046", "dateTime": "2026-04-18T10:00:00", "type": "Boten",     "from": "Berlin Mitte",    "to": "Berlin Süd",        "amount": 25.00, "settlement": "card",  "status": "pending"   },
+    { "id": "R-1045", "dateTime": "2026-04-18T09:00:00", "type": "Passagier", "from": "Berlin Zentrum",  "to": "Flughafen",         "amount": 35.00, "settlement": "card",  "status": "pending"   },
+    { "id": "R-1044", "dateTime": "2026-04-17T18:00:00", "type": "Boten",     "from": "Mitte",           "to": "Spandau",           "amount": 20.00, "settlement": "card",  "status": "completed" },
+    { "id": "R-1043", "dateTime": "2026-04-17T16:00:00", "type": "Passagier", "from": "Tempelhof",       "to": "Reinickendorf",     "amount": 30.00, "settlement": "card",  "status": "cancelled" },
     { "id": "R-1042", "dateTime": "2026-04-11T08:15:00", "type": "Passagier", "from": "Hauptbahnhof",     "to": "Flughafen",        "amount": 42.50, "settlement": "card", "status": "completed"  },
     { "id": "R-1041", "dateTime": "2026-04-11T07:30:00", "type": "Boten",     "from": "Friedrichstr. 12", "to": "Alexanderplatz 5", "amount": 18.90, "settlement": "cash", "status": "completed"  },
     { "id": "R-1040", "dateTime": "2026-04-10T19:45:00", "type": "Passagier", "from": "Potsdamer Platz",  "to": "Charlottenburg",   "amount": 28.60, "settlement": "card", "status": "completed"  },
@@ -44,9 +48,9 @@
     { "id": "R-1001", "dateTime": "2026-03-26T17:30:00", "type": "Passagier", "from": "Hauptbahnhof",     "to": "Zehlendorf",       "amount": 34.60, "settlement": "card", "status": "completed"  }
   ],
   "pagination": {
-    "total": 42,
+    "total": 46,
     "page": 1,
-    "pageSize": 8,
-    "totalPages": 6
+    "pageSize": 6,
+    "totalPages": 8
   }
 }

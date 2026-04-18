@@ -393,10 +393,10 @@ export default function RideHistoryPage() {
                   <TableCell className="py-4 px-4 text-sm font-medium text-z-neutral-900 dark:text-z-neutral-100">
                     {ride.amount.toFixed(2)} €
                   </TableCell>
-                  <TableCell className="py-4 px-4">
+                  <TableCell className="py-4 px-4" data-testid="ride-history-row-settlement">
                     <SettlementBadge method={ride.settlement as Settlement} />
                   </TableCell>
-                  <TableCell className="py-4 px-4">
+                  <TableCell className="py-4 px-4" data-testid="ride-history-row-status">
                     <StatusBadge status={ride.status as RideStatus} />
                   </TableCell>
                 </TableRow>
@@ -428,6 +428,7 @@ export default function RideHistoryPage() {
               onClick={() => setCurrentPage((p) => p - 1)}
               className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
               aria-label="Vorherige Seite"
+              data-testid="ride-history-pagination-prev"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
                 <path fillRule="evenodd" d="M9.78 4.22a.75.75 0 0 1 0 1.06L7.06 8l2.72 2.72a.75.75 0 1 1-1.06 1.06L5.47 8.53a.75.75 0 0 1 0-1.06l3.25-3.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
@@ -469,6 +470,7 @@ export default function RideHistoryPage() {
               onClick={() => setCurrentPage((p) => p + 1)}
               className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
               aria-label="Nächste Seite"
+              data-testid="ride-history-pagination-next"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
                 <path fillRule="evenodd" d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06L7.28 11.78a.75.75 0 0 1-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
