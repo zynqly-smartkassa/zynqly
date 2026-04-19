@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zynqly_mobile/theme/app_theme.dart';
 import 'package:zynqly_mobile/screens/root_screen.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Zynqly Home Screen',
-      theme: ThemeData(primarySwatch: Colors.yellow, useMaterial3: true),
+      theme: AppTheme.lightTheme,
       home: RootScreen(),
     );
   }
