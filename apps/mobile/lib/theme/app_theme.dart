@@ -19,10 +19,22 @@ class AppTheme {
       ),
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.brandColor,
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.white,
-        elevation: 8, // shadow strength
+        elevation: 0.1, // shadow strength
+
+        selectedLabelStyle: TextStyle(
+          fontSize: 15.0,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+        ),
+
+        unselectedLabelStyle: TextStyle(
+          fontSize: 13.0,
+          fontWeight: FontWeight.normal,
+        ),
       ),
     );
   }
