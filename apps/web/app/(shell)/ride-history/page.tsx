@@ -293,7 +293,7 @@ export default function RideHistoryPage() {
                     className={cn(
                       "w-9 h-9 rounded-full flex items-center justify-center shrink-0",
                       isPassagier
-                        ? "bg-z-violet-100 dark:bg-violet-950/50"
+                        ? "bg-z-violet-100 dark:bg-amber-950/50"
                         : "bg-green-50 dark:bg-green-950/40"
                     )}
                   >

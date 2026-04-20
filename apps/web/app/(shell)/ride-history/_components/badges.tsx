@@ -45,7 +45,7 @@ export function SettlementBadge({ method }: { method: Settlement }) {
       className={cn(
         "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border",
         isCard
-          ? "bg-z-violet-100 text-z-violet-500 border-z-violet-200 dark:bg-violet-950/50 dark:text-z-violet-300 dark:border-violet-800/60"
+          ? "bg-z-violet-100 text-z-violet-500 border-z-violet-200 dark:bg-amber-950/50 dark:text-z-violet-300 dark:border-amber-800/60"
           : "bg-green-50 text-green-700 border-green-200 dark:bg-green-950/40 dark:text-green-400 dark:border-green-800/60"
       )}
     >
