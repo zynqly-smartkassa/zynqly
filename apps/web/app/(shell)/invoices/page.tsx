@@ -184,12 +184,14 @@ export default function InvoicesPage() {
               placeholder="Rechnungen suchen …"
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
+              data-testid="invoices-search-input"
               className="pl-9 h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
             />
             {/* Mobile reset */}
             <Button
               size="lg"
               className="lg:hidden text-sm shrink-0"
+              data-testid="invoices-reset-button"
               onClick={() => { setSearch(""); setFilterStatus("all"); setCurrentPage(1); }}
             >
               <RotateCcw className="w-4 h-4" />
@@ -204,7 +206,10 @@ export default function InvoicesPage() {
         {/* Filters row */}
         <div className="flex items-center gap-2">
           <Select value={filterStatus} onValueChange={handleFilterStatus}>
-            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[150px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200">
+            <SelectTrigger
+              className="h-9 text-sm w-full lg:w-auto lg:min-w-[150px] bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200"
+              data-testid="invoices-filter-status-trigger"
+            >
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -219,6 +224,7 @@ export default function InvoicesPage() {
           <Button
             size="lg"
             className="hidden lg:flex text-sm"
+            data-testid="invoices-reset-button"
             onClick={() => { setSearch(""); setFilterStatus("all"); setCurrentPage(1); }}
           >
             <RotateCcw className="w-4 h-4" />
@@ -343,7 +349,7 @@ export default function InvoicesPage() {
                   <TableCell className="py-4 px-4 text-sm font-medium text-z-neutral-900 dark:text-z-neutral-100">
                     {inv.amount.toFixed(2)} €
                   </TableCell>
-                  <TableCell className="py-4 px-4">
+                  <TableCell className="py-4 px-4" data-testid="invoices-row-status">
                     <InvoiceStatusBadge status={inv.status as InvoiceStatus} />
                   </TableCell>
                   <TableCell className="py-4 px-4">
@@ -397,6 +403,8 @@ export default function InvoicesPage() {
             currentPage={activePage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
+            prevTestId="invoices-pagination-prev"
+            nextTestId="invoices-pagination-next"
             className={isPaginating ? "opacity-60 pointer-events-none" : ""}
           />
         )}
