@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class RootScreen extends StatefulWidget {
+  const RootScreen({super.key});
+
   @override
-  _RootScreenState createState() => _RootScreenState();
+  State<RootScreen> createState() => _RootScreenState();
 }
 
 class _RootScreenState extends State<RootScreen> {
