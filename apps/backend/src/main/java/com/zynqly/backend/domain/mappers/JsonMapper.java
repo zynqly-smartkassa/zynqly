@@ -1,5 +1,6 @@
 package com.zynqly.backend.domain.mappers;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -22,5 +23,11 @@ public class JsonMapper {
     try (InputStream in = resource.getInputStream()) {
       return objectMapper.readValue(in, target);
     }
+  }
+
+  public void toJson(String dataFile, Object value) throws IOException {
+    ClassPathResource resource = new ClassPathResource(dataFile);
+    File file = resource.getFile();
+    objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, value);
   }
 }

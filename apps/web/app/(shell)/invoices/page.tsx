@@ -23,13 +23,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
 import { useGetInvoicesQuery, useGetInvoicesStatsQuery } from "@/redux/api/apis/invoices";
-import type { InvoiceStatus } from "@/types/Invoice";
-import { RotateCcw, Plus, Eye, Download } from "lucide-react";
+import type { InvoiceStatus, Invoice } from "@/types/Invoice";
+import { RotateCcw, Plus, Eye, Download, Loader2 } from "lucide-react";
 import { PaginationBar } from "@/components/PaginationBar";
 
 import { InvoiceStatusBadge } from "./_components/badges";
 import { TableSkeletonRows, MobileSkeletonCards, StatCardSkeleton } from "./_components/skeletons";
 import { CreateInvoiceDialog } from "./_components/CreateInvoiceDialog";
+import { InvoicePreviewDialog, downloadInvoicePDF } from "./_components/InvoicePreviewDialog";
 
 
 
@@ -59,6 +60,17 @@ export default function InvoicesPage() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [previewInvoice, setPreviewInvoice] = useState<Invoice | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  const handleDownload = async (inv: Invoice) => {
+    setDownloadingId(inv.id);
+    try {
+      await downloadInvoicePDF(inv);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -252,13 +264,32 @@ export default function InvoicesPage() {
                   <InvoiceStatusBadge status={inv.status as InvoiceStatus} />
                 </div>
 
-                {/* Download */}
-                <button
-                  className="ml-1 text-z-neutral-400 hover:text-z-violet-500 transition-colors shrink-0"
-                  aria-label="Rechnung herunterladen"
-                >
-                  <Download className="w-4 h-4" />
-                </button>
+                {/* Eye + Download */}
+                <div className="ml-1 flex items-center gap-0.5 shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-z-neutral-400 hover:text-z-violet-500 hover:bg-z-violet-50 dark:hover:bg-z-violet-950/30"
+                    aria-label={`Rechnung ${inv.id} anzeigen`}
+                    onClick={() => setPreviewInvoice(inv)}
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-z-neutral-400 hover:text-z-violet-500 hover:bg-z-violet-50 dark:hover:bg-z-violet-950/30"
+                    aria-label={`Rechnung ${inv.id} herunterladen`}
+                    disabled={downloadingId === inv.id}
+                    onClick={() => handleDownload(inv)}
+                  >
+                    {downloadingId === inv.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Download className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
@@ -316,19 +347,30 @@ export default function InvoicesPage() {
                     <InvoiceStatusBadge status={inv.status as InvoiceStatus} />
                   </TableCell>
                   <TableCell className="py-4 px-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        className="text-z-neutral-400 hover:text-z-violet-500 transition-colors"
+                    <div className="flex items-center gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-z-neutral-400 hover:text-z-violet-500 hover:bg-z-violet-50 dark:hover:bg-z-violet-950/30"
                         aria-label={`Rechnung ${inv.id} anzeigen`}
+                        onClick={() => setPreviewInvoice(inv)}
                       >
                         <Eye className="w-4 h-4" />
-                      </button>
-                      <button
-                        className="text-z-neutral-400 hover:text-z-violet-500 transition-colors"
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-z-neutral-400 hover:text-z-violet-500 hover:bg-z-violet-50 dark:hover:bg-z-violet-950/30"
                         aria-label={`Rechnung ${inv.id} herunterladen`}
+                        disabled={downloadingId === inv.id}
+                        onClick={() => handleDownload(inv)}
                       >
-                        <Download className="w-4 h-4" />
-                      </button>
+                        {downloadingId === inv.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Download className="w-4 h-4" />
+                        )}
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -362,6 +404,12 @@ export default function InvoicesPage() {
 
       {/* ── Create Invoice Dialog ── */}
       <CreateInvoiceDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+
+      {/* ── Invoice PDF Preview Dialog ── */}
+      <InvoicePreviewDialog
+        invoice={previewInvoice}
+        onClose={() => setPreviewInvoice(null)}
+      />
     </div>
   );
 }
