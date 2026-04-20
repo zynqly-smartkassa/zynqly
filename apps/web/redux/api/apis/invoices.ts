@@ -1,21 +1,29 @@
+
+import { Page } from '@/types/Page';
 import { apiSlice } from '../apiSlice';
-import type { InvoicesResponse, CreateInvoiceRequest, Invoice } from '@/types/Invoice';
+import { CreateInvoiceRequest, Invoice, InvoiceStats } from '@/types/Invoice';
 
-const invoicesApi = apiSlice.injectEndpoints({
+const invoices = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getInvoices: builder.query<InvoicesResponse, void>({
-      query: () => '/invoices',
-      providesTags: ['Invoices'],
+    getInvoices: builder.query<Page<Invoice>, number>({
+      query: (page) => `/invoices?page=${page}`,
+       providesTags: ["Invoices"]
     }),
-    createInvoice: builder.mutation<Invoice, CreateInvoiceRequest>({
-      query: (body) => ({
-        url: '/invoices',
-        method: 'POST',
-        body,
+    getInvoicesStats: builder.query<InvoiceStats, void>({
+      query: () => `/invoices/stats`,
+      providesTags: ["Invoices"]
+    }),
+    createInvoice: builder.mutation<void, CreateInvoiceRequest>({
+      query: (invoiceData) => ({
+        url: "/invoices/create",
+        method: "POST",
+        body: invoiceData
       }),
-      invalidatesTags: ['Invoices'],
+      invalidatesTags: ["Invoices"]
     }),
-  }),
-});
+  })
+})
 
-export const { useGetInvoicesQuery, useCreateInvoiceMutation } = invoicesApi;
+export const { useGetInvoicesQuery, 
+  useGetInvoicesStatsQuery,
+   useCreateInvoiceMutation } = invoices;

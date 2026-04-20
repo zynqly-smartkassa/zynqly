@@ -22,17 +22,16 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
-import { useGetInvoicesQuery } from "@/redux/api/apis/invoices";
+import { useGetInvoicesQuery, useGetInvoicesStatsQuery } from "@/redux/api/apis/invoices";
 import type { InvoiceStatus } from "@/types/Invoice";
 import { RotateCcw, Plus, Eye, Download } from "lucide-react";
+import { PaginationBar } from "@/components/PaginationBar";
 
 import { InvoiceStatusBadge } from "./_components/badges";
 import { TableSkeletonRows, MobileSkeletonCards, StatCardSkeleton } from "./_components/skeletons";
 import { CreateInvoiceDialog } from "./_components/CreateInvoiceDialog";
 
-// ── Constants ──────────────────────────────────────────────────────────────────
 
-const INVOICES_PER_PAGE = 8;
 
 // ── Stat card ──────────────────────────────────────────────────────────────────
 
@@ -64,16 +63,18 @@ export default function InvoicesPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const { data, isLoading } = useGetInvoicesQuery();
+  const { data: invoices, isLoading: isLoadingInvoices, isFetching } = useGetInvoicesQuery(currentPage - 1);
+  const isPaginating = isFetching && !isLoadingInvoices;
+  const { data: stats } = useGetInvoicesStatsQuery();
 
-  const showSkeleton = !mounted || isLoading;
+  const showSkeleton = !mounted || isLoadingInvoices;
 
   // ── Filter ─────────────────────────────────────────────────────────────────
 
   const filtered = useMemo(() => {
-    const invoices = data?.invoices ?? [];
     const q = search.toLowerCase().trim();
-    return invoices.filter((inv) => {
+    const invoicesToFilter = invoices?.content ?? [];
+    return invoicesToFilter.filter((inv) => {
       if (filterStatus !== "all" && inv.status !== filterStatus) return false;
       if (q !== "") {
         const matchId = inv.id.toLowerCase().includes(q);
@@ -84,36 +85,21 @@ export default function InvoicesPage() {
       }
       return true;
     });
-  }, [data?.invoices, search, filterStatus]);
+  }, [invoices, search, filterStatus]);
 
-  // ── Pagination ─────────────────────────────────────────────────────────────
+  // ── Pagination — alle Werte kommen vom Server ────────────────────────────────
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / INVOICES_PER_PAGE));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const paginated = filtered.slice(
-    (safeCurrentPage - 1) * INVOICES_PER_PAGE,
-    safeCurrentPage * INVOICES_PER_PAGE
-  );
+  const totalPages = invoices?.page.totalPages ?? 1;
+  const activePage = (invoices?.page.number ?? currentPage - 1) + 1;
+  const pageStart = invoices ? invoices.page.number * invoices.page.size + 1 : 0;
+  const pageEnd = invoices ? Math.min((invoices.page.number + 1) * invoices.page.size, invoices.page.totalElements) : 0;
+  const totalElements = invoices?.page.totalElements ?? 0;
 
   const handleSearch = (v: string) => { setSearch(v); setCurrentPage(1); };
   const handleFilterStatus = (v: string) => { setFilterStatus(v); setCurrentPage(1); };
 
-  const pageNumbers = useMemo(() => {
-    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
-    const pages: (number | "…")[] = [];
-    if (safeCurrentPage <= 4) {
-      pages.push(1, 2, 3, 4, 5, "…", totalPages);
-    } else if (safeCurrentPage >= totalPages - 3) {
-      pages.push(1, "…", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-    } else {
-      pages.push(1, "…", safeCurrentPage - 1, safeCurrentPage, safeCurrentPage + 1, "…", totalPages);
-    }
-    return pages;
-  }, [totalPages, safeCurrentPage]);
-
   // ── Stats ──────────────────────────────────────────────────────────────────
 
-  const stats = data?.stats;
   const fmt = (n: number) => `${n.toFixed(2)} €`;
 
   return (
@@ -233,13 +219,13 @@ export default function InvoicesPage() {
       <div className="sm:hidden rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
         {showSkeleton ? (
           <MobileSkeletonCards />
-        ) : paginated.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <p className="text-center py-12 text-sm text-z-neutral-400 dark:text-z-neutral-500">
             Keine Rechnungen gefunden.
           </p>
         ) : (
           <div className="flex flex-col divide-y divide-z-neutral-200 dark:divide-z-neutral-700">
-            {paginated.map((inv) => (
+            {filtered.map((inv) => (
               <div key={inv.id} className="flex items-center gap-3 py-3.5 px-4">
                 {/* Icon */}
                 <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-z-violet-100 dark:bg-violet-950/50">
@@ -294,19 +280,19 @@ export default function InvoicesPage() {
           <TableBody>
             {showSkeleton ? (
               <TableSkeletonRows />
-            ) : paginated.length === 0 ? (
+            ) : filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-12 text-sm text-z-neutral-400 dark:text-z-neutral-500">
                   Keine Rechnungen gefunden.
                 </TableCell>
               </TableRow>
             ) : (
-              paginated.map((inv, idx) => (
+              filtered.map((inv, idx) => (
                 <TableRow
                   key={inv.id}
                   className={cn(
                     "transition-colors hover:bg-z-neutral-50 dark:hover:bg-z-neutral-700/40",
-                    idx < paginated.length - 1
+                    idx < filtered.length - 1
                       ? "border-b border-z-neutral-200 dark:border-z-neutral-700"
                       : "border-none"
                   )}
@@ -357,64 +343,20 @@ export default function InvoicesPage() {
         <span className="text-xs text-z-neutral-400 dark:text-z-neutral-500">
           {showSkeleton ? (
             <Skeleton className="h-3 w-40 rounded" />
-          ) : filtered.length === 0 ? (
+          ) : totalElements === 0 ? (
             "Keine Rechnungen gefunden"
           ) : (
-            `${(safeCurrentPage - 1) * INVOICES_PER_PAGE + 1}–${Math.min(safeCurrentPage * INVOICES_PER_PAGE, filtered.length)} von ${filtered.length} Rechnungen`
+            `${pageStart}–${pageEnd} von ${totalElements} Rechnungen`
           )}
         </span>
 
         {!showSkeleton && totalPages > 1 && (
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={safeCurrentPage === 1}
-              onClick={() => setCurrentPage((p) => p - 1)}
-              className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
-              aria-label="Vorherige Seite"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
-                <path fillRule="evenodd" d="M9.78 4.22a.75.75 0 0 1 0 1.06L7.06 8l2.72 2.72a.75.75 0 1 1-1.06 1.06L5.47 8.53a.75.75 0 0 1 0-1.06l3.25-3.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
-              </svg>
-            </Button>
-
-            {pageNumbers.map((p, i) =>
-              p === "…" ? (
-                <span key={`ellipsis-${i}`} className="inline-flex items-center justify-center w-8 h-8 text-sm text-z-neutral-400 dark:text-z-neutral-500">
-                  …
-                </span>
-              ) : (
-                <Button
-                  key={p}
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setCurrentPage(p as number)}
-                  className={cn(
-                    "w-8 h-8 text-sm font-medium",
-                    p === safeCurrentPage
-                      ? "bg-z-violet-500 text-white hover:bg-z-violet-600 dark:bg-z-violet-500 dark:text-white dark:hover:bg-z-violet-600"
-                      : "text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
-                  )}
-                >
-                  {p}
-                </Button>
-              )
-            )}
-
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={safeCurrentPage === totalPages}
-              onClick={() => setCurrentPage((p) => p + 1)}
-              className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
-              aria-label="Nächste Seite"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
-                <path fillRule="evenodd" d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06L7.28 11.78a.75.75 0 0 1-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-              </svg>
-            </Button>
-          </div>
+          <PaginationBar
+            currentPage={activePage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            className={isPaginating ? "opacity-60 pointer-events-none" : ""}
+          />
         )}
       </div>
 

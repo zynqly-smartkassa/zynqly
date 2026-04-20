@@ -1,12 +1,3 @@
-export interface SpringPage<T> {
-  content: T[];
-  page: {
-    size: number;
-    number: number;       // 0-based page index
-    totalElements: number;
-    totalPages: number;
-  };
-}
 
 export interface Ride {
   id: string;

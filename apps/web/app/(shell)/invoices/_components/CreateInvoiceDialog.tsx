@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -14,40 +16,57 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateInvoiceMutation } from "@/redux/api/apis/invoices";
 
+// ── Schema ─────────────────────────────────────────────────────────────────────
+
+const createInvoiceSchema = z.object({
+  rideId: z
+    .string()
+    .min(1, "Fahrt-ID ist erforderlich")
+    .regex(/^R-\d+$/, "Format muss R-{Nummer} sein, z.B. R-1042"),
+  customer: z
+    .string()
+    .min(2, "Kundenname muss mindestens 2 Zeichen haben")
+    .max(100, "Kundenname ist zu lang"),
+  amount: z
+    .number()
+    .refine((n) => !isNaN(n), { message: "Betrag muss eine Zahl sein" })
+    .positive("Betrag muss größer als 0 sein")
+    .max(9999.99, "Betrag darf maximal 9.999,99 € sein"),
+});
+
+type CreateInvoiceFormValues = z.infer<typeof createInvoiceSchema>;
+
+// ── Props ──────────────────────────────────────────────────────────────────────
+
 interface CreateInvoiceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogProps) {
-  const [rideId, setRideId] = useState("");
-  const [customer, setCustomer] = useState("");
-  const [amount, setAmount] = useState("");
+// ── Component ──────────────────────────────────────────────────────────────────
 
+export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogProps) {
   const [createInvoice, { isLoading }] = useCreateInvoiceMutation();
 
-  const canSubmit = rideId.trim() !== "" && customer.trim() !== "" && amount.trim() !== "";
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm<CreateInvoiceFormValues>({
+    resolver: zodResolver(createInvoiceSchema),
+    mode: "onChange",
+  });
 
   function handleClose() {
-    setRideId("");
-    setCustomer("");
-    setAmount("");
+    reset();
     onOpenChange(false);
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!canSubmit) return;
-    try {
-      await createInvoice({
-        rideId: rideId.trim(),
-        customer: customer.trim(),
-        amount: parseFloat(amount),
-      }).unwrap();
-      handleClose();
-    } catch {
-      // Error handling will be added once backend is ready
-    }
+  async function onSubmit(data: CreateInvoiceFormValues) {
+    // TODO: dein Code hier
+    await createInvoice(data).unwrap();
+    handleClose();
   }
 
   return (
@@ -60,7 +79,7 @@ export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogP
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           {/* Ride ID */}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="rideId" className="text-sm font-medium text-z-neutral-700 dark:text-z-neutral-200">
@@ -69,10 +88,12 @@ export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogP
             <Input
               id="rideId"
               placeholder="z.B. R-1042"
-              value={rideId}
-              onChange={(e) => setRideId(e.target.value)}
+              {...register("rideId")}
               className="h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
             />
+            {errors.rideId && (
+              <p className="text-xs text-red-500">{errors.rideId.message}</p>
+            )}
           </div>
 
           {/* Customer */}
@@ -83,10 +104,12 @@ export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogP
             <Input
               id="customer"
               placeholder="z.B. Max Müller"
-              value={customer}
-              onChange={(e) => setCustomer(e.target.value)}
+              {...register("customer")}
               className="h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
             />
+            {errors.customer && (
+              <p className="text-xs text-red-500">{errors.customer.message}</p>
+            )}
           </div>
 
           {/* Amount */}
@@ -100,10 +123,12 @@ export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogP
               min="0"
               step="0.01"
               placeholder="z.B. 42.50"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              {...register("amount", { valueAsNumber: true })}
               className="h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
             />
+            {errors.amount && (
+              <p className="text-xs text-red-500">{errors.amount.message}</p>
+            )}
           </div>
 
           <DialogFooter>
@@ -118,7 +143,7 @@ export function CreateInvoiceDialog({ open, onOpenChange }: CreateInvoiceDialogP
             </Button>
             <Button
               type="submit"
-              disabled={!canSubmit || isLoading}
+              disabled={!isValid || isLoading}
               className="bg-z-violet-500 hover:bg-z-violet-600 text-white dark:bg-z-violet-500 dark:hover:bg-z-violet-600 text-sm"
             >
               {isLoading ? "Wird erstellt…" : "Erstellen"}

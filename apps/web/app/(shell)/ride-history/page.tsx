@@ -26,6 +26,7 @@ import { useGetRideHistoryQuery } from "@/redux/api/apis/ride-history";
 import type { Ride } from "@/types/RideHistory";
 
 import ResetFiltersButton from "@/components/ResetFiltersButton";
+import { PaginationBar } from "@/components/PaginationBar";
 import { TypeBadge, SettlementBadge, StatusBadge, formatDateTime } from "./_components/badges";
 import { TableSkeletonRows, MobileSkeletonCards } from "./_components/skeletons";
 
@@ -130,19 +131,6 @@ export default function RideHistoryPage() {
   const handleSearch = (v: string) => { setSearch(v); setCurrentPage(1); };
 
   // Pagination page numbers with ellipsis
-  const pageNumbers = useMemo(() => {
-    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
-    const pages: (number | "…")[] = [];
-    if (activePage <= 4) {
-      pages.push(1, 2, 3, 4, 5, "…", totalPages);
-    } else if (activePage >= totalPages - 3) {
-      pages.push(1, "…", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-    } else {
-      pages.push(1, "…", activePage - 1, activePage, activePage + 1, "…", totalPages);
-    }
-    return pages;
-  }, [totalPages, activePage]);
-
   return (
     <div className="max-w-[1440px] mx-auto">
 
@@ -419,64 +407,13 @@ export default function RideHistoryPage() {
         </span>
 
         {!showSkeleton && totalPages > 1 && (
-          <div className="flex items-center gap-1">
-            {/* Prev */}
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={activePage === 1}
-              onClick={() => setCurrentPage((p) => p - 1)}
-              className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
-              aria-label="Vorherige Seite"
-              data-testid="ride-history-pagination-prev"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
-                <path fillRule="evenodd" d="M9.78 4.22a.75.75 0 0 1 0 1.06L7.06 8l2.72 2.72a.75.75 0 1 1-1.06 1.06L5.47 8.53a.75.75 0 0 1 0-1.06l3.25-3.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
-              </svg>
-            </Button>
-
-            {/* Page numbers */}
-            {pageNumbers.map((p, i) =>
-              p === "…" ? (
-                <span
-                  key={`ellipsis-${i}`}
-                  className="inline-flex items-center justify-center w-8 h-8 text-sm text-z-neutral-400 dark:text-z-neutral-500"
-                >
-                  …
-                </span>
-              ) : (
-                <Button
-                  key={p}
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setCurrentPage(p as number)}
-                  className={cn(
-                    "w-8 h-8 text-sm font-medium",
-                    p === activePage
-                      ? "bg-z-violet-500 text-white hover:bg-z-violet-600 dark:bg-z-violet-500 dark:text-white dark:hover:bg-z-violet-600"
-                      : "text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
-                  )}
-                >
-                  {p}
-                </Button>
-              )
-            )}
-
-            {/* Next */}
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={activePage === totalPages}
-              onClick={() => setCurrentPage((p) => p + 1)}
-              className="w-8 h-8 text-z-neutral-600 dark:text-z-neutral-300 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-700"
-              aria-label="Nächste Seite"
-              data-testid="ride-history-pagination-next"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4">
-                <path fillRule="evenodd" d="M6.22 4.22a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06L7.28 11.78a.75.75 0 0 1-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-              </svg>
-            </Button>
-          </div>
+          <PaginationBar
+            currentPage={activePage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            prevTestId="ride-history-pagination-prev"
+            nextTestId="ride-history-pagination-next"
+          />
         )}
       </div>
     </div>
