@@ -1,5 +1,6 @@
 package com.zynqly.backend.controllers;
 
+import lombok.NonNull;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,7 @@ public class DashboardController {
   private final DashboardService dashboardService;
 
   @GetMapping
-  public ResponseEntity<DashboardDto> getDashboard() {
+  public ResponseEntity<@NonNull DashboardDto> getDashboard() {
 
     DashboardDto dashboardDto = dashboardService.getDashboard();
 

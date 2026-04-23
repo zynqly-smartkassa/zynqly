@@ -1,5 +1,6 @@
 package com.zynqly.backend.controllers;
 
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,22 +27,22 @@ public class InvoicesController {
   private final InvoicesService invoicesService;
 
   @GetMapping
-  public ResponseEntity<Page<InvoicesDto.Invoice>> getInvoices(
-      @PageableDefault(page = 0, size = 6) Pageable pageable
+  public ResponseEntity<@NonNull Page<InvoicesDto.@NonNull Invoice>> getInvoices(
+      @PageableDefault(size = 6) Pageable pageable
   ) {
     return ResponseEntity.ok(invoicesService.getInvoices(pageable));
   }
 
   @GetMapping("/stats")
-  public ResponseEntity<InvoicesDto.Stats> getStats() {
+  public ResponseEntity<InvoicesDto.@NonNull Stats> getStats() {
     return ResponseEntity.ok(invoicesService.getStats());
   }
 
   @PostMapping("/create")
-  public ResponseEntity<Void> createInvoice(@RequestBody CreateInvoiceRequest createInvoiceRequest) {
+  public ResponseEntity<@NonNull Void> createInvoice(@RequestBody CreateInvoiceRequest createInvoiceRequest) {
       invoicesService.createInvoice(createInvoiceRequest);
 
-      return new ResponseEntity<Void>(HttpStatus.OK);
+      return new ResponseEntity<>(HttpStatus.OK);
   }
   
 }

@@ -1,5 +1,6 @@
 package com.zynqly.backend.controllers;
 
+import lombok.NonNull;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,9 +23,9 @@ public class RideHistoryController {
   private final RideHistoryService rideHistoryService;
 
   @GetMapping
-  public ResponseEntity<Page<RideHistoryDto.Ride>> getRideHistory(
-      @PageableDefault(page = 0, size = 6) Pageable pageable) {
-    Page<RideHistoryDto.Ride> ridePage = rideHistoryService.getRideHistory(pageable);
+  public ResponseEntity<@NonNull Page<RideHistoryDto.@NonNull Ride>> getRideHistory(
+      @PageableDefault(size = 6) Pageable pageable) {
+    Page<RideHistoryDto.@NonNull Ride> ridePage = rideHistoryService.getRideHistory(pageable);
     return ResponseEntity.ok(ridePage);
   }
 
