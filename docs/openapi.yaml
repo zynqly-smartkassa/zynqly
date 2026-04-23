@@ -132,6 +132,10 @@ paths:
                 $ref: '#/components/schemas/Receipt'
         '404':
           description: No receipt found for this ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error
           content:

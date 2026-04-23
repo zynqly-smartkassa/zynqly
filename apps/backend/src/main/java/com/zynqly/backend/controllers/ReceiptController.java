@@ -1,6 +1,6 @@
 package com.zynqly.backend.controllers;
 
-import com.zynqly.backend.domain.dtos.responses.ErrorResponse;
+import com.zynqly.backend.domain.dtos.factory.ErrorResponseFactory;
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.services.ReceiptService;
@@ -9,8 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/receipts")
@@ -24,7 +22,7 @@ public class ReceiptController {
         try {
             return ResponseEntity.ok(receiptService.getReceipts());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ErrorResponse(e.getMessage(), request.getRequestURI()));
+            return ResponseEntity.internalServerError().body(ErrorResponseFactory.InternalServerErrorResponse(e, request));
         }
     }
 
@@ -33,11 +31,11 @@ public class ReceiptController {
         try {
             Receipt receipt = receiptService.getReceiptById(id);
             if (receipt == null) {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(404).body(ErrorResponseFactory.NotFoundErrorResponse(String.format("Receipt with ID %d not found", id), request.getRequestURI()));
             }
             return ResponseEntity.ok(receipt);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ErrorResponse(e.getMessage(), request.getRequestURI()));
+            return ResponseEntity.internalServerError().body(ErrorResponseFactory.InternalServerErrorResponse(e, request));
         }
     }
 
@@ -46,7 +44,7 @@ public class ReceiptController {
         try {
             return ResponseEntity.status(201).body(receiptService.createReceipt(receiptCreateDto));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ErrorResponse(e.getMessage(), request.getRequestURI()));
+            return ResponseEntity.internalServerError().body(ErrorResponseFactory.InternalServerErrorResponse(e, request));
         }
     }
 }

@@ -9,9 +9,9 @@ public class ErrorResponse {
     private final String message;
     private final String path;
 
-    public ErrorResponse(String message, String path) {
-        this.status = 500;
-        this.error = "Internal Server Error";
+    public ErrorResponse(int status, String error, String message, String path) {
+        this.status = status;
+        this.error = error != null ? error : "Internal Server Error";
         this.message = message;
         this.path = path;
     }
