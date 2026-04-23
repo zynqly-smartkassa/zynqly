@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ListReceiptDto {
+public class ReceiptListDto {
     private int id;
     private String receiptNumber;
     private LocalDateTime issuedAt;

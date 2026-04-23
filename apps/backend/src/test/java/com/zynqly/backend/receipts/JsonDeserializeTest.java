@@ -1,8 +1,8 @@
 package com.zynqly.backend.receipts;
 
 import com.zynqly.backend.domain.receipt.Receipt;
-import com.zynqly.backend.domain.receipt.dto.CreateReceiptDto;
-import com.zynqly.backend.domain.receipt.dto.ListReceiptDto;
+import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
+import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +20,10 @@ public class JsonDeserializeTest {
     private JacksonTester<@NonNull Receipt> receiptJacksonTester;
 
     @Autowired
-    private JacksonTester<@NonNull CreateReceiptDto> createReceiptDtoJacksonTester;
+    private JacksonTester<@NonNull ReceiptCreateDto> createReceiptDtoJacksonTester;
 
     @Autowired
-    private JacksonTester<@NonNull List<ListReceiptDto>> listReceiptDtoJacksonTester;
+    private JacksonTester<@NonNull List<ReceiptListDto>> listReceiptDtoJacksonTester;
 
     @Test
     void receiptDeserializeTest() throws IOException {
@@ -51,8 +51,8 @@ public class JsonDeserializeTest {
 
     @Test
     void createReceiptDtoDeserializeTest() throws IOException {
-        CreateReceiptDto parsed = createReceiptDtoJacksonTester.readObject(FileNames.CREATE_RECEIPT_FILE);
-        CreateReceiptDto dto = ReceiptTestFactory.getCreateReceiptDto();
+        ReceiptCreateDto parsed = createReceiptDtoJacksonTester.readObject(FileNames.CREATE_RECEIPT_FILE);
+        ReceiptCreateDto dto = ReceiptTestFactory.getRECEIPT_CREATE_DTO();
 
         assertThat(parsed.getRide_id()).isEqualTo(dto.getRide_id());
         assertThat(parsed.getPaymentMethod()).isEqualTo(dto.getPaymentMethod());
@@ -65,14 +65,14 @@ public class JsonDeserializeTest {
 
     @Test
     void listReceiptDtoDeserializeTest() throws IOException {
-        List<ListReceiptDto> parsed = listReceiptDtoJacksonTester.readObject(FileNames.LIST_RECEIPT_FILE);
-        List<ListReceiptDto> list = ReceiptTestFactory.getListReceiptDtoList();
+        List<ReceiptListDto> parsed = listReceiptDtoJacksonTester.readObject(FileNames.LIST_RECEIPT_FILE);
+        List<ReceiptListDto> list = ReceiptTestFactory.getLIST_RECEIPT_DTO();
 
         assertThat(parsed.size()).isEqualTo(list.size());
 
         for (int i = 0; i < list.size(); i++) {
-            ListReceiptDto parsedDto = parsed.get(i);
-            ListReceiptDto dto = list.get(i);
+            ReceiptListDto parsedDto = parsed.get(i);
+            ReceiptListDto dto = list.get(i);
 
             assertThat(parsedDto.getId()).isEqualTo(dto.getId());
             assertThat(parsedDto.getReceiptNumber()).isEqualTo(dto.getReceiptNumber());

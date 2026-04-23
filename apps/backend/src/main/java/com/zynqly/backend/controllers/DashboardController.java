@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController()
-@RequestMapping(path = "/api/v1/dashboard")
+@RequestMapping(path = "/dashboard")
 @RequiredArgsConstructor
 public class DashboardController {
 

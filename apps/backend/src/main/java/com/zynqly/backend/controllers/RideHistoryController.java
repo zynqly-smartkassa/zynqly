@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
-@RequestMapping(path = "/api/v1/ride-history")
+@RequestMapping(path = "/ride-history")
 @RequiredArgsConstructor
 public class RideHistoryController {
 

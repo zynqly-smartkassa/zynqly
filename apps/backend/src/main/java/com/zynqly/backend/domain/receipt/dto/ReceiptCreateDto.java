@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 
 @Getter
 @AllArgsConstructor
-public class CreateReceiptDto {
+public class ReceiptCreateDto {
     @NotNull
     private Integer ride_id;
 

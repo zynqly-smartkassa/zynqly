@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping(path = "/api/v1/invoices")
+@RequestMapping(path = "/invoices")
 @RequiredArgsConstructor
 public class InvoicesController {
 

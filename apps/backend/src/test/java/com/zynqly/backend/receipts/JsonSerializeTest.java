@@ -1,8 +1,8 @@
 package com.zynqly.backend.receipts;
 
 import com.zynqly.backend.domain.receipt.Receipt;
-import com.zynqly.backend.domain.receipt.dto.CreateReceiptDto;
-import com.zynqly.backend.domain.receipt.dto.ListReceiptDto;
+import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
+import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,10 @@ public class JsonSerializeTest {
     private JacksonTester<@NonNull Receipt> receiptJacksonTester;
 
     @Autowired
-    private JacksonTester<@NonNull CreateReceiptDto> createReceiptDtoJacksonTester;
+    private JacksonTester<@NonNull ReceiptCreateDto> createReceiptDtoJacksonTester;
 
     @Autowired
-    private JacksonTester<@NonNull List<ListReceiptDto>> listReceiptDtoJacksonTester;
+    private JacksonTester<@NonNull List<ReceiptListDto>> listReceiptDtoJacksonTester;
 
     @Test
     void receiptSerializationTest() throws IOException {
@@ -55,8 +55,8 @@ public class JsonSerializeTest {
 
     @Test
     void createReceiptDtoSerializationTest() throws IOException {
-        CreateReceiptDto dto = ReceiptTestFactory.getCreateReceiptDto();
-        JsonContent<@NonNull CreateReceiptDto> json = createReceiptDtoJacksonTester.write(dto);
+        ReceiptCreateDto dto = ReceiptTestFactory.getRECEIPT_CREATE_DTO();
+        JsonContent<@NonNull ReceiptCreateDto> json = createReceiptDtoJacksonTester.write(dto);
 
         assertThat(json).isStrictlyEqualToJson(FileNames.CREATE_RECEIPT_FILE);
 
@@ -71,13 +71,13 @@ public class JsonSerializeTest {
 
     @Test
     void listReceiptDtoSerializationTest() throws IOException {
-        List<ListReceiptDto> list = ReceiptTestFactory.getListReceiptDtoList();
-        JsonContent<@NonNull List<ListReceiptDto>> json = listReceiptDtoJacksonTester.write(list);
+        List<ReceiptListDto> list = ReceiptTestFactory.getLIST_RECEIPT_DTO();
+        JsonContent<@NonNull List<ReceiptListDto>> json = listReceiptDtoJacksonTester.write(list);
 
         assertThat(json).isStrictlyEqualToJson(FileNames.LIST_RECEIPT_FILE);
 
         for (int i = 0; i < list.size(); i++) {
-            ListReceiptDto dto = list.get(i);
+            ReceiptListDto dto = list.get(i);
             assertThat(json).extractingJsonPathNumberValue("$[%d].id".formatted(i)).isEqualTo(dto.getId());
             assertThat(json).extractingJsonPathStringValue("$[%d].receiptNumber".formatted(i)).isEqualTo(dto.getReceiptNumber());
             assertThat(json).extractingJsonPathStringValue("$[%d].issuedAt".formatted(i)).startsWith(dto.getIssuedAt().toLocalDate().toString());

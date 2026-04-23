@@ -1,9 +1,9 @@
 package com.zynqly.backend.controllers;
 
 import com.zynqly.backend.domain.receipt.Receipt;
-import com.zynqly.backend.domain.receipt.dto.CreateReceiptDto;
-import com.zynqly.backend.domain.receipt.dto.ListReceiptDto;
-import com.zynqly.backend.services.ReceiptService;
+import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
+import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
+import com.zynqly.backend.services.ipl.ReceiptServiceIpl;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReceiptController {
 
-    private final ReceiptService receiptService = new ReceiptService();
+    private final ReceiptServiceIpl receiptServiceIpl = new ReceiptServiceIpl();
 
     @GetMapping
-    public ResponseEntity<@NonNull List<ListReceiptDto>> getReceipts() {
+    public ResponseEntity<@NonNull List<ReceiptListDto>> getReceipts() {
         try {
-            return ResponseEntity.ok(receiptService.getReceipts());
+            return ResponseEntity.ok(receiptServiceIpl.getReceipts());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -31,7 +31,7 @@ public class ReceiptController {
     @GetMapping("/{id}")
     public ResponseEntity<@NonNull Receipt> getReceiptById(@PathVariable int id) {
         try {
-            Receipt receipt = receiptService.getReceiptById(id);
+            Receipt receipt = receiptServiceIpl.getReceiptById(id);
             if (receipt == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -42,9 +42,9 @@ public class ReceiptController {
     }
 
     @PostMapping
-    public ResponseEntity<@NonNull Receipt> makeReceipt(@Valid @RequestBody CreateReceiptDto createReceiptDto) {
+    public ResponseEntity<@NonNull Receipt> makeReceipt(@Valid @RequestBody ReceiptCreateDto receiptCreateDto) {
         try {
-            return ResponseEntity.ok(receiptService.createReceipt(createReceiptDto));
+            return ResponseEntity.status(201).body(receiptServiceIpl.createReceipt(receiptCreateDto));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
