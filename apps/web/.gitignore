@@ -1,79 +1,55 @@
-# Logs
-logs
-*.log
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+.pnpm-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-docs
-
-# Changelogs
-CHANGELOG*.md
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
+# env files — real secrets, never commit
 .env
-.env.*
-!.env.example
+.env.local
+.env.*.local
+.env.production.local
 
-# Capacitor
-android/app/build/
-android/build/
-android/.gradle/
-android/app/release/
-android/app/debug/
-android/.idea/
-android/local.properties
-android/*.iml
-android/.cxx/
-android/app/src/main/assets/public/
-android/app/src/main/assets/capacitor.config.json
-android/app/src/main/assets/capacitor.plugins.json
-android/app/src/main/res/xml/config.xml
-
-# Die APK Files
-*.apk
-*.aab
-
-# Capacitor generated files
-capacitor-cordova-android-plugins/
-capacitor-cordova-ios-plugins/
-
-# Android-specific
-local.properties
-*.keystore
-*.jks
-
-# iOS-specific
-*.mobileprovision
-*.p12
-DerivedData/
-
-# Capacitor plugins
-.capacitor/
-
-
-# Redundant patterns (cleanup)
-android/**/.gradle/
-android/**/build/
-
-/playwright-report
-/test-results
+# vercel
 .vercel
-.vite*
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# e2e
+test-results
+playwright-report
+
+# capacitor native builds
+/android
+/dist
+
+# vite cache
+/.vite

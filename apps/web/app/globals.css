@@ -1,0 +1,227 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ═══════════════════════════════════════════════════════════════
+   Zynqly Design Tokens — Web (CSS Custom Properties)
+   Single source of truth for the web platform.
+   Cross-platform reference: design-values.json (root of project)
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Brand Scale (amber/orange — legacy var name "violet" kept for compat.) ── */
+  --z-violet-50:  #FFFBEB;  /* Lightest amber tint, hover backgrounds */
+  --z-violet-100: #FEF3C7;  /* Badge/chip backgrounds, subtle highlights */
+  --z-violet-200: #FDE68A;  /* Active borders, light accents */
+  --z-violet-300: #FCD34D;  /* Mid accent, dark-mode hover */
+  --z-violet-400: #FBBF24;  /* Dark-mode brand primary */
+  --z-violet-500: #F59E0B;  /* Main — brand color, CTAs, accents */
+  --z-violet-600: #D97706;  /* Hover / pressed state */
+  --z-violet-700: #B45309;
+  --z-violet-800: #92400E;
+  --z-violet-900: #78350F;
+
+  /* ── Neutral Scale (warm, amber-tinted) ──────────────────── */
+  --z-neutral-50:  #FFFBF5;  /* Main page background */
+  --z-neutral-100: #FEF4E8;  /* Card / surface on background */
+  --z-neutral-200: #F0DEC8;  /* Borders, dividers, input outlines */
+  --z-neutral-300: #D5BE9E;
+  --z-neutral-400: #A8896A;  /* Muted / placeholder text */
+  --z-neutral-500: #84704A;
+  --z-neutral-600: #6B5638;  /* Secondary / supporting text */
+  --z-neutral-700: #503F28;
+  --z-neutral-800: #352918;
+  --z-neutral-900: #1C1508;  /* Main text, headings */
+
+  /* ── Status ───────────────────────────────────────────────── */
+  --z-success:       #22C55E;
+  --z-success-light: #DCFCE7;
+  --z-error:         #EF4444;
+  --z-error-light:   #FEE2E2;
+
+  /* ── Semantic Aliases (use these in components) ───────────── */
+  --z-bg-page:            var(--z-neutral-50);
+  --z-bg-surface:         #FFFFFF;
+  --z-bg-card:            var(--z-neutral-100);
+  --z-color-main:         var(--z-violet-500);
+  --z-color-main-hover:   var(--z-violet-600);
+  --z-color-main-light:   var(--z-violet-100);
+  --z-text-main:          var(--z-neutral-900);
+  --z-text-secondary:     var(--z-neutral-600);
+  --z-text-muted:         var(--z-neutral-400);
+  --z-border:             var(--z-neutral-200);
+  --z-bg-glass:           rgba(255, 255, 255, 0.92);
+
+  /* ── shadcn system vars — light mode ─────────────────────── */
+  --background:           #FFFBF5;
+  --foreground:           #1C1508;
+  --card:                 #FFFFFF;
+  --card-foreground:      #1C1508;
+  --popover:              #FFFFFF;
+  --popover-foreground:   #1C1508;
+  --primary:              #F59E0B;
+  --primary-foreground:   #FFFFFF;
+  --secondary:            #FEF4E8;
+  --secondary-foreground: #1C1508;
+  --muted:                #FEF4E8;
+  --muted-foreground:     #A8896A;
+  --accent:               #FEF4E8;
+  --accent-foreground:    #1C1508;
+  --destructive:          oklch(0.577 0.245 27.325);
+  --border:               #F0DEC8;
+  --input:                #F0DEC8;
+  --ring:                 #F59E0B;
+  --chart-1:              #F59E0B;
+  --chart-2:              #D97706;
+  --chart-3:              #B45309;
+  --chart-4:              #FCD34D;
+  --chart-5:              #FBBF24;
+  --radius:               0.625rem;
+  --sidebar:              #FEF4E8;
+  --sidebar-foreground:   #1C1508;
+  --sidebar-primary:      #F59E0B;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent:       #F0DEC8;
+  --sidebar-accent-foreground: #1C1508;
+  --sidebar-border:       #F0DEC8;
+  --sidebar-ring:         #F59E0B;
+}
+
+/* Register brand colors as Tailwind v4 utility classes
+   Usage: bg-z-violet-500 (amber), text-z-violet-100 (amber), border-z-neutral-200 (warm neutral) … */
+@theme inline {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --color-z-violet-50:  var(--z-violet-50);
+  --color-z-violet-100: var(--z-violet-100);
+  --color-z-violet-200: var(--z-violet-200);
+  --color-z-violet-300: var(--z-violet-300);
+  --color-z-violet-400: var(--z-violet-400);
+  --color-z-violet-500: var(--z-violet-500);
+  --color-z-violet-600: var(--z-violet-600);
+  --color-z-violet-700: var(--z-violet-700);
+  --color-z-violet-800: var(--z-violet-800);
+  --color-z-violet-900: var(--z-violet-900);
+
+  --color-z-neutral-50:  var(--z-neutral-50);
+  --color-z-neutral-100: var(--z-neutral-100);
+  --color-z-neutral-200: var(--z-neutral-200);
+  --color-z-neutral-300: var(--z-neutral-300);
+  --color-z-neutral-400: var(--z-neutral-400);
+  --color-z-neutral-500: var(--z-neutral-500);
+  --color-z-neutral-600: var(--z-neutral-600);
+  --color-z-neutral-700: var(--z-neutral-700);
+  --color-z-neutral-800: var(--z-neutral-800);
+  --color-z-neutral-900: var(--z-neutral-900);
+  --font-heading:  var(--font-mono);
+  --font-mono:  var(--font-mono);
+  --color-sidebar-ring:  var(--sidebar-ring);
+  --color-sidebar-border:  var(--sidebar-border);
+  --color-sidebar-accent-foreground:  var(--sidebar-accent-foreground);
+  --color-sidebar-accent:  var(--sidebar-accent);
+  --color-sidebar-primary-foreground:  var(--sidebar-primary-foreground);
+  --color-sidebar-primary:  var(--sidebar-primary);
+  --color-sidebar-foreground:  var(--sidebar-foreground);
+  --color-sidebar:  var(--sidebar);
+  --color-chart-5:  var(--chart-5);
+  --color-chart-4:  var(--chart-4);
+  --color-chart-3:  var(--chart-3);
+  --color-chart-2:  var(--chart-2);
+  --color-chart-1:  var(--chart-1);
+  --color-ring:  var(--ring);
+  --color-input:  var(--input);
+  --color-border:  var(--border);
+  --color-destructive:  var(--destructive);
+  --color-accent-foreground:  var(--accent-foreground);
+  --color-accent:  var(--accent);
+  --color-muted-foreground:  var(--muted-foreground);
+  --color-muted:  var(--muted);
+  --color-secondary-foreground:  var(--secondary-foreground);
+  --color-secondary:  var(--secondary);
+  --color-primary-foreground:  var(--primary-foreground);
+  --color-primary:  var(--primary);
+  --color-popover-foreground:  var(--popover-foreground);
+  --color-popover:  var(--popover);
+  --color-card-foreground:  var(--card-foreground);
+  --color-card:  var(--card);
+  --color-foreground:  var(--foreground);
+  --color-background:  var(--background);
+  --radius-sm:  calc(var(--radius) * 0.6);
+  --radius-md:  calc(var(--radius) * 0.8);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) * 1.4);
+  --radius-2xl:  calc(var(--radius) * 1.8);
+  --radius-3xl:  calc(var(--radius) * 2.2);
+  --radius-4xl:  calc(var(--radius) * 2.6);
+}
+
+html,
+body {
+  background-color: var(--z-bg-page);
+  color: var(--z-text-main);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  scrollbar-gutter: stable;
+}
+
+.dark {
+  /* ── shadcn system vars — dark mode (warm amber-dark palette) ── */
+  --background:           #1A1207;
+  --foreground:           #FFFBEB;
+  --card:                 #241A0E;
+  --card-foreground:      #FFFBEB;
+  --popover:              #2E2112;
+  --popover-foreground:   #FFFBEB;
+  --primary:              #FBBF24;
+  --primary-foreground:   #1A1207;
+  --secondary:            #2E2112;
+  --secondary-foreground: #FFFBEB;
+  --muted:                #2E2112;
+  --muted-foreground:     #A8896A;
+  --accent:               #2E2112;
+  --accent-foreground:    #FFFBEB;
+  --destructive:          oklch(0.704 0.191 22.216);
+  --border:               rgba(255, 255, 255, 0.08);
+  --input:                rgba(255, 255, 255, 0.10);
+  --ring:                 #F59E0B;
+  --chart-1:              #FBBF24;
+  --chart-2:              #F59E0B;
+  --chart-3:              #FCD34D;
+  --chart-4:              #FDE68A;
+  --chart-5:              #FEF3C7;
+  --sidebar:              #241A0E;
+  --sidebar-foreground:   #FFFBEB;
+  --sidebar-primary:      #FBBF24;
+  --sidebar-primary-foreground: #1A1207;
+  --sidebar-accent:       #2E2112;
+  --sidebar-accent-foreground: #FFFBEB;
+  --sidebar-border:       rgba(255, 255, 255, 0.08);
+  --sidebar-ring:         #F59E0B;
+
+  /* ── Zynqly z-* token overrides for dark mode ─────────────── */
+  --z-bg-page:            #1A1207;
+  --z-bg-surface:         #241A0E;
+  --z-bg-card:            #2E2112;
+  --z-color-main:         #FBBF24;
+  --z-color-main-hover:   #FCD34D;
+  --z-color-main-light:   rgba(251, 191, 36, 0.15);
+  --z-text-main:          #FFFBEB;
+  --z-text-secondary:     #FDE68A;
+  --z-text-muted:         #A8896A;
+  --z-border:             rgba(255, 255, 255, 0.08);
+  --z-bg-glass:           rgba(26, 18, 7, 0.92);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-mono;
+  }
+}

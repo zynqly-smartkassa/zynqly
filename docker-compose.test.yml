@@ -1,0 +1,11 @@
+services:
+  db-e2e:
+    image: postgres:17.7
+    container_name: zynqly-test-db
+    environment:
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpass
+      - POSTGRES_DB=zynqly-test
+    ports:
+      - "5433:5432"
+   

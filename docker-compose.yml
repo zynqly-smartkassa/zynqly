@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:18
+    image: postgres:17.7
     container_name: zynqly-db
     environment:
       - POSTGRES_USER=user
@@ -9,7 +9,17 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - zynqly_v18_data:/var/lib/postgresql 
+      - zynqly_v17_data:/var/lib/postgresql/data
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: zynqly-swagger
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./docs:/usr/share/nginx/html/docs
+    environment:
+      - SWAGGER_JSON=/usr/share/nginx/html/docs/openapi.yaml
+    restart: unless-stopped
 
 volumes:
-  zynqly_v18_data:
+  zynqly_v17_data:

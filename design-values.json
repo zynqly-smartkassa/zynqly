@@ -1,0 +1,80 @@
+{
+  "_description": "Zynqly Design Values — Cross-Platform Color Reference",
+  "_note": "Single source of truth for all brand colors. Keep in sync with apps/web/app/globals.css.",
+
+  "_web_usage": [
+    "CSS custom properties are defined in globals.css as --z-violet-* (legacy name, amber values).",
+    "Use Tailwind utilities: bg-z-violet-500, text-z-violet-100, border-z-neutral-200, etc.",
+    "Semantic aliases --z-color-main, --z-bg-page, etc. are preferred over raw scale classes."
+  ],
+
+  "_flutter_usage": [
+    "Use Color(0xFFRRGGBB). Example: Color(0xFFF59E0B) for amber-500 (main brand).",
+    "Map 'amber' → brand accent, 'neutral' → backgrounds/text/borders.",
+    "Use the 'dark' section overrides when the app is in dark theme."
+  ],
+
+  "amber": {
+    "_note": "Primary brand scale — used for CTAs, links, active states, highlights",
+    "50":  { "hex": "#FFFBEB", "flutter": "0xFFFFFBEB", "description": "Lightest amber tint, hover backgrounds" },
+    "100": { "hex": "#FEF3C7", "flutter": "0xFFFEF3C7", "description": "Badge/chip backgrounds, subtle highlights" },
+    "200": { "hex": "#FDE68A", "flutter": "0xFFFDE68A", "description": "Active borders, light accents" },
+    "300": { "hex": "#FCD34D", "flutter": "0xFFFCD34D", "description": "Mid accent, dark-mode hover" },
+    "400": { "hex": "#FBBF24", "flutter": "0xFFFBBF24", "description": "Dark-mode brand primary" },
+    "500": { "hex": "#F59E0B", "flutter": "0xFFF59E0B", "description": "MAIN — main brand color, CTAs, accents" },
+    "600": { "hex": "#D97706", "flutter": "0xFFD97706", "description": "Hover / pressed state" },
+    "700": { "hex": "#B45309", "flutter": "0xFFB45309", "description": "Deep accent" },
+    "800": { "hex": "#92400E", "flutter": "0xFF92400E", "description": "Very deep amber" },
+    "900": { "hex": "#78350F", "flutter": "0xFF78350F", "description": "Darkest amber, strong contrast" }
+  },
+
+  "neutral": {
+    "_note": "Warm neutral scale — backgrounds, text, borders. Slightly amber-tinted for visual consistency.",
+    "50":  { "hex": "#FFFBF5", "flutter": "0xFFFFFBF5", "description": "Main page / screen background" },
+    "100": { "hex": "#FEF4E8", "flutter": "0xFFFEF4E8", "description": "Card / surface on background" },
+    "200": { "hex": "#F0DEC8", "flutter": "0xFFF0DEC8", "description": "Borders, dividers, input outlines" },
+    "300": { "hex": "#D5BE9E", "flutter": "0xFFD5BE9E", "description": "Subtle dividers" },
+    "400": { "hex": "#A8896A", "flutter": "0xFFA8896A", "description": "Muted / placeholder text" },
+    "500": { "hex": "#84704A", "flutter": "0xFF84704A", "description": "Mid neutral" },
+    "600": { "hex": "#6B5638", "flutter": "0xFF6B5638", "description": "Secondary / supporting text" },
+    "700": { "hex": "#503F28", "flutter": "0xFF503F28", "description": "Strong secondary text" },
+    "800": { "hex": "#352918", "flutter": "0xFF352918", "description": "Near-dark" },
+    "900": { "hex": "#1C1508", "flutter": "0xFF1C1508", "description": "Main text, headings" }
+  },
+
+  "status": {
+    "_note": "Semantic status colors for feedback indicators",
+    "success":      { "hex": "#22C55E", "flutter": "0xFF22C55E", "description": "Positive indicators, upward trends" },
+    "successLight": { "hex": "#DCFCE7", "flutter": "0xFFDCFCE7", "description": "Success background chip" },
+    "error":        { "hex": "#EF4444", "flutter": "0xFFEF4444", "description": "Validation errors" },
+    "errorLight":   { "hex": "#FEE2E2", "flutter": "0xFFFEE2E2", "description": "Error background chip" }
+  },
+
+  "semantic": {
+    "_note": "Named aliases that map to the scales above — use these in components for intent clarity",
+    "bgPage":         { "ref": "neutral.50",  "hex": "#FFFBF5", "flutter": "0xFFFFFBF5", "description": "Page / screen background (light mode)" },
+    "bgSurface":      { "ref": "white",        "hex": "#FFFFFF",  "flutter": "0xFFFFFFFF",  "description": "Component surface (cards, dialogs)" },
+    "bgCard":         { "ref": "neutral.100",  "hex": "#FEF4E8", "flutter": "0xFFFEF4E8", "description": "Elevated card background" },
+    "colorMain":      { "ref": "amber.500",    "hex": "#F59E0B", "flutter": "0xFFF59E0B", "description": "Primary action color" },
+    "colorMainHover": { "ref": "amber.600",    "hex": "#D97706", "flutter": "0xFFD97706", "description": "Primary action hover/pressed" },
+    "colorMainLight": { "ref": "amber.100",    "hex": "#FEF3C7", "flutter": "0xFFFEF3C7", "description": "Tinted background for brand accents" },
+    "textMain":       { "ref": "neutral.900",  "hex": "#1C1508", "flutter": "0xFF1C1508", "description": "Primary text and headings" },
+    "textSecondary":  { "ref": "neutral.600",  "hex": "#6B5638", "flutter": "0xFF6B5638", "description": "Secondary / label text" },
+    "textMuted":      { "ref": "neutral.400",  "hex": "#A8896A", "flutter": "0xFFA8896A", "description": "Placeholder, muted text" },
+    "border":         { "ref": "neutral.200",  "hex": "#F0DEC8", "flutter": "0xFFF0DEC8", "description": "Default border / divider" }
+  },
+
+  "dark": {
+    "_note": "Dark mode overrides — apply when theme is dark. All other tokens inherit from the base scales.",
+    "bgPage":         { "hex": "#1A1207", "flutter": "0xFF1A1207", "description": "Page background dark" },
+    "bgSurface":      { "hex": "#241A0E", "flutter": "0xFF241A0E", "description": "Component surface dark" },
+    "bgCard":         { "hex": "#2E2112", "flutter": "0xFF2E2112", "description": "Card background dark" },
+    "colorMain":      { "hex": "#FBBF24", "flutter": "0xFFFBBF24", "description": "Brand primary dark (amber-400, lighter for contrast)" },
+    "colorMainHover": { "hex": "#FCD34D", "flutter": "0xFFFCD34D", "description": "Brand hover dark (amber-300)" },
+    "colorMainLight": { "hex": "#F59E0B26", "flutter": "rgba(0xFFF59E0B, 0.15)", "description": "Tinted brand bg dark (amber-500 at 15% opacity)" },
+    "textMain":       { "hex": "#FFFBEB", "flutter": "0xFFFFFBEB", "description": "Primary text dark (amber-50)" },
+    "textSecondary":  { "hex": "#FDE68A", "flutter": "0xFFFDE68A", "description": "Secondary text dark (amber-200)" },
+    "textMuted":      { "hex": "#A8896A", "flutter": "0xFFA8896A", "description": "Muted text dark (neutral-400)" },
+    "border":         { "hex": "#FFFFFF14", "flutter": "rgba(0xFFFFFFFF, 0.08)", "description": "Border dark (white at 8%)" }
+  }
+}
