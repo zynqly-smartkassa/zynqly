@@ -14,7 +14,7 @@ services:
     image: swaggerapi/swagger-ui
     container_name: zynqly-swagger
     ports:
-      - "8081:8080"
+      - "8082:8080"
     volumes:
       - ./docs:/usr/share/nginx/html/docs
     environment:

@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import com.zynqly.backend.domain.dtos.responses.Rides;
+import com.zynqly.backend.domain.Rides;
 import com.zynqly.backend.services.RideService;
 
 import tools.jackson.core.type.TypeReference;
