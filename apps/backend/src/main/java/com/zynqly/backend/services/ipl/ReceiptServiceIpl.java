@@ -6,8 +6,14 @@ import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import com.zynqly.backend.domain.mappers.JsonMapper;
+import com.zynqly.backend.repository.ReceiptRepository;
 import com.zynqly.backend.services.ReceiptService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -28,6 +34,8 @@ public class ReceiptServiceIpl implements ReceiptService {
 
     private final JsonMapper jsonMapper;
 
+    private ReceiptRepository receiptRepository;
+
     private List<Receipt> loadReceipts() {
         try {
             return jsonMapper.fromJson(DATA_FILE, RECEIPT_LIST_TYPE);
@@ -45,11 +53,16 @@ public class ReceiptServiceIpl implements ReceiptService {
     }
 
     @Override
-    public List<ReceiptListDto> getReceipts() {
-        return loadReceipts().stream()
-                .map(r -> new ReceiptListDto(r.getId(), r.getReceiptNumber(), r.getIssuedAt(),
-                        r.getPaymentMethod(), r.getStatus(), r.getTotal(), r.getCurrency()))
-                .collect(Collectors.toList());
+    public Page<@NonNull ReceiptListDto> getAllReceipts(int page, int size, String sortBy, boolean ascending) {
+        Sort sorting;
+
+        if (ascending) {
+            sorting = Sort.by(sortBy).ascending();
+        } else {
+            sorting = Sort.by(sortBy).descending();
+        }
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).and(sorting));
+        return receiptRepository.findAllAsDto(pageable);
     }
 
     @Override
@@ -64,7 +77,7 @@ public class ReceiptServiceIpl implements ReceiptService {
     public Receipt createReceipt(ReceiptCreateDto dto) {
         List<Receipt> receipts = loadReceipts();
 
-        int nextId = receipts.stream().mapToInt(Receipt::getId).max().orElse(0) + 1;
+        Long nextId = receipts.stream().mapToLong(Receipt::getId).max().orElse(0) + 1;
         String receiptNumber = "REC-" + LocalDateTime.now().getYear() + "-" + String.format("%05d", nextId);
 
         BigDecimal taxRate = new BigDecimal("0.20");

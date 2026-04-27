@@ -3,11 +3,12 @@ package com.zynqly.backend.services;
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
-
-import java.util.List;
+import lombok.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ReceiptService {
-    List<ReceiptListDto> getReceipts();
+    Page<@NonNull ReceiptListDto> getAllReceipts(int page, int size, String sortBy, boolean ascending);
 
     Receipt getReceiptById(int id);
 

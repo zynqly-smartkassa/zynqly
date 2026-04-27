@@ -20,7 +20,8 @@ public class ReceiptController {
     @GetMapping
     public ResponseEntity<?> getReceipts(HttpServletRequest request) {
         try {
-            return ResponseEntity.ok(receiptService.getReceipts());
+        // TODO replace dummy data
+            return ResponseEntity.ok(receiptService.getAllReceipts(0, 10, "total", true));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(ErrorResponseFactory.InternalServerErrorResponse(e, request));
         }

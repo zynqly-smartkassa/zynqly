@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class ReceiptListDto {
-    private int id;
+    private Long id;
     private String receiptNumber;
     private LocalDateTime issuedAt;
     private PaymentMethod paymentMethod;
