@@ -12,5 +12,5 @@ public interface ReceiptService {
 
     Receipt getReceiptById(int id);
 
-    Receipt createReceipt(ReceiptCreateDto receiptCreateDto);
+    Receipt createReceipt(ReceiptCreateDto receiptCreateDto, int user_id);
 }

@@ -283,6 +283,8 @@ components:
         notes:
           type: string
           example: "Ride to the airport"
+        rideType:
+          $ref: '#/components/schemas/RideType'
 
     ReceiptCreateDto:
       type: object
@@ -290,6 +292,7 @@ components:
         - ride_id
         - paymentMethod
         - currency
+        - subtotal
         - amountPaid
       properties:
         ride_id:
@@ -297,6 +300,12 @@ components:
           example: 500
         paymentMethod:
           $ref: '#/components/schemas/PaymentMethod'
+        subtotal:
+          type: number
+          format: decimal
+          minimum: 0.0
+          example: 32.50
+          description: Base ride price before tax and discounts
         discountAmount:
           type: number
           format: decimal
@@ -320,6 +329,9 @@ components:
           format: decimal
           minimum: 0.0
           example: 40.00
+          description: Amount actually handed over by the customer (cash or charged amount)
+        rideType:
+          $ref: '#/components/schemas/RideType'
 
     ReceiptListDto:
       type: object
@@ -376,3 +388,9 @@ components:
       type: string
       enum: [ EUR ]
       example: "EUR"
+
+    RideType:
+      type: string
+      enum: [ BOTENFAHRT,
+              PERSONENFAHRT ]
+      example: "PERSONENFAHRT"

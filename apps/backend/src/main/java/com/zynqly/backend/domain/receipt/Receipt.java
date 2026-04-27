@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Generated;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ public class Receipt {
     private int ride_id;
     private int user_id;
 
+    @CreationTimestamp
     private LocalDateTime issuedAt;
     private PaymentMethod paymentMethod;
     private PaymentStatus status;
@@ -37,4 +40,5 @@ public class Receipt {
     private Currency currency;
     private String receiptNumber;
     private String notes;
+    private RideType rideType;
 }

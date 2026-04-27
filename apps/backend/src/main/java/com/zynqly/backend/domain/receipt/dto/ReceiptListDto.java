@@ -3,6 +3,7 @@ package com.zynqly.backend.domain.receipt.dto;
 import com.zynqly.backend.domain.receipt.Currency;
 import com.zynqly.backend.domain.receipt.PaymentMethod;
 import com.zynqly.backend.domain.receipt.PaymentStatus;
+import com.zynqly.backend.domain.receipt.RideType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

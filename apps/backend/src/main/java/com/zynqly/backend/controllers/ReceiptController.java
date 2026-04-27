@@ -20,7 +20,7 @@ public class ReceiptController {
     @GetMapping
     public ResponseEntity<?> getReceipts(HttpServletRequest request) {
         try {
-        // TODO replace dummy data
+            // TODO replace dummy data
             return ResponseEntity.ok(receiptService.getAllReceipts(0, 10, "total", true));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(ErrorResponseFactory.InternalServerErrorResponse(e, request));
@@ -43,7 +43,8 @@ public class ReceiptController {
     @PostMapping
     public ResponseEntity<?> makeReceipt(@Valid @RequestBody ReceiptCreateDto receiptCreateDto, HttpServletRequest request) {
         try {
-            return ResponseEntity.status(201).body(receiptService.createReceipt(receiptCreateDto));
+            // TODO implement real userId to being used here
+            return ResponseEntity.status(201).body(receiptService.createReceipt(receiptCreateDto, 1));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(ErrorResponseFactory.InternalServerErrorResponse(e, request));
         }

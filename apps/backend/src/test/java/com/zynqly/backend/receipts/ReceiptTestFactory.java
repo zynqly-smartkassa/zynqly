@@ -1,9 +1,6 @@
 package com.zynqly.backend.receipts;
 
-import com.zynqly.backend.domain.receipt.Currency;
-import com.zynqly.backend.domain.receipt.PaymentMethod;
-import com.zynqly.backend.domain.receipt.PaymentStatus;
-import com.zynqly.backend.domain.receipt.Receipt;
+import com.zynqly.backend.domain.receipt.*;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import lombok.Getter;
@@ -39,16 +36,20 @@ public class ReceiptTestFactory {
     ));
 
     @Getter
-    private static final Receipt receipt = new Receipt(1L, 101, 201, LocalDateTime.of(2026, 1, 15, 10, 30),
+    private static final int dummy_user_id = 201;
+
+    @Getter
+    private static final Receipt receipt = new Receipt(1L, 101, dummy_user_id, LocalDateTime.of(2026, 1, 15, 10, 30),
             PaymentMethod.CARD, PaymentStatus.PAID,
             new BigDecimal("18.50"), new BigDecimal("0.20"), new BigDecimal("3.70"),
             new BigDecimal("0.00"), new BigDecimal("22.20"), new BigDecimal("0.00"),
             new BigDecimal("22.20"), new BigDecimal("0.00"),
-            Currency.EUR, "REC-2026-00001", null);
+            Currency.EUR, "REC-2026-00001", null, RideType.BOTENFAHRT);
 
     @Getter
     private static final ReceiptCreateDto RECEIPT_CREATE_DTO = new ReceiptCreateDto(101, PaymentMethod.CARD,
             new BigDecimal("0.00"), null,
-            Currency.EUR, new BigDecimal("0.00"), new BigDecimal("22.20"));
+            Currency.EUR, new BigDecimal("0.00"),
+            new BigDecimal("18.50"), new BigDecimal("22.20"), RideType.BOTENFAHRT);
 
 }
