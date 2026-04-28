@@ -1,4 +1,4 @@
-package com.zynqly.backend.receipts;
+package com.zynqly.backend.receipts.utils;
 
 import com.zynqly.backend.domain.receipt.*;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;

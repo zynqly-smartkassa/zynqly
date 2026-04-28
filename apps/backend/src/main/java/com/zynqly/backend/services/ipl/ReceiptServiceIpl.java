@@ -2,7 +2,6 @@ package com.zynqly.backend.services.ipl;
 
 import com.zynqly.backend.domain.receipt.PaymentStatus;
 import com.zynqly.backend.domain.receipt.Receipt;
-import com.zynqly.backend.domain.receipt.RideType;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import com.zynqly.backend.repository.ReceiptRepository;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Service

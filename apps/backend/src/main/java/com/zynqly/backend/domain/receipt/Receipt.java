@@ -3,8 +3,6 @@ package com.zynqly.backend.domain.receipt;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Generated;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

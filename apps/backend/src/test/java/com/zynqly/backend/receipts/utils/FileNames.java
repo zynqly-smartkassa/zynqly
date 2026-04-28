@@ -1,4 +1,4 @@
-package com.zynqly.backend.receipts;
+package com.zynqly.backend.receipts.utils;
 
 public final class FileNames {
     private FileNames() {

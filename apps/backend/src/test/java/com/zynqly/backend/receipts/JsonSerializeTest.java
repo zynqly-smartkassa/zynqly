@@ -3,6 +3,8 @@ package com.zynqly.backend.receipts;
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
+import com.zynqly.backend.receipts.utils.FileNames;
+import com.zynqly.backend.receipts.utils.ReceiptTestFactory;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,7 @@ public class JsonSerializeTest {
 
         assertThat(json).isStrictlyEqualToJson(FileNames.RECEIPT_FILE);
 
-        assertThat(json).extractingJsonPathNumberValue("$.id").isEqualTo(receipt.getId());
+        assertThat(json).extractingJsonPathNumberValue("$.id").isEqualTo(receipt.getId().intValue());
         assertThat(json).extractingJsonPathNumberValue("$.ride_id").isEqualTo(receipt.getRide_id());
         assertThat(json).extractingJsonPathNumberValue("$.user_id").isEqualTo(receipt.getUser_id());
         assertThat(json).extractingJsonPathStringValue("$.issuedAt").startsWith("2026-01-15T10:30");
@@ -50,7 +52,8 @@ public class JsonSerializeTest {
         assertThat(json).extractingJsonPathNumberValue("$.change").isEqualTo(receipt.getChange().doubleValue());
         assertThat(json).extractingJsonPathStringValue("$.currency").isEqualTo(receipt.getCurrency().name());
         assertThat(json).extractingJsonPathStringValue("$.receiptNumber").isEqualTo(receipt.getReceiptNumber());
-        assertThat(json).extractingJsonPathValue("$.notes").isNull();
+        assertThat(json).extractingJsonPathStringValue("$.notes").isEqualTo(receipt.getNotes());
+        assertThat(json).extractingJsonPathStringValue("$.rideType").isEqualTo(receipt.getRideType().name());
     }
 
     @Test
@@ -66,7 +69,9 @@ public class JsonSerializeTest {
         assertThat(json).extractingJsonPathNumberValue("$.tip").isEqualTo(dto.getTip().doubleValue());
         assertThat(json).extractingJsonPathNumberValue("$.amountPaid").isEqualTo(dto.getAmountPaid().doubleValue());
         assertThat(json).extractingJsonPathStringValue("$.currency").isEqualTo(dto.getCurrency().name());
-        assertThat(json).extractingJsonPathValue("$.notes").isNull();
+        assertThat(json).extractingJsonPathStringValue("$.notes").isEqualTo(dto.getNotes());
+        assertThat(json).extractingJsonPathNumberValue("$.subtotal").isEqualTo(dto.getSubtotal().doubleValue());
+        assertThat(json).extractingJsonPathStringValue("$.rideType").isEqualTo(dto.getRideType().name());
     }
 
     @Test
@@ -78,7 +83,7 @@ public class JsonSerializeTest {
 
         for (int i = 0; i < list.size(); i++) {
             ReceiptListDto dto = list.get(i);
-            assertThat(json).extractingJsonPathNumberValue("$[%d].id".formatted(i)).isEqualTo(dto.getId());
+            assertThat(json).extractingJsonPathNumberValue("$[%d].id".formatted(i)).isEqualTo(dto.getId().intValue());
             assertThat(json).extractingJsonPathStringValue("$[%d].receiptNumber".formatted(i)).isEqualTo(dto.getReceiptNumber());
             assertThat(json).extractingJsonPathStringValue("$[%d].issuedAt".formatted(i)).startsWith(dto.getIssuedAt().toLocalDate().toString());
             assertThat(json).extractingJsonPathStringValue("$[%d].paymentMethod".formatted(i)).isEqualTo(dto.getPaymentMethod().name());

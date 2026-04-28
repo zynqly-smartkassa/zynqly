@@ -3,6 +3,8 @@ package com.zynqly.backend.receipts;
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
+import com.zynqly.backend.receipts.utils.FileNames;
+import com.zynqly.backend.receipts.utils.ReceiptTestFactory;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

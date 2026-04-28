@@ -30,7 +30,7 @@
     "id": 4,
     "receiptNumber": "REC-2026-00004",
     "issuedAt": "2026-01-18T18:20:00",
-    "paymentMethod": "TWINT",
+    "paymentMethod": "APP",
     "status": "REFUNDED",
     "total": 9.60,
     "currency": "EUR"
