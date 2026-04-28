@@ -4,6 +4,10 @@ import com.zynqly.backend.domain.receipt.*;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,6 +41,11 @@ public class ReceiptTestFactory {
                     .paymentMethod(PaymentMethod.CASH).status(PaymentStatus.CANCELLED)
                     .total(new BigDecimal("16.00")).currency(Currency.EUR).build()
     ));
+
+    @Getter
+    private static final Page<ReceiptListDto> LIST_RECEIPT_PAGE = new PageImpl<>(
+            LIST_RECEIPT_DTO, PageRequest.of(0, 10, Sort.by("total").ascending()), LIST_RECEIPT_DTO.size()
+    );
 
     @Getter
     private static final Receipt receipt = Receipt.builder()

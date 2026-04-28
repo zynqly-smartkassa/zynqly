@@ -3,18 +3,23 @@ package com.zynqly.backend.receipts;
 import com.zynqly.backend.domain.receipt.PaymentStatus;
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
+import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import com.zynqly.backend.receipts.utils.ReceiptTestFactory;
 import com.zynqly.backend.repository.ReceiptRepository;
 import com.zynqly.backend.services.ipl.ReceiptServiceIpl;
 import com.zynqly.backend.services.util.receipt.ReceiptCalculator;
+import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -67,5 +72,47 @@ public class ServiceTest {
         assertThat(receiptCreated.getTip()).isEqualTo(dto.getTip());
         assertThat(receiptCreated.getUser_id()).isEqualTo(ReceiptTestFactory.getDummy_user_id());
         assertThat(receiptCreated.getStatus()).isEqualTo(PaymentStatus.PAID);
+    }
+
+    @Test
+    void getReceiptById_shouldReturnReceipt() {
+        Receipt mockUpReceipt = ReceiptTestFactory.getReceipt();
+        when(repo.findById(any(Long.class))).thenReturn(Optional.of(mockUpReceipt));
+
+        Receipt receipt = service.getReceiptById(1);
+
+        assertThat(receipt).isEqualTo(mockUpReceipt);
+        verify(repo, times(1)).findById(any(Long.class));
+    }
+
+    @Test
+    void getReceiptById_shouldThrowException() {
+        when(repo.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        try {
+            service.getReceiptById(1);
+        } catch (Exception e) {
+            assertThat(e.getMessage()).isEqualTo("Receipt with ID: 1 not found");
+        }
+
+
+        try {
+            service.getReceiptById(2);
+        } catch (Exception e) {
+            assertThat(e.getMessage()).isEqualTo("Receipt with ID: 2 not found");
+        }
+
+    }
+
+    @Test
+    void getReceipts_shouldReturnReceiptListDto() {
+        Page<@NonNull ReceiptListDto> mockUpReceiptListDto = ReceiptTestFactory.getLIST_RECEIPT_PAGE();
+
+        when(repo.findAllAsDto(any(Pageable.class))).thenReturn(mockUpReceiptListDto);
+
+        Page<@NonNull ReceiptListDto> receiptListDto = service.getAllReceipts(0, 10, "total", true);
+
+        assertThat(receiptListDto).isEqualTo(mockUpReceiptListDto);
+        verify(repo, times(1)).findAllAsDto(any(Pageable.class));
     }
 }
