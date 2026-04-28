@@ -7,6 +7,7 @@ import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import com.zynqly.backend.repository.ReceiptRepository;
 import com.zynqly.backend.services.ReceiptService;
+import com.zynqly.backend.services.util.receipt.ReceiptCalculator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,15 +47,15 @@ public class ReceiptServiceIpl implements ReceiptService {
 
     @Override
     public Receipt createReceipt(ReceiptCreateDto dto, int user_id) {
-        BigDecimal taxRate = (dto.getRideType() == RideType.ERRANDTRIP) ? new BigDecimal("0.20") : new BigDecimal("0.10");
+        BigDecimal taxRate = ReceiptCalculator.calculateTaxRate(dto.getRideType());
         BigDecimal subtotal = dto.getSubtotal();
-        BigDecimal taxAmount = subtotal.multiply(taxRate);
+        BigDecimal taxAmount = ReceiptCalculator.calculateTaxAmount(subtotal, taxRate);
         BigDecimal discountAmount = dto.getDiscountAmount() != null ? dto.getDiscountAmount() : BigDecimal.ZERO;
         BigDecimal tip = dto.getTip() != null ? dto.getTip() : BigDecimal.ZERO;
-        BigDecimal total = subtotal.add(taxAmount).subtract(discountAmount);
-        BigDecimal change = dto.getAmountPaid().subtract(total).max(BigDecimal.ZERO);
+        BigDecimal total = ReceiptCalculator.calculateTotal(subtotal, taxAmount, discountAmount);
+        BigDecimal change = ReceiptCalculator.calculateChange(total, dto.getAmountPaid());
 
-        String receiptNumber = "REC-" + LocalDateTime.now().getYear() + "-" + System.currentTimeMillis();
+        String receiptNumber = Receipt.createReceiptNumber();
 
         Receipt receipt = Receipt.builder()
                 .ride_id(dto.getRide_id())

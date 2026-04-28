@@ -39,4 +39,8 @@ public class Receipt {
     private String receiptNumber;
     private String notes;
     private RideType rideType;
+
+    public static String createReceiptNumber() {
+        return "REC-" + LocalDateTime.now().getYear() + "-" + System.currentTimeMillis();
+    }
 }
