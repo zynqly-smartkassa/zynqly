@@ -21,19 +21,19 @@ public class ReceiptController {
     private final ReceiptService receiptService;
 
     @GetMapping
-    public ResponseEntity<@NonNull Page<@NonNull ReceiptListDto>> getReceipts(HttpServletRequest request) {
+    public ResponseEntity<@NonNull Page<@NonNull ReceiptListDto>> getReceipts() {
         // TODO replace dummy data
         return ResponseEntity.ok(receiptService.getAllReceipts(0, 10, "total", true));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getReceiptById(@PathVariable int id, HttpServletRequest request) {
+    public ResponseEntity<?> getReceiptById(@PathVariable int id) {
         Receipt receipt = receiptService.getReceiptById(id);
         return ResponseEntity.ok(receipt);
     }
 
     @PostMapping
-    public ResponseEntity<?> makeReceipt(@Valid @RequestBody ReceiptCreateDto receiptCreateDto, HttpServletRequest request) {
+    public ResponseEntity<?> makeReceipt(@Valid @RequestBody ReceiptCreateDto receiptCreateDto) {
         // TODO implement real userId to being used here
         return ResponseEntity.status(201).body(receiptService.createReceipt(receiptCreateDto, 201));
     }
