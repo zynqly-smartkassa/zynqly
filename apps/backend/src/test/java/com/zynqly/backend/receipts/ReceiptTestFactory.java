@@ -13,43 +13,59 @@ import java.util.List;
 public class ReceiptTestFactory {
 
     @Getter
-    private final static List<ReceiptListDto> LIST_RECEIPT_DTO = new ArrayList<>(List.of(
-            new ReceiptListDto(1L, "REC-2026-00001", LocalDateTime.of(2026, 1, 15, 10, 30),
-                    PaymentMethod.CARD, PaymentStatus.PAID,
-                    new BigDecimal("22.20"), Currency.EUR),
-
-            new ReceiptListDto(2L, "REC-2026-00002", LocalDateTime.of(2026, 1, 16, 14, 45),
-                    PaymentMethod.CASH, PaymentStatus.PAID,
-                    new BigDecimal("14.40"), Currency.EUR),
-
-            new ReceiptListDto(3L, "REC-2026-00003", LocalDateTime.of(2026, 1, 17, 9, 0),
-                    PaymentMethod.CARD, PaymentStatus.PENDING,
-                    new BigDecimal("30.00"), Currency.EUR),
-
-            new ReceiptListDto(4L, "REC-2026-00004", LocalDateTime.of(2026, 1, 18, 18, 20),
-                    PaymentMethod.APP, PaymentStatus.REFUNDED,
-                    new BigDecimal("9.60"), Currency.EUR),
-
-            new ReceiptListDto(5L, "REC-2026-00005", LocalDateTime.of(2026, 1, 19, 22, 10),
-                    PaymentMethod.CASH, PaymentStatus.CANCELLED,
-                    new BigDecimal("16.00"), Currency.EUR)
-    ));
-
-    @Getter
     private static final int dummy_user_id = 201;
 
     @Getter
-    private static final Receipt receipt = new Receipt(1L, 101, dummy_user_id, LocalDateTime.of(2026, 1, 15, 10, 30),
-            PaymentMethod.CARD, PaymentStatus.PAID,
-            new BigDecimal("18.50"), new BigDecimal("0.20"), new BigDecimal("3.70"),
-            new BigDecimal("0.00"), new BigDecimal("22.20"), new BigDecimal("0.00"),
-            new BigDecimal("22.20"), new BigDecimal("0.00"),
-            Currency.EUR, "REC-2026-00001", null, RideType.BOTENFAHRT);
+    private final static List<ReceiptListDto> LIST_RECEIPT_DTO = new ArrayList<>(List.of(
+            ReceiptListDto.builder().id(1L).receiptNumber("REC-2026-00001").issuedAt(LocalDateTime.of(2026, 1, 15, 10, 30))
+                    .paymentMethod(PaymentMethod.CARD).status(PaymentStatus.PAID)
+                    .total(new BigDecimal("22.20")).currency(Currency.EUR).build(),
+
+            ReceiptListDto.builder().id(2L).receiptNumber("REC-2026-00002").issuedAt(LocalDateTime.of(2026, 1, 16, 14, 45))
+                    .paymentMethod(PaymentMethod.CASH).status(PaymentStatus.PAID)
+                    .total(new BigDecimal("14.40")).currency(Currency.EUR).build(),
+
+            ReceiptListDto.builder().id(3L).receiptNumber("REC-2026-00003").issuedAt(LocalDateTime.of(2026, 1, 17, 9, 0))
+                    .paymentMethod(PaymentMethod.CARD).status(PaymentStatus.PENDING)
+                    .total(new BigDecimal("30.00")).currency(Currency.EUR).build(),
+
+            ReceiptListDto.builder().id(4L).receiptNumber("REC-2026-00004").issuedAt(LocalDateTime.of(2026, 1, 18, 18, 20))
+                    .paymentMethod(PaymentMethod.APP).status(PaymentStatus.REFUNDED)
+                    .total(new BigDecimal("9.60")).currency(Currency.EUR).build(),
+
+            ReceiptListDto.builder().id(5L).receiptNumber("REC-2026-00005").issuedAt(LocalDateTime.of(2026, 1, 19, 22, 10))
+                    .paymentMethod(PaymentMethod.CASH).status(PaymentStatus.CANCELLED)
+                    .total(new BigDecimal("16.00")).currency(Currency.EUR).build()
+    ));
 
     @Getter
-    private static final ReceiptCreateDto RECEIPT_CREATE_DTO = new ReceiptCreateDto(101, PaymentMethod.CARD,
-            new BigDecimal("0.00"), null,
-            Currency.EUR, new BigDecimal("0.00"),
-            new BigDecimal("18.50"), new BigDecimal("22.20"), RideType.BOTENFAHRT);
+    private static final Receipt receipt = Receipt.builder()
+            .id(1L).ride_id(101).user_id(dummy_user_id)
+            .issuedAt(LocalDateTime.of(2026, 1, 15, 10, 30))
+            .paymentMethod(PaymentMethod.CARD).status(PaymentStatus.PAID)
+            .subtotal(new BigDecimal("18.50")).taxRate(new BigDecimal("0.20")).taxAmount(new BigDecimal("3.70"))
+            .discountAmount(new BigDecimal("0.00")).total(new BigDecimal("22.20")).tip(new BigDecimal("0.00"))
+            .amountPaid(new BigDecimal("22.20")).change(new BigDecimal("0.00"))
+            .currency(Currency.EUR).receiptNumber("REC-2026-00001").notes(null).rideType(RideType.ERRANDTRIP)
+            .build();
 
+    /**
+     * Receipt Object containing
+     * @params ride_id =  101
+     * @params paymentMethod = PaymentMethod.Card
+     * @params discountAmount = 0.00
+     * @params notes = null
+     * @params currency = Currency.EUR
+     * @params tip = 0.00
+     * @params subtotal = 18.50
+     * @params amountPaid = 22.20
+     * @params rideType = RideType.ERRANDTRIP
+     */
+    @Getter
+    private static final ReceiptCreateDto RECEIPT_CREATE_DTO = ReceiptCreateDto.builder()
+            .ride_id(101).paymentMethod(PaymentMethod.CARD)
+            .discountAmount(new BigDecimal("0.00")).notes(null)
+            .currency(Currency.EUR).tip(new BigDecimal("0.00"))
+            .subtotal(new BigDecimal("18.50")).amountPaid(new BigDecimal("22.20")).rideType(RideType.ERRANDTRIP)
+            .build();
 }

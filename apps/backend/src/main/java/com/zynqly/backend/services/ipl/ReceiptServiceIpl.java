@@ -34,6 +34,7 @@ public class ReceiptServiceIpl implements ReceiptService {
         } else {
             sorting = Sort.by(sortBy).descending();
         }
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).and(sorting));
         return receiptRepository.findAllAsDto(pageable);
     }
@@ -45,10 +46,9 @@ public class ReceiptServiceIpl implements ReceiptService {
 
     @Override
     public Receipt createReceipt(ReceiptCreateDto dto, int user_id) {
-    // TODO check for correct implementation and discuss with colleges
-        BigDecimal taxRate = (dto.getRideType() == RideType.BOTENFAHRT) ? new BigDecimal("0.20") : new BigDecimal("0.10");
+        BigDecimal taxRate = (dto.getRideType() == RideType.ERRANDTRIP) ? new BigDecimal("0.20") : new BigDecimal("0.10");
         BigDecimal subtotal = dto.getSubtotal();
-        BigDecimal taxAmount = subtotal.multiply(taxRate).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal taxAmount = subtotal.multiply(taxRate);
         BigDecimal discountAmount = dto.getDiscountAmount() != null ? dto.getDiscountAmount() : BigDecimal.ZERO;
         BigDecimal tip = dto.getTip() != null ? dto.getTip() : BigDecimal.ZERO;
         BigDecimal total = subtotal.add(taxAmount).subtract(discountAmount);
@@ -56,23 +56,25 @@ public class ReceiptServiceIpl implements ReceiptService {
 
         String receiptNumber = "REC-" + LocalDateTime.now().getYear() + "-" + System.currentTimeMillis();
 
-        Receipt receipt = new Receipt();
-        receipt.setRide_id(dto.getRide_id());
-        receipt.setUser_id(user_id);
-        receipt.setIssuedAt(LocalDateTime.now());
-        receipt.setPaymentMethod(dto.getPaymentMethod());
-        receipt.setStatus(PaymentStatus.PAID);
-        receipt.setSubtotal(subtotal);
-        receipt.setTaxRate(taxRate);
-        receipt.setTaxAmount(taxAmount);
-        receipt.setDiscountAmount(discountAmount);
-        receipt.setTotal(total);
-        receipt.setTip(tip);
-        receipt.setAmountPaid(dto.getAmountPaid());
-        receipt.setChange(change);
-        receipt.setCurrency(dto.getCurrency());
-        receipt.setReceiptNumber(receiptNumber);
-        receipt.setNotes(dto.getNotes());
+        Receipt receipt = Receipt.builder()
+                .ride_id(dto.getRide_id())
+                .user_id(user_id)
+                .issuedAt(LocalDateTime.now())
+                .paymentMethod(dto.getPaymentMethod())
+                .status(PaymentStatus.PAID)
+                .subtotal(subtotal)
+                .taxRate(taxRate)
+                .taxAmount(taxAmount)
+                .discountAmount(discountAmount)
+                .total(total)
+                .tip(tip)
+                .amountPaid(dto.getAmountPaid())
+                .change(change)
+                .currency(dto.getCurrency())
+                .receiptNumber(receiptNumber)
+                .rideType(dto.getRideType())
+                .notes(dto.getNotes())
+                .build();
 
         return receiptRepository.save(receipt);
     }

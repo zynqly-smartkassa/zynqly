@@ -5,6 +5,7 @@ import com.zynqly.backend.domain.receipt.PaymentMethod;
 import com.zynqly.backend.domain.receipt.PaymentStatus;
 import com.zynqly.backend.domain.receipt.RideType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class ReceiptListDto {
     private Long id;
     private String receiptNumber;
