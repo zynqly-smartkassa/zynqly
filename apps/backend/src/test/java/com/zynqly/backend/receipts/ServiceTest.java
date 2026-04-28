@@ -1,5 +1,6 @@
 package com.zynqly.backend.receipts;
 
+import com.zynqly.backend.domain.receipt.PaymentStatus;
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.RideType;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
@@ -41,13 +42,30 @@ public class ServiceTest {
 
         Receipt receiptCreated = captor.getValue();
 
+        // another values to check using chaining ReceiptCalculator Methods
+        BigDecimal expectedTaxRate = ReceiptCalculator.calculateTaxRate(dto.getRideType());
+        BigDecimal expectedTaxAmount = ReceiptCalculator.calculateTaxAmount(dto.getSubtotal(), ReceiptCalculator.calculateTaxRate(dto.getRideType()));
+        BigDecimal expectedTotal = ReceiptCalculator.calculateTotal(dto.getSubtotal(), expectedTaxAmount, dto.getDiscountAmount());
+
+
         assertThat(receiptCreated.getRideType()).isEqualTo(dto.getRideType());
         assertThat(receiptCreated.getRide_id()).isEqualTo(dto.getRide_id());
         assertThat(receiptCreated.getNotes()).isNull();
         assertThat(receiptCreated.getAmountPaid()).isEqualTo(dto.getAmountPaid());
-        assertThat(receiptCreated.getTaxRate()).isEqualTo(new BigDecimal("0.20"));
+        assertThat(receiptCreated.getTaxRate()).isEqualTo(expectedTaxRate);
+        assertThat(receiptCreated.getTaxAmount()).isEqualTo(ReceiptCalculator.calculateTaxAmount(dto.getSubtotal(), dto.getRideType()));
+        assertThat(receiptCreated.getTaxAmount()).isEqualTo(expectedTaxAmount);
         assertThat(receiptCreated.getTotal()).isEqualTo(ReceiptCalculator.calculateTotal(dto.getSubtotal(), dto.getRideType(), dto.getDiscountAmount()));
-        assertThat(receiptCreated.getTaxRate()).isEqualTo(ReceiptCalculator.calculateTaxRate(dto.getRideType()));
-        assertThat(receiptCreated.getChange()).isEqualByComparingTo(new BigDecimal("0.00"));
+        assertThat(receiptCreated.getTotal()).isEqualTo(expectedTotal);
+        assertThat(receiptCreated.getChange()).isEqualByComparingTo(
+                ReceiptCalculator.calculateChange(
+                        ReceiptCalculator.calculateTotal(dto.getSubtotal(), dto.getRideType(), dto.getDiscountAmount()), dto.getAmountPaid()));
+        assertThat(receiptCreated.getChange()).isEqualByComparingTo(ReceiptCalculator.calculateChange(expectedTotal, dto.getAmountPaid()));
+        assertThat(receiptCreated.getSubtotal()).isEqualTo(dto.getSubtotal());
+        assertThat(receiptCreated.getCurrency()).isEqualTo(dto.getCurrency());
+        assertThat(receiptCreated.getDiscountAmount()).isEqualTo(dto.getDiscountAmount());
+        assertThat(receiptCreated.getTip()).isEqualTo(dto.getTip());
+        assertThat(receiptCreated.getUser_id()).isEqualTo(ReceiptTestFactory.getDummy_user_id());
+        assertThat(receiptCreated.getStatus()).isEqualTo(PaymentStatus.PAID);
     }
 }

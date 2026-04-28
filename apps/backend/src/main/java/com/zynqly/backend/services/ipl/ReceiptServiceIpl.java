@@ -52,7 +52,7 @@ public class ReceiptServiceIpl implements ReceiptService {
         BigDecimal discountAmount = dto.getDiscountAmount() != null ? dto.getDiscountAmount() : BigDecimal.ZERO;
         BigDecimal tip = dto.getTip() != null ? dto.getTip() : BigDecimal.ZERO;
         BigDecimal total = subtotal.add(taxAmount).subtract(discountAmount);
-        BigDecimal change = dto.getAmountPaid().subtract(total).subtract(tip).max(BigDecimal.ZERO);
+        BigDecimal change = dto.getAmountPaid().subtract(total).max(BigDecimal.ZERO);
 
         String receiptNumber = "REC-" + LocalDateTime.now().getYear() + "-" + System.currentTimeMillis();
 

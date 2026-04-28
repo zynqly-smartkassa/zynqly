@@ -36,4 +36,8 @@ public class ReceiptCalculator {
     public static BigDecimal calculateTotal(BigDecimal subtotal, BigDecimal taxAmount, BigDecimal discountAmount) {
         return subtotal.add(taxAmount).subtract(discountAmount);
     }
+
+    public static BigDecimal calculateChange(BigDecimal total, BigDecimal amountPaid) {
+        return total.subtract(amountPaid).max(BigDecimal.ZERO);
+    }
 }
