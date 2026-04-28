@@ -38,6 +38,6 @@ public class ReceiptCalculator {
     }
 
     public static BigDecimal calculateChange(BigDecimal total, BigDecimal amountPaid) {
-        return total.subtract(amountPaid).max(BigDecimal.ZERO);
+        return amountPaid.subtract(total).max(BigDecimal.ZERO);
     }
 }

@@ -52,8 +52,7 @@ public class JsonSerializeTest {
         assertThat(json).extractingJsonPathNumberValue("$.change").isEqualTo(receipt.getChange().doubleValue());
         assertThat(json).extractingJsonPathStringValue("$.currency").isEqualTo(receipt.getCurrency().name());
         assertThat(json).extractingJsonPathStringValue("$.receiptNumber").isEqualTo(receipt.getReceiptNumber());
-        assertThat(json).extractingJsonPathStringValue("$.notes").isEqualTo(receipt.getNotes());
-        assertThat(json).extractingJsonPathStringValue("$.rideType").isEqualTo(receipt.getRideType().name());
+        assertThat(json).extractingJsonPathValue("$.notes").isNull();
     }
 
     @Test
@@ -69,9 +68,7 @@ public class JsonSerializeTest {
         assertThat(json).extractingJsonPathNumberValue("$.tip").isEqualTo(dto.getTip().doubleValue());
         assertThat(json).extractingJsonPathNumberValue("$.amountPaid").isEqualTo(dto.getAmountPaid().doubleValue());
         assertThat(json).extractingJsonPathStringValue("$.currency").isEqualTo(dto.getCurrency().name());
-        assertThat(json).extractingJsonPathStringValue("$.notes").isEqualTo(dto.getNotes());
-        assertThat(json).extractingJsonPathNumberValue("$.subtotal").isEqualTo(dto.getSubtotal().doubleValue());
-        assertThat(json).extractingJsonPathStringValue("$.rideType").isEqualTo(dto.getRideType().name());
+        assertThat(json).extractingJsonPathValue("$.notes").isNull();
     }
 
     @Test

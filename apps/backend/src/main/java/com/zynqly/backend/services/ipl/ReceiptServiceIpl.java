@@ -7,6 +7,7 @@ import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import com.zynqly.backend.repository.ReceiptRepository;
 import com.zynqly.backend.services.ReceiptService;
 import com.zynqly.backend.services.util.receipt.ReceiptCalculator;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,7 +41,7 @@ public class ReceiptServiceIpl implements ReceiptService {
 
     @Override
     public Receipt getReceiptById(int id) {
-        return receiptRepository.findReceiptById((long) id);
+        return receiptRepository.findById((long) id).orElseThrow(() -> new EntityNotFoundException("Receipt with ID: %d not found".formatted(id)));
     }
 
     @Override
