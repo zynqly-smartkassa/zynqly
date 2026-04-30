@@ -1,0 +1,74 @@
+{
+  "content": [
+    {
+      "id": 1,
+      "receiptNumber": "REC-2026-00001",
+      "issuedAt": "2026-01-15T10:30:00",
+      "paymentMethod": "CARD",
+      "status": "PAID",
+      "total": 22.20,
+      "currency": "EUR"
+    },
+    {
+      "id": 2,
+      "receiptNumber": "REC-2026-00002",
+      "issuedAt": "2026-01-16T14:45:00",
+      "paymentMethod": "CASH",
+      "status": "PAID",
+      "total": 14.40,
+      "currency": "EUR"
+    },
+    {
+      "id": 3,
+      "receiptNumber": "REC-2026-00003",
+      "issuedAt": "2026-01-17T09:00:00",
+      "paymentMethod": "CARD",
+      "status": "PENDING",
+      "total": 30.00,
+      "currency": "EUR"
+    },
+    {
+      "id": 4,
+      "receiptNumber": "REC-2026-00004",
+      "issuedAt": "2026-01-18T18:20:00",
+      "paymentMethod": "APP",
+      "status": "REFUNDED",
+      "total": 9.60,
+      "currency": "EUR"
+    },
+    {
+      "id": 5,
+      "receiptNumber": "REC-2026-00005",
+      "issuedAt": "2026-01-19T22:10:00",
+      "paymentMethod": "CASH",
+      "status": "CANCELLED",
+      "total": 16.00,
+      "currency": "EUR"
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 10,
+    "sort": {
+      "empty": false,
+      "sorted": true,
+      "unsorted": false
+    },
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "last": true,
+  "totalElements": 5,
+  "totalPages": 1,
+  "size": 10,
+  "number": 0,
+  "sort": {
+    "empty": false,
+    "sorted": true,
+    "unsorted": false
+  },
+  "first": true,
+  "numberOfElements": 5,
+  "empty": false
+}
