@@ -2,13 +2,13 @@ package com.zynqly.backend.receipts;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zynqly.backend.controllers.ReceiptController;
-import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
-import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
+import com.zynqly.backend.receipt.ReceiptController;
+import com.zynqly.backend.receipt.domain.dto.ReceiptCreateDto;
+import com.zynqly.backend.receipt.domain.dto.ReceiptListDto;
 import com.zynqly.backend.receipts.utils.ReceiptApiNames;
 import com.zynqly.backend.receipts.utils.ReceiptTestJsonFileNames;
 import com.zynqly.backend.receipts.utils.ReceiptTestFactory;
-import com.zynqly.backend.services.ReceiptService;
+import com.zynqly.backend.receipt.ReceiptService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;

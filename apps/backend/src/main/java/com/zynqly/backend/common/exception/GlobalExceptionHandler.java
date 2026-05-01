@@ -1,12 +1,11 @@
 package com.zynqly.backend.common.exception;
 
-import com.zynqly.backend.domain.dtos.factory.ErrorResponseFactory;
-import com.zynqly.backend.domain.dtos.responses.ErrorResponse;
+import com.zynqly.backend.common.domain.dtos.factory.ErrorResponseFactory;
+import com.zynqly.backend.common.domain.dtos.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

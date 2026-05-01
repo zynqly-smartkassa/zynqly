@@ -194,7 +194,7 @@ import org.springframework.stereotype.Service;
 
 import com.zynqly.backend.domain.dtos.responses.RideDto;
 import com.zynqly.backend.domain.mappers.RideMapper;
-import com.zynqly.backend.services.RideService;
+import com.zynqly.backend.ride.RideService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -229,10 +229,11 @@ The controller is the entry point for HTTP requests. It maps a URL path to a met
 Create `controllers/RideController.java`:
 
 ```java
-package com.zynqly.backend.controllers;
+package com.zynqly.backend.ride_history;
 
 import java.util.List;
 
+import com.zynqly.backend.ride.RideService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -240,7 +241,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zynqly.backend.domain.dtos.responses.RideDto;
-import com.zynqly.backend.services.RideService;
 
 import lombok.RequiredArgsConstructor;
 
