@@ -2,6 +2,8 @@ package com.zynqly.backend.domain.entities;
 
 import java.util.UUID;
 
+import com.zynqly.backend.domain.dtos.requests.SignUpAccountRequestDto.Role;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,8 +28,17 @@ public class User {
 	private UUID id;
 
 	@Column(nullable = false)
+	private String name;
+
+	@Column(nullable = false)
 	private String email;
+
+	@Column(nullable = false)
+	private String phone;
 	
 	@Column(nullable = false)
-	private String alias;
+	private String password;
+
+	@Column(nullable = false)
+	private Role role;
 }
