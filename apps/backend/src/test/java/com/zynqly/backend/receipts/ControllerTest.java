@@ -9,6 +9,7 @@ import com.zynqly.backend.receipts.utils.ReceiptApiNames;
 import com.zynqly.backend.receipts.utils.ReceiptTestJsonFileNames;
 import com.zynqly.backend.receipts.utils.ReceiptTestFactory;
 import com.zynqly.backend.services.ReceiptService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.List;
 import java.util.Objects;
 
 import static org.hamcrest.Matchers.is;
@@ -51,7 +54,7 @@ public class ControllerTest {
         ReceiptCreateDto dto = ReceiptTestFactory.getRECEIPT_CREATE_DTO();
 
         JsonNode expected = new ObjectMapper().readTree(responseBody);
-        when(receiptService.createReceipt(dto, ReceiptTestFactory.getDummy_user_id())).thenReturn(ReceiptTestFactory.getReceipt());
+        when(receiptService.createReceipt(any(), anyInt())).thenReturn(ReceiptTestFactory.getReceipt());
 
         mockMvc.perform(post(ReceiptApiNames.apiURL).content(requestBody).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -81,11 +84,31 @@ public class ControllerTest {
 
         when(receiptService.getAllReceipts(0, 10, "total", true)).thenReturn(receiptListDtoPage);
 
-        mockMvc.perform(get(ReceiptApiNames.apiURL)).andExpect(status().isOk())
+        ResultActions result = mockMvc.perform(get(ReceiptApiNames.apiURL)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sortBy", "total")
+                        .param("ascending", "true")
+                )
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.first").value(true))
-                .andExpect(jsonPath("$.size").value(10))
-                .andExpect(jsonPath("$.sort.sorted").value(true));
+                .andExpect(jsonPath("$.page.totalElements").value((int) receiptListDtoPage.getTotalElements()))
+                .andExpect(jsonPath("$.page.totalPages").value(receiptListDtoPage.getTotalPages()))
+                .andExpect(jsonPath("$.page.number").value(receiptListDtoPage.getNumber()))
+                .andExpect(jsonPath("$.page.size").value(receiptListDtoPage.getSize()));
+
+        List<ReceiptListDto> content = receiptListDtoPage.getContent();
+        for (int i = 0; i < content.size(); i++) {
+            ReceiptListDto dto = content.get(i);
+            result
+                    .andExpect(jsonPath("$.content[%d].id".formatted(i)).value(dto.getId().intValue()))
+                    .andExpect(jsonPath("$.content[%d].receiptNumber".formatted(i)).value(dto.getReceiptNumber()))
+                    .andExpect(jsonPath("$.content[%d].issuedAt".formatted(i)).exists())
+                    .andExpect(jsonPath("$.content[%d].paymentMethod".formatted(i)).value(dto.getPaymentMethod().name()))
+                    .andExpect(jsonPath("$.content[%d].status".formatted(i)).value(dto.getStatus().name()))
+                    .andExpect(jsonPath("$.content[%d].total".formatted(i)).value(dto.getTotal().doubleValue()))
+                    .andExpect(jsonPath("$.content[%d].currency".formatted(i)).value(dto.getCurrency().name()));
+        }
     }
 
     @Test
@@ -125,16 +148,16 @@ public class ControllerTest {
 
     @Test
     void getReceiptById_shouldReturn404notFound() throws Exception {
-        when(receiptService.getReceiptById(anyInt())).thenReturn(null);
+        when(receiptService.getReceiptById(anyInt())).thenThrow(new EntityNotFoundException("Receipt with ID: %d not found".formatted(99)));
 
         mockMvc.perform(get(ReceiptApiNames.apiURL(0))).andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.path").value(ReceiptApiNames.apiURL(99)));
+                .andExpect(jsonPath("$.path").value(ReceiptApiNames.apiURL(0)));
 
         mockMvc.perform(get(ReceiptApiNames.apiURL(99)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Not Found"))
-                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").value("Receipt with ID: 99 not found"))
                 .andExpect(jsonPath("$.path").value(ReceiptApiNames.apiURL(99)));
     }
 }

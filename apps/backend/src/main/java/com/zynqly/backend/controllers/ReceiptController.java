@@ -1,11 +1,9 @@
 package com.zynqly.backend.controllers;
 
-import com.zynqly.backend.domain.dtos.factory.ErrorResponseFactory;
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import com.zynqly.backend.services.ReceiptService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +19,22 @@ public class ReceiptController {
     private final ReceiptService receiptService;
 
     @GetMapping
-    public ResponseEntity<@NonNull Page<@NonNull ReceiptListDto>> getReceipts() {
-        // TODO replace dummy data
-        return ResponseEntity.ok(receiptService.getAllReceipts(0, 10, "total", true));
+    public ResponseEntity<@NonNull Page<@NonNull ReceiptListDto>> getReceipts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "total") String sortBy,
+            @RequestParam(defaultValue = "true") boolean ascending) {
+        return ResponseEntity.ok(receiptService.getAllReceipts(page, size, sortBy, ascending));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getReceiptById(@PathVariable int id) {
+    public ResponseEntity<@NonNull Receipt> getReceiptById(@PathVariable int id) {
         Receipt receipt = receiptService.getReceiptById(id);
         return ResponseEntity.ok(receipt);
     }
 
     @PostMapping
-    public ResponseEntity<?> makeReceipt(@Valid @RequestBody ReceiptCreateDto receiptCreateDto) {
+    public ResponseEntity<@NonNull Receipt> makeReceipt(@Valid @RequestBody ReceiptCreateDto receiptCreateDto) {
         // TODO implement real userId to being used here
         return ResponseEntity.status(201).body(receiptService.createReceipt(receiptCreateDto, 201));
     }

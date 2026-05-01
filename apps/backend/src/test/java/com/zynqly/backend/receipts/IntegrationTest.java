@@ -2,6 +2,7 @@ package com.zynqly.backend.receipts;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zynqly.backend.receipts.utils.ReceiptApiNames;
 import com.zynqly.backend.receipts.utils.ReceiptTestJsonFileNames;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ public class IntegrationTest {
 
         JsonNode expected = new ObjectMapper().readTree(responseBody);
 
-        mockMvc.perform(post("/api/v1/receipts/").content(requestBody).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(ReceiptApiNames.realApiUrl).content(requestBody).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.ride_id").value(expected.get("ride_id").asInt()))
@@ -63,11 +64,11 @@ public class IntegrationTest {
                 .andExpect(jsonPath("$.rideType").value(expected.get("rideType").asText()));
     }
 
+    @Test
     void findReceiptById_shouldReturn200() throws Exception {
         String requestBody = loadJson(ReceiptTestJsonFileNames.CREATE_RECEIPT_FILE);
 
-
-        MvcResult mvcResult = mockMvc.perform(post("/api/v1/receipts/").content(requestBody).contentType(MediaType.APPLICATION_JSON))
+        MvcResult mvcResult = mockMvc.perform(post(ReceiptApiNames.realApiUrl).content(requestBody).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
         String responseBody = mvcResult.getResponse().getContentAsString();

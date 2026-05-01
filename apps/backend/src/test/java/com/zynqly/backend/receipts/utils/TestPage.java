@@ -13,9 +13,14 @@ public class TestPage<T> extends PageImpl<@NonNull T> {
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public TestPage(
             @JsonProperty("content") List<T> content,
-            @JsonProperty("number") int number,
-            @JsonProperty("size") int size,
-            @JsonProperty("totalElements") long totalElements) {
-        super(content, PageRequest.of(number, size), totalElements);
+            @JsonProperty("page") PageMetadata page) {
+        super(content, PageRequest.of(page.number(), page.size()), page.totalElements());
     }
+
+    record PageMetadata(
+            @JsonProperty("size") int size,
+            @JsonProperty("number") int number,
+            @JsonProperty("totalElements") long totalElements,
+            @JsonProperty("totalPages") int totalPages
+    ) {}
 }
