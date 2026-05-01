@@ -15,5 +15,6 @@
   "change": 0.00,
   "currency": "EUR",
   "receiptNumber": "REC-2026-00001",
-  "notes": null
+  "notes": null,
+  "rideType": "ERRANDTRIP"
 }

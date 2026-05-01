@@ -1,12 +1,13 @@
 package com.zynqly.backend.controllers;
 
-import com.zynqly.backend.domain.dtos.factory.ErrorResponseFactory;
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
+import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import com.zynqly.backend.services.ReceiptService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,33 +19,23 @@ public class ReceiptController {
     private final ReceiptService receiptService;
 
     @GetMapping
-    public ResponseEntity<?> getReceipts(HttpServletRequest request) {
-        try {
-            return ResponseEntity.ok(receiptService.getReceipts());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(ErrorResponseFactory.InternalServerErrorResponse(e, request));
-        }
+    public ResponseEntity<@NonNull Page<@NonNull ReceiptListDto>> getReceipts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "total") String sortBy,
+            @RequestParam(defaultValue = "true") boolean ascending) {
+        return ResponseEntity.ok(receiptService.getAllReceipts(page, size, sortBy, ascending));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getReceiptById(@PathVariable int id, HttpServletRequest request) {
-        try {
-            Receipt receipt = receiptService.getReceiptById(id);
-            if (receipt == null) {
-                return ResponseEntity.status(404).body(ErrorResponseFactory.NotFoundErrorResponse(String.format("Receipt with ID %d not found", id), request.getRequestURI()));
-            }
-            return ResponseEntity.ok(receipt);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(ErrorResponseFactory.InternalServerErrorResponse(e, request));
-        }
+    public ResponseEntity<@NonNull Receipt> getReceiptById(@PathVariable int id) {
+        Receipt receipt = receiptService.getReceiptById(id);
+        return ResponseEntity.ok(receipt);
     }
 
     @PostMapping
-    public ResponseEntity<?> makeReceipt(@Valid @RequestBody ReceiptCreateDto receiptCreateDto, HttpServletRequest request) {
-        try {
-            return ResponseEntity.status(201).body(receiptService.createReceipt(receiptCreateDto));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(ErrorResponseFactory.InternalServerErrorResponse(e, request));
-        }
+    public ResponseEntity<@NonNull Receipt> makeReceipt(@Valid @RequestBody ReceiptCreateDto receiptCreateDto) {
+        // TODO implement real userId to being used here
+        return ResponseEntity.status(201).body(receiptService.createReceipt(receiptCreateDto, 201));
     }
 }

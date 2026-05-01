@@ -3,11 +3,14 @@ package com.zynqly.backend.receipts;
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
+import com.zynqly.backend.receipts.utils.ReceiptTestJsonFileNames;
+import com.zynqly.backend.receipts.utils.ReceiptTestFactory;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
+import com.zynqly.backend.receipts.utils.TestPage;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,11 +26,11 @@ public class JsonDeserializeTest {
     private JacksonTester<@NonNull ReceiptCreateDto> createReceiptDtoJacksonTester;
 
     @Autowired
-    private JacksonTester<@NonNull List<ReceiptListDto>> listReceiptDtoJacksonTester;
+    private JacksonTester<@NonNull TestPage<@NonNull ReceiptListDto>> listReceiptPageJacksonTester;
 
     @Test
     void receiptDeserializeTest() throws IOException {
-        Receipt parsed = receiptJacksonTester.readObject(FileNames.RECEIPT_FILE);
+        Receipt parsed = receiptJacksonTester.readObject(ReceiptTestJsonFileNames.RECEIPT_FILE);
         Receipt receipt = ReceiptTestFactory.getReceipt();
 
         assertThat(parsed.getId()).isEqualTo(receipt.getId());
@@ -51,7 +54,7 @@ public class JsonDeserializeTest {
 
     @Test
     void createReceiptDtoDeserializeTest() throws IOException {
-        ReceiptCreateDto parsed = createReceiptDtoJacksonTester.readObject(FileNames.CREATE_RECEIPT_FILE);
+        ReceiptCreateDto parsed = createReceiptDtoJacksonTester.readObject(ReceiptTestJsonFileNames.CREATE_RECEIPT_FILE);
         ReceiptCreateDto dto = ReceiptTestFactory.getRECEIPT_CREATE_DTO();
 
         assertThat(parsed.getRide_id()).isEqualTo(dto.getRide_id());
@@ -65,13 +68,15 @@ public class JsonDeserializeTest {
 
     @Test
     void listReceiptDtoDeserializeTest() throws IOException {
-        List<ReceiptListDto> parsed = listReceiptDtoJacksonTester.readObject(FileNames.LIST_RECEIPT_FILE);
+        TestPage<@NonNull ReceiptListDto> page = listReceiptPageJacksonTester.readObject(ReceiptTestJsonFileNames.LIST_RECEIPT_PAGE_FILE);
         List<ReceiptListDto> list = ReceiptTestFactory.getLIST_RECEIPT_DTO();
 
-        assertThat(parsed.size()).isEqualTo(list.size());
+        assertThat(page.getNumberOfElements()).isEqualTo(list.size());
+        assertThat(page.getTotalElements()).isEqualTo(ReceiptTestFactory.getLIST_RECEIPT_PAGE().getTotalElements());
+        assertThat(page.getTotalPages()).isEqualTo(ReceiptTestFactory.getLIST_RECEIPT_PAGE().getTotalPages());
 
         for (int i = 0; i < list.size(); i++) {
-            ReceiptListDto parsedDto = parsed.get(i);
+            ReceiptListDto parsedDto = page.getContent().get(i);
             ReceiptListDto dto = list.get(i);
 
             assertThat(parsedDto.getId()).isEqualTo(dto.getId());

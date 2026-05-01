@@ -5,5 +5,7 @@
   "notes": null,
   "currency": "EUR",
   "tip": 0.00,
-  "amountPaid": 22.20
+  "subtotal": 18.50,
+  "amountPaid": 22.20,
+  "rideType": "ERRANDTRIP"
 }

@@ -1,5 +1,6 @@
 package com.zynqly.backend.controllers;
 
+import com.zynqly.backend.services.ipl.DashboardServiceJsonIpl;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
