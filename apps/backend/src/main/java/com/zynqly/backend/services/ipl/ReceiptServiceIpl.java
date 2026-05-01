@@ -25,6 +25,7 @@ public class ReceiptServiceIpl implements ReceiptService {
 
     private final ReceiptRepository receiptRepository;
 
+    // TODO change sortBy Parameter to use Enum of keys instead of String, and add filtering feature using same enum
     @Override
     public Page<@NonNull ReceiptListDto> getAllReceipts(int page, int size, String sortBy, boolean ascending) {
         Sort sorting;

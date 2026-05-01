@@ -18,6 +18,7 @@ public class ReceiptController {
 
     private final ReceiptService receiptService;
 
+    // TODO check for userId (when implemented) to return only authorized receipts
     @GetMapping
     public ResponseEntity<@NonNull Page<@NonNull ReceiptListDto>> getReceipts(
             @RequestParam(defaultValue = "0") int page,
@@ -27,15 +28,16 @@ public class ReceiptController {
         return ResponseEntity.ok(receiptService.getAllReceipts(page, size, sortBy, ascending));
     }
 
+    // TODO check for userId (when implemented) to return only authorized receipts
     @GetMapping("/{id}")
     public ResponseEntity<@NonNull Receipt> getReceiptById(@PathVariable int id) {
         Receipt receipt = receiptService.getReceiptById(id);
         return ResponseEntity.ok(receipt);
     }
 
+    // TODO implement real userId to being used here (when implemented)
     @PostMapping
     public ResponseEntity<@NonNull Receipt> makeReceipt(@Valid @RequestBody ReceiptCreateDto receiptCreateDto) {
-        // TODO implement real userId to being used here
         return ResponseEntity.status(201).body(receiptService.createReceipt(receiptCreateDto, 201));
     }
 }
