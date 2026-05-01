@@ -71,17 +71,36 @@ paths:
 
   /receipts:
     get:
-      summary: Retrieve list of all receipts (overview)
-      description: Provides a list of receipts with key data for tables or list views.
+      summary: Retrieve paginated list of all receipts (overview)
+      description: Provides a paginated list of receipts with key data for tables or list views.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            default: "total"
+        - name: ascending
+          in: query
+          schema:
+            type: boolean
+            default: true
       responses:
         '200':
-          description: A list of receipt summaries
+          description: A paginated list of receipt summaries
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ReceiptListDto'
+                $ref: '#/components/schemas/ReceiptListPage'
         '500':
           description: Internal server error
           content:
@@ -372,6 +391,32 @@ components:
         path:
           type: string
           example: "/api/v1/receipts"
+
+    ReceiptListPage:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReceiptListDto'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+
+    PageMetadata:
+      type: object
+      properties:
+        size:
+          type: integer
+          example: 10
+        number:
+          type: integer
+          example: 0
+        totalElements:
+          type: integer
+          example: 50
+        totalPages:
+          type: integer
+          example: 5
 
     # ENUMS
     PaymentMethod:
