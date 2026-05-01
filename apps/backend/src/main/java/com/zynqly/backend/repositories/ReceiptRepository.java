@@ -1,4 +1,4 @@
-package com.zynqly.backend.repository;
+package com.zynqly.backend.repositories;
 
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;

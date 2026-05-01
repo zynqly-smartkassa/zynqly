@@ -4,7 +4,7 @@ import com.zynqly.backend.domain.receipt.PaymentStatus;
 import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
-import com.zynqly.backend.repository.ReceiptRepository;
+import com.zynqly.backend.repositories.ReceiptRepository;
 import com.zynqly.backend.services.ReceiptService;
 import com.zynqly.backend.services.util.receipt.ReceiptCalculator;
 import jakarta.persistence.EntityNotFoundException;

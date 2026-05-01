@@ -5,7 +5,7 @@ import com.zynqly.backend.domain.receipt.Receipt;
 import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
 import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
 import com.zynqly.backend.receipts.utils.ReceiptTestFactory;
-import com.zynqly.backend.repository.ReceiptRepository;
+import com.zynqly.backend.repositories.ReceiptRepository;
 import com.zynqly.backend.services.ipl.ReceiptServiceIpl;
 import com.zynqly.backend.services.util.receipt.ReceiptCalculator;
 import lombok.NonNull;
