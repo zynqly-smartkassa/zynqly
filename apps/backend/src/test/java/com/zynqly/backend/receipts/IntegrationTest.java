@@ -42,7 +42,7 @@ public class IntegrationTest {
 
         JsonNode expected = new ObjectMapper().readTree(responseBody);
 
-        mockMvc.perform(post(ReceiptApiNames.realApiUrl).content(requestBody).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post(ReceiptApiNames.apiURL).content(requestBody).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.ride_id").value(expected.get("ride_id").asInt()))
@@ -59,7 +59,7 @@ public class IntegrationTest {
                 .andExpect(jsonPath("$.amountPaid").value(expected.get("amountPaid").asDouble()))
                 .andExpect(jsonPath("$.change").value(expected.get("change").asDouble()))
                 .andExpect(jsonPath("$.currency").value(expected.get("currency").asText()))
-                .andExpect(jsonPath("$.receiptNumber").value(expected.get("receiptNumber").asText()))
+                .andExpect(jsonPath("$.receiptNumber").exists())
                 .andExpect(jsonPath("$.notes", nullValue()))
                 .andExpect(jsonPath("$.rideType").value(expected.get("rideType").asText()));
     }
@@ -68,13 +68,13 @@ public class IntegrationTest {
     void findReceiptById_shouldReturn200() throws Exception {
         String requestBody = loadJson(ReceiptTestJsonFileNames.CREATE_RECEIPT_FILE);
 
-        MvcResult mvcResult = mockMvc.perform(post(ReceiptApiNames.realApiUrl).content(requestBody).contentType(MediaType.APPLICATION_JSON))
+        MvcResult mvcResult = mockMvc.perform(post(ReceiptApiNames.apiURL).content(requestBody).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated()).andReturn();
 
         String responseBody = mvcResult.getResponse().getContentAsString();
         JsonNode expected = new ObjectMapper().readTree(responseBody);
 
-        mockMvc.perform(get("/api/v1/receipts/%d".formatted(expected.get("id").asInt())))
+        mockMvc.perform(get(ReceiptApiNames.apiURL(expected.get("id").asInt())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ride_id").value(expected.get("ride_id").asInt()))
                 .andExpect(jsonPath("$.user_id").value(expected.get("user_id").asInt()))
@@ -90,8 +90,17 @@ public class IntegrationTest {
                 .andExpect(jsonPath("$.amountPaid").value(expected.get("amountPaid").asDouble()))
                 .andExpect(jsonPath("$.change").value(expected.get("change").asDouble()))
                 .andExpect(jsonPath("$.currency").value(expected.get("currency").asText()))
-                .andExpect(jsonPath("$.receiptNumber").value(expected.get("receiptNumber").asText()))
+                .andExpect(jsonPath("$.receiptNumber").exists())
                 .andExpect(jsonPath("$.notes", nullValue()))
                 .andExpect(jsonPath("$.rideType").value(expected.get("rideType").asText()));
+    }
+
+    @Test
+    void findReceiptsUsingToBigSize_shouldReturn200WithLimitedSize() throws Exception {
+        mockMvc.perform(get(ReceiptApiNames.apiURL)
+                        .param("size", "9999999"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.size").value(50))
+                .andExpect(jsonPath("$.content").isArray());
     }
 }

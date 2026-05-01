@@ -35,6 +35,10 @@ public class ReceiptServiceIpl implements ReceiptService {
             sorting = Sort.by(sortBy).descending();
         }
 
+        if (size > 50) {
+            size = 50;
+        }
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).and(sorting));
         return receiptRepository.findAllAsDto(pageable);
     }

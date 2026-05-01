@@ -4,7 +4,7 @@ public class ReceiptApiNames {
 
     public static final String apiURL = "/receipts";
 
-    public static final String realApiUrl = "/api/v1/receipts/";
+    public static final String realApiUrl = "/api/v1/receipts";
 
     public static String apiURL(int id) {
         return apiURL + "/%d".formatted(id);
@@ -12,5 +12,13 @@ public class ReceiptApiNames {
 
     public static String apiURL(String id) {
         return apiURL + "/" + id;
+    }
+
+    public static String realApiUrl(int id) {
+        return realApiUrl + "/%d".formatted(id);
+    }
+
+    public static String realApiUrl(String id) {
+        return realApiUrl + "/" + id;
     }
 }
