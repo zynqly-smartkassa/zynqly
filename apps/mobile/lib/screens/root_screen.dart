@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zynqly_mobile/screens/history_screen.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
@@ -13,7 +14,7 @@ class _RootScreenState extends State<RootScreen> {
   final List<Widget> _pages = [
     Center(child: Text('Home')),
     Center(child: Text('New Ride')),
-    Center(child: Text('History')),
+    const HistoryScreen(),
     Center(child: Text('Invoices')),
     Center(child: Text('Settings')),
   ];
