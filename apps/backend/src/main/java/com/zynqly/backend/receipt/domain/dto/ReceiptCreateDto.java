@@ -39,7 +39,9 @@ public class ReceiptCreateDto {
     private BigDecimal subtotal;
 
     @NotNull
+    @DecimalMin("0.0")
     private BigDecimal amountPaid;
 
+    @NotNull
     private RideType rideType;
 }
