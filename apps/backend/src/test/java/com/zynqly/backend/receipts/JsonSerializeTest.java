@@ -1,8 +1,8 @@
 package com.zynqly.backend.receipts;
 
-import com.zynqly.backend.domain.receipt.Receipt;
-import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
-import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
+import com.zynqly.backend.receipt.domain.Receipt;
+import com.zynqly.backend.receipt.domain.dto.ReceiptCreateDto;
+import com.zynqly.backend.receipt.domain.dto.ReceiptListDto;
 import com.zynqly.backend.receipts.utils.ReceiptTestJsonFileNames;
 import com.zynqly.backend.receipts.utils.ReceiptTestFactory;
 import lombok.NonNull;

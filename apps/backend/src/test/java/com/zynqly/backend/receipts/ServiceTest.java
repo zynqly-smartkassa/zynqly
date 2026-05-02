@@ -1,13 +1,13 @@
 package com.zynqly.backend.receipts;
 
-import com.zynqly.backend.domain.receipt.PaymentStatus;
-import com.zynqly.backend.domain.receipt.Receipt;
-import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
-import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
+import com.zynqly.backend.receipt.domain.PaymentStatus;
+import com.zynqly.backend.receipt.domain.Receipt;
+import com.zynqly.backend.receipt.domain.dto.ReceiptCreateDto;
+import com.zynqly.backend.receipt.domain.dto.ReceiptListDto;
 import com.zynqly.backend.receipts.utils.ReceiptTestFactory;
-import com.zynqly.backend.repository.ReceiptRepository;
-import com.zynqly.backend.services.ipl.ReceiptServiceIpl;
-import com.zynqly.backend.services.util.receipt.ReceiptCalculator;
+import com.zynqly.backend.receipt.ReceiptRepository;
+import com.zynqly.backend.receipt.ReceiptServiceIpl;
+import com.zynqly.backend.receipt.util.ReceiptCalculator;
 import lombok.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

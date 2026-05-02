@@ -1,8 +1,8 @@
 package com.zynqly.backend.receipts.utils;
 
-import com.zynqly.backend.domain.receipt.*;
-import com.zynqly.backend.domain.receipt.dto.ReceiptCreateDto;
-import com.zynqly.backend.domain.receipt.dto.ReceiptListDto;
+import com.zynqly.backend.receipt.domain.*;
+import com.zynqly.backend.receipt.domain.dto.ReceiptCreateDto;
+import com.zynqly.backend.receipt.domain.dto.ReceiptListDto;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
