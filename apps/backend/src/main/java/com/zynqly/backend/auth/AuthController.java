@@ -4,6 +4,7 @@ import com.zynqly.backend.auth.domain.dto.SignUpAccountResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,14 +14,14 @@ import com.zynqly.backend.common.entities.User;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(path = "/api/v1/auth")
+@RequestMapping(path = "/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
 	private final AuthService authService;
 	
 	@PostMapping(path = "/sign-up")
-	public ResponseEntity<SignUpAccountResponseDto> signUpAccount(SignUpAccountRequestDto signUpAccountRequestDto) {
+	public ResponseEntity<SignUpAccountResponseDto> signUpAccount(@RequestBody SignUpAccountRequestDto signUpAccountRequestDto) {
 
 		User user = authService.signUpAccount(signUpAccountRequestDto);
 

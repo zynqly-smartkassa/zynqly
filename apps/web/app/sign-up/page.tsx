@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useCreateUserMutation } from "@/redux/api/apis/auth";
 
 // ---------------------------------------------------------------------------
 // Zod schema — defines the shape and validation rules for the sign-up form
@@ -46,7 +47,7 @@ const signUpSchema = z.object({
   password: z.string().min(8, "Passwort muss mindestens 8 Zeichen lang sein."),
 
   // Role: one of the three allowed enum values (matches Java backend enum)
-  role: z.enum(["MANAGER", "DRIVER", "ACCOUNTANT"] as const, {
+  role: z.enum(["UNTERNEHMER", "FAHRER", "BUCHHALTER"] as const, {
     required_error: "Bitte wähle eine Rolle aus.",
   }),
   // Terms must be accepted
@@ -56,7 +57,7 @@ const signUpSchema = z.object({
 });
 
 // Infer the TypeScript type from the schema so we get full type safety
-type SignUpFormValues = z.infer<typeof signUpSchema>;
+export type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 // ---------------------------------------------------------------------------
 // Component
@@ -64,6 +65,7 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
 
+  const [createUser] = useCreateUserMutation();
   // Initialise react-hook-form with the Zod resolver and sensible defaults
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -72,15 +74,21 @@ export default function SignUpPage() {
       email: "",
       phone: "+43", // pre-fill country code so the user only types the rest
       password: "",
-      role: "MANAGER",
+      role: "UNTERNEHMER",
       terms: false,
     },
   });
 
   // Called only when all Zod validations pass
-  const onSubmit = (values: SignUpFormValues) => {
-    console.log("Form submitted:", values);
-    // TODO: send `values` to your Spring Boot backend via fetch/axios
+  const onSubmit = async (values: SignUpFormValues) => {
+    try {
+      console.log(values)
+       const user = await createUser(values).unwrap();
+
+        console.log(user);
+    } catch(err: any) {
+      const errorMessage = "An error occured while creating the user!"
+    }
   };
 
   return (
@@ -341,9 +349,9 @@ export default function SignUpPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {/* Values are UPPERCASE to match the Java Role enum */}
-                        <SelectItem value="MANAGER">Unternehmer</SelectItem>
-                        <SelectItem value="DRIVER">Fahrer</SelectItem>
-                        <SelectItem value="ACCOUNTANT">Buchhalter</SelectItem>
+                        <SelectItem value="UNTERNEHMER">Unternehmer</SelectItem>
+                        <SelectItem value="FAHRER">Fahrer</SelectItem>
+                        <SelectItem value="BUCHHALTER">Buchhalter</SelectItem>
                       </SelectContent>
                     </Select>
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

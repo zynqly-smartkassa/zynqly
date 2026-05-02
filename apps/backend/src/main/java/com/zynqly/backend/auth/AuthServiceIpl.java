@@ -32,6 +32,7 @@ public class AuthServiceIpl implements AuthService {
 		User newUser = User.builder()
 		.name(signUpAccountRequestDto.getName())
 		.email(signUpAccountRequestDto.getEmail())
+		.phone(signUpAccountRequestDto.getPhone())
 		.role(signUpAccountRequestDto.getRole())
 		.password(signUpAccountRequestDto.getPassword())
 		.build();
