@@ -69,6 +69,7 @@ export default function SignUpPage() {
   // Initialise react-hook-form with the Zod resolver and sensible defaults
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
+    mode: "onChange",
     defaultValues: {
       name: "",
       email: "",
@@ -88,6 +89,7 @@ export default function SignUpPage() {
         console.log(user);
     } catch(err: any) {
       const errorMessage = "An error occured while creating the user!"
+      console.log(errorMessage)
     }
   };
 

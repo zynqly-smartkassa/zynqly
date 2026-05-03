@@ -1,12 +1,16 @@
 package com.zynqly.backend.auth;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.zynqly.backend.auth.domain.dto.SignUpAccountRequestDto;
 import com.zynqly.backend.common.entities.User;
+import com.zynqly.backend.common.exception.FormError;
+import com.zynqly.backend.common.exception.OwnException;
 import com.zynqly.backend.common.repositories.UserRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,13 +24,26 @@ public class AuthServiceIpl implements AuthService {
 	@Override
 	public User signUpAccount(SignUpAccountRequestDto signUpAccountRequestDto) {
 
+		List<FormError.FieldError> fieldErrors = new ArrayList<>();
 
 		if (!userRepository.findByEmail(signUpAccountRequestDto.getEmail()).isEmpty()) {
-			throw new EntityNotFoundException();
-		} else if  (!userRepository.findByPhone(signUpAccountRequestDto.getPhone()).isEmpty()) {
+			fieldErrors.add(FormError.FieldError.builder()
+				.field("Email")
+				.message("The used email is already taken.")
+				.build());
+		} 
 
-			throw new EntityNotFoundException();
+		if  (!userRepository.findByPhone(signUpAccountRequestDto.getPhone()).isEmpty()) {
 
+			fieldErrors.add(FormError.FieldError.builder()
+				.field("phone")
+				.message("The used phone is already taken.")
+				.build());
+
+		}
+
+		if (!fieldErrors.isEmpty()) {
+			throw new OwnException(fieldErrors);
 		}
 
 		User newUser = User.builder()

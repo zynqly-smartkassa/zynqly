@@ -6,6 +6,8 @@ import com.zynqly.backend.auth.domain.dto.SignUpAccountRequestDto.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,7 +41,7 @@ public class User {
 	@Column(nullable = false)
 	private String password;
 
-    // TODO later to false
-	@Column(nullable = true)
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private Role role;
 }
