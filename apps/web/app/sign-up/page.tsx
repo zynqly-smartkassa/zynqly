@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useCreateUserMutation } from "@/redux/api/apis/auth";
+import { toast } from "sonner";
 
 // ---------------------------------------------------------------------------
 // Zod schema — defines the shape and validation rules for the sign-up form
@@ -84,12 +85,19 @@ export default function SignUpPage() {
   const onSubmit = async (values: SignUpFormValues) => {
     try {
       console.log(values)
-       const user = await createUser(values).unwrap();
+      const user = await createUser(values).unwrap();
+      toast.success("You've successfully created a new account!" );
+      console.log(user);
+    } catch(error: any) {
+      const errorMessage = error?.message || "An error occured while creating the user!"
+      toast.error(errorMessage);
+      console.log(errorMessage, error);
 
-        console.log(user);
-    } catch(err: any) {
-      const errorMessage = "An error occured while creating the user!"
-      console.log(errorMessage)
+      if (error?.data) {
+        error.data.errors.forEach((fieldError: any) => {
+          form.setError(fieldError.field, { message: fieldError.message})
+        })
+      }
     }
   };
 
