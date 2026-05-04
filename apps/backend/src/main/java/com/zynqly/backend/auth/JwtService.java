@@ -42,6 +42,5 @@ public interface JwtService {
      */
     String extractRefreshTk(HttpServletRequest request);
 
-    String extractUsername(String tk);
 
 }
