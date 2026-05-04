@@ -3,6 +3,10 @@ package com.zynqly.backend.auth;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +21,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 
-public class AuthServiceIpl implements AuthService {
+public class AuthServiceIpl implements AuthService  {
 
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder encoder;
+	private final AuthenticationManager authenticationManager;
+	private final UserDetailsService userDetailsService;
 
 	@Override
 	public User signUpAccount(SignUpAccountRequestDto signUpAccountRequestDto) {
@@ -58,5 +64,14 @@ public class AuthServiceIpl implements AuthService {
 		.build();
 
 		return userRepository.save(newUser);
+	}
+
+	@Override
+	public UserDetails authenticate(String email, String password) {
+	
+		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+
+		return userDetailsService.loadUserByUsername(email);
+
 	}
 }

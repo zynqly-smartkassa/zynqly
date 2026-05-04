@@ -62,9 +62,9 @@ public class JwtServiceTest {
 
 		String tk = jwtService.createRefreshTk(username, TkName.REFRESH);
 
-		UserDetails userDetails = mock(UserDetails.class);
+		//UserDetails userDetails = mock(UserDetails.class);
 
-		when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
+		//when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
 
 		UserDetails userDetailsReturn = jwtService.validateTk(tk);
 

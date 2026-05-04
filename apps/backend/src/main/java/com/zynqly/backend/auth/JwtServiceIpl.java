@@ -2,11 +2,13 @@ package com.zynqly.backend.auth;
 
 import java.security.Key;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtServiceIpl implements JwtService {
 
-	private final UserDetailsService userDetailsService;
+	//private final UserDetailsService userDetailsService;
 
 	@Value("${jwt.secret}")
 	private String secretKey;
@@ -39,8 +41,14 @@ public class JwtServiceIpl implements JwtService {
 	@Override
 	public UserDetails validateTk(String tk) {
 		String username = extractUsername(tk);
-		return userDetailsService.loadUserByUsername(username);
+		//return userDetailsService.loadUserByUsername(username);
+		return User.withUsername(username)
+		.password("")
+		.authorities(Collections.emptyList())
+		.build();
+
 	}
+
 
 	/**
    * Creates an access JWT token with specified expiry.
