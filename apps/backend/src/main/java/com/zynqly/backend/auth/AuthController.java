@@ -76,7 +76,7 @@ public class AuthController {
      * @param response the HTTP response
      * @return ResponseEntity containing the authentication response with a new access token or an error status
      */
-    @GetMapping(path = "/access-jwt")
+    @GetMapping(path = "/access-tk")
     public ResponseEntity<?> createAccessJwt(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshTk = jwtService.extractRefreshTk(request);
@@ -108,7 +108,7 @@ public class AuthController {
         if (response != null) {
             String refreshTk = jwtService.createRefreshTk(username, TkName.REFRESH);
 
-            Cookie refreshCookie = new Cookie("refresh_jwt", refreshTk);
+            Cookie refreshCookie = new Cookie("refresh_tk", refreshTk);
             refreshCookie.setHttpOnly(true);
             refreshCookie.setSecure(false);
             refreshCookie.setPath("/");
