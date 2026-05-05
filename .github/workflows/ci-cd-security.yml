@@ -1,0 +1,68 @@
+name: CI/CD & Security Pipeline
+
+on:
+    push:
+        branches: ["main", "master"]
+    pull_request:
+        branches: ["main", "master"]
+
+jobs:
+    # BUILD & TEST
+    build-and-test:
+        name: Build & Test
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: "npm"
+
+            - name: Install Dependencies
+              run: npm ci
+
+            - name: Run Linter & Tests
+              run: |
+                  npm run lint --if-present
+                  npm test --if-present
+
+            - name: Build Project
+              run: npm run build --if-present
+
+    # SECURITY SCANS (Dependencies)
+    security-scans:
+        name: Security Scans
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            #  Deprecated / unsave Dependencies
+            - name: Dependency Vulnerability Scan (npm audit)
+              run: npm audit --audit-level=high || true
+
+            # Static Code Analysis
+            - name: Run Trivy Vulnerability & Secret Scanner
+              uses: aquasecurity/trivy-action@master
+              with:
+                  scan-type: "fs"
+                  ignore-unfixed: true
+                  severity: "CRITICAL,HIGH"
+                  exit-code: "0"
+
+    #  DEPLOYMENT
+    deploy:
+        name: Deployment
+        needs: [build-and-test, security-scans]
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Deploy Step
+              run: |
+                  echo "Deployment in progress... pray for success!"
