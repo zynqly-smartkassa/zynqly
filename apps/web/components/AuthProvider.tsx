@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 const AuthProvider = ({children}: {children: React.ReactNode}) => {
 
 
-    const {data, isLoading} = useGetAccessTkQuery();
+    const {data, isLoading} = useGetAccessTkQuery(undefined);
 
     useEffect(() => {
         console.log(data);
