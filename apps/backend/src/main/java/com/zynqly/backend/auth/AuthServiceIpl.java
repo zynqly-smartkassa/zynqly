@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.zynqly.backend.auth.domain.dto.SignUpAccountRequestDto;
 import com.zynqly.backend.common.entities.User;
-import com.zynqly.backend.common.exception.FormError;
+import com.zynqly.backend.common.exception.ApiError;
 import com.zynqly.backend.common.exception.OwnException;
 import com.zynqly.backend.common.repositories.UserRepository;
 
@@ -32,10 +32,10 @@ public class AuthServiceIpl implements AuthService  {
 	@Override
 	public User signUpAccount(SignUpAccountRequestDto signUpAccountRequestDto) {
 
-		List<FormError.FieldError> fieldErrors = new ArrayList<>();
+		List<ApiError.FieldError> fieldErrors = new ArrayList<>();
 
 		if (!userRepository.findByEmail(signUpAccountRequestDto.getEmail()).isEmpty()) {
-			fieldErrors.add(FormError.FieldError.builder()
+			fieldErrors.add(ApiError.FieldError.builder()
 				.field("email")
 				.message("The used email is already taken.")
 				.build());
@@ -43,7 +43,7 @@ public class AuthServiceIpl implements AuthService  {
 
 		if  (!userRepository.findByPhone(signUpAccountRequestDto.getPhone()).isEmpty()) {
 
-			fieldErrors.add(FormError.FieldError.builder()
+			fieldErrors.add(ApiError.FieldError.builder()
 				.field("phone")
 				.message("The used phone is already taken.")
 				.build());

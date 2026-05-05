@@ -1,4 +1,4 @@
-package com.zynqly.backend.config;
+package com.zynqly.backend.auth.config;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +46,6 @@ public class SecurityConfig {
             .authorizeHttpRequests(
                 auth -> auth.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/ws/**").permitAll()
                 .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -19,7 +19,7 @@ public class SignInAccountRequestDto {
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 20, message = "Username must be between {min} and {max} characters.")
-    private String username;
+    private String email;
 
     @NotBlank(message = "password is required")
     @Size(min = 6, message = "password must be at least {min} characters.")

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AuthResponseDto {
-    private String accessJwt;
+    private String accessTk;
     private Long expiresIn;
 }
 

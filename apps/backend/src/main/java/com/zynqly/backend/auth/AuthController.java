@@ -30,21 +30,18 @@ public class AuthController {
 	private final JwtService jwtService;
 	
 	@PostMapping(path = "/sign-up")
-	public ResponseEntity<SignUpAccountResponseDto> signUpAccount(@RequestBody SignUpAccountRequestDto signUpAccountRequestDto) {
+	public ResponseEntity<AuthResponseDto> signUpAccount(@Valid @RequestBody SignUpAccountRequestDto signUpAccountRequestDto,
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
 		User user = authService.signUpAccount(signUpAccountRequestDto);
 
-		SignUpAccountResponseDto signUpAccountResponse = SignUpAccountResponseDto.builder()
-		.name(user.getName())
-		.email(user.getEmail())
-		.phone(user.getPhone())
-		.role(user.getRole())
-		.build();
+        AuthResponseDto authResponseDto = createAuthResponseDto(user.getEmail(), response);
 
-		return new ResponseEntity<>(signUpAccountResponse, HttpStatus.CREATED);
+		return new ResponseEntity<>(authResponseDto, HttpStatus.CREATED);
 	}
 
-	/**
+	/**null
      * Handles user sign-in requests.
      * Authenticates user credentials and returns authentication tokens.
      *
@@ -60,7 +57,7 @@ public class AuthController {
             HttpServletResponse response) {
 
         UserDetails userDetails = authService.authenticate(
-                signUpAccountRequestDto.getUsername(),
+                signUpAccountRequestDto.getEmail(),
                 signUpAccountRequestDto.getPassword());
 
         AuthResponseDto authResponseDto = createAuthResponseDto(userDetails.getUsername(), response);
@@ -118,7 +115,7 @@ public class AuthController {
         }
 
         return AuthResponseDto.builder()
-                .accessJwt(accessTk)
+                .accessTk(accessTk)
                 .expiresIn(15 * 60L)
                 .build();
     }

@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useCreateUserMutation } from "@/redux/api/apis/auth";
+import { useSignUpMutation } from "@/redux/api/apis/auth";
 import { toast } from "sonner";
 
 // ---------------------------------------------------------------------------
@@ -49,7 +49,7 @@ const signUpSchema = z.object({
 
   // Role: one of the three allowed enum values (matches Java backend enum)
   role: z.enum(["UNTERNEHMER", "FAHRER", "BUCHHALTER"] as const, {
-    required_error: "Bitte wähle eine Rolle aus.",
+    message: "Bitte wähle eine Rolle aus."
   }),
   // Terms must be accepted
   terms: z.boolean().refine((val) => val === true, {
@@ -66,7 +66,7 @@ export type SignUpFormValues = z.infer<typeof signUpSchema>;
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
 
-  const [createUser] = useCreateUserMutation();
+  const [signUp] = useSignUpMutation();
   // Initialise react-hook-form with the Zod resolver and sensible defaults
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -85,7 +85,7 @@ export default function SignUpPage() {
   const onSubmit = async (values: SignUpFormValues) => {
     try {
       console.log(values)
-      const user = await createUser(values).unwrap();
+      const user = await signUp(values).unwrap();
       toast.success("You've successfully created a new account!" );
       console.log(user);
     } catch(error: any) {

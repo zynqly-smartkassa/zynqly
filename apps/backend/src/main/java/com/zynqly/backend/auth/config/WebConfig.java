@@ -1,4 +1,4 @@
-package com.zynqly.backend.config;
+package com.zynqly.backend.auth.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
