@@ -1,46 +1,107 @@
 package com.zynqly.backend.auth;
 
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
 
+import com.zynqly.backend.auth.dto.TkName;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
-public interface JwtService {
+@Service
+@RequiredArgsConstructor
+public class JwtService {
 
-	
-	 /**
-     * Creates an access JWT token for the given username.
-     *
-     * @return the generated access token as a string
-     */
-    String createAccessTk(String username, TkName tkExpiry);
-    
-    /**
-     * Creates a refresh JWT token for the given username.
-     *
-     * @return the generated refresh token as a string
-     */
-    String createRefreshTk(String username, TkName tkExpiry);
+	// private final UserDetailsService userDetailsService;
 
-    /**
-     * Validates a JWT token and retrieves the associated user details.
-     *
-     * @return UserDetails object for the token's user
-     */
-    UserDetails validateTk(String tk);
+	@Value("${jwt.secret}")
+	private String secretKey;
 
-    /**
-     * Extracts the access token from the Authorization header of an HTTP request.
-     *
-     * @return the access token string, or null if not found
-     */
-    String extractAccesTk(HttpServletRequest request);
+	private final long REFRESH_TK = 1000L * 60 * 60 * 24 * 30;
+	private final long ACCESS_TK = 1000L * 60 * 15;
+	private final UserDetailsService userDetailsService;
 
-    /**
-     * Extracts the refresh token from the cookies of an HTTP request.
-     *
-     * @return the refresh token string, or null if not found
-     */
-    String extractRefreshTk(HttpServletRequest request);
+	public UserDetails validateTk(String tk) {
+		String email = extractEmail(tk);
+		return userDetailsService.loadUserByUsername(email);
+	}
 
+	public String createAccessTk(String email) {
+		return createTk(email, TkName.ACCESS);
+	}
 
+	public String createRefreshTk(String email) {
+		return createTk(email, TkName.REFRESH);
+	}
+
+	public String extractAccesTk(HttpServletRequest request) {
+
+		String bearerTk = request.getHeader("Authorization");
+
+		if (bearerTk != null && bearerTk.startsWith("Bearer ")) {
+			return bearerTk.substring(7);
+		}
+		return null;
+	}
+
+	public String extractRefreshTk(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies == null) {
+			return null;
+		}
+
+		return Arrays.stream(cookies)
+				.filter(cookie -> "refresh_tk".equals(cookie.getName()))
+				.map(Cookie::getValue)
+				.findFirst()
+				.orElse(null);
+	}
+
+	private String createTk(String email, TkName tkExpiry) {
+
+		long expiryMs;
+		if (tkExpiry == TkName.ACCESS) {
+			expiryMs = ACCESS_TK;
+		} else {
+			expiryMs = REFRESH_TK;
+		}
+
+		Map<String, Object> claims = new HashMap<>();
+		return Jwts.builder()
+				.setClaims(claims) // Infos which the frontend can read from without any request to the server: f.e
+				// Role
+				.setSubject(email)
+				.setIssuedAt(new Date(System.currentTimeMillis()))
+				.claim("type_tk", tkExpiry)
+				.setExpiration(new Date(System.currentTimeMillis() + expiryMs)) // Date needed for the server
+				.signWith(getSigningKey(), SignatureAlgorithm.HS256) // Our checksum
+				.compact(); // Creates the xxxxx.yyyyy.zzzzz String
+	}
+
+	private Key getSigningKey() {
+		byte[] keyBytes = secretKey.getBytes();
+		return Keys.hmacShaKeyFor(keyBytes);
+	}
+
+	private String extractEmail(String tk) {
+		Claims claims = Jwts.parserBuilder()
+				.setSigningKey(getSigningKey())
+				.build()
+				.parseClaimsJws(tk)
+				.getBody();
+		return claims.getSubject();
+	}
 }

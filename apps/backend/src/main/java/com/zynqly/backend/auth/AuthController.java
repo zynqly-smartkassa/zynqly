@@ -29,11 +29,11 @@ public class AuthController {
 	private final JwtService jwtService;
 	
 	@PostMapping(path = "/sign-up")
-	public ResponseEntity<AuthResponseDto> signUpAccount(@Valid @RequestBody SignUpAccountRequestDto signUpAccountRequestDto,
+	public ResponseEntity<AuthResponseDto> signUp(@Valid @RequestBody SignUpAccountRequestDto signUpAccountRequestDto,
             HttpServletRequest request,
             HttpServletResponse response) {
 
-		User user = authService.signUpAccount(signUpAccountRequestDto);
+		User user = authService.signUp(signUpAccountRequestDto);
 
         AuthResponseDto authResponseDto = createAuthResponseDto(user.getEmail(), response);
 
@@ -50,7 +50,7 @@ public class AuthController {
      * @return ResponseEntity containing the authentication response with the access token
      */
     @PostMapping(path = "/sign-in")
-    public ResponseEntity<AuthResponseDto> signInAccount(
+    public ResponseEntity<AuthResponseDto> signIn(
             @Valid @RequestBody SignInAccountRequestDto signUpAccountRequestDto,
             HttpServletRequest request,
             HttpServletResponse response) {
@@ -73,7 +73,7 @@ public class AuthController {
      * @return ResponseEntity containing the authentication response with a new access token or an error status
      */
     @GetMapping(path = "/access-tk")
-    public ResponseEntity<?> createAccessJwt(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> createAccessTk(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshTk = jwtService.extractRefreshTk(request);
 
@@ -99,10 +99,10 @@ public class AuthController {
      */
     private AuthResponseDto createAuthResponseDto(String username, HttpServletResponse response) {
 
-        String accessTk = jwtService.createAccessTk(username, TkName.ACCESS);
+        String accessTk = jwtService.createAccessTk(username);
 
         if (response != null) {
-            String refreshTk = jwtService.createRefreshTk(username, TkName.REFRESH);
+            String refreshTk = jwtService.createRefreshTk(username);
 
             Cookie refreshCookie = new Cookie("refresh_tk", refreshTk);
             refreshCookie.setHttpOnly(true);
