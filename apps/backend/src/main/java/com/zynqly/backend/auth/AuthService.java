@@ -2,7 +2,7 @@ package com.zynqly.backend.auth;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.zynqly.backend.auth.domain.dto.SignUpAccountRequestDto;
+import com.zynqly.backend.auth.dto.requests.SignUpAccountRequestDto;
 import com.zynqly.backend.common.entities.User;
 
 public interface AuthService {

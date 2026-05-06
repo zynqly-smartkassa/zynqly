@@ -1,4 +1,4 @@
-package com.zynqly.backend.auth.domain.dto;
+package com.zynqly.backend.auth.dto.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

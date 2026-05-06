@@ -1,6 +1,6 @@
-package com.zynqly.backend.auth.domain.dto;
+package com.zynqly.backend.auth.dto.responses;
 
-import com.zynqly.backend.auth.domain.dto.SignUpAccountRequestDto.Role;
+import com.zynqly.backend.auth.dto.requests.SignUpAccountRequestDto.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -10,12 +10,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <StoreProvider>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
         <TooltipProvider>
-          <AuthProvider>
+          
              {children}
-          </AuthProvider>
-         
+          
         </TooltipProvider>
-        
       </ThemeProvider>
     </StoreProvider>
   );

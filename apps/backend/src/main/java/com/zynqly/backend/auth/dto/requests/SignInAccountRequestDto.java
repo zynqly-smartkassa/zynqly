@@ -1,4 +1,4 @@
-package com.zynqly.backend.auth.domain.dto;
+package com.zynqly.backend.auth.dto.requests;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

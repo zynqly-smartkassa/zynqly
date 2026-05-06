@@ -1,9 +1,9 @@
-import { SignUpFormValues } from "@/app/sign-up/page";
 import { apiSlice } from "../apiSlice";
-import { User } from "@/types/User";
-import { AuthResponseDto } from "@/types/AuthResponseDto";
-import { SignInFormValues } from "@/app/sign-in/page";
-import { getAccessTkAction, signInAction, signUpAction } from "@/actions/auth-action";
+import {
+  getAccessTkAction,
+  signInAction,
+  signUpAction,
+} from "@/actions/auth-action";
 
 const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -11,38 +11,48 @@ const authApi = apiSlice.injectEndpoints({
       async queryFn(signUpData) {
         const res = await signUpAction(signUpData);
 
-        if (!res.success) {
-            return { error: res.error };
-        }
+        return res.success ? { data: res.data } : { error: res.error };
+      },
 
-        return { data: res.data };
-      }
+      onQueryStarted: updateAuthCache,
     }),
 
     signIn: builder.mutation({
       async queryFn(signInData) {
         const res = await signInAction(signInData);
 
-        if (!res.success) {
-            return { error: res.error };
-        }
+        return res.success ? { data: res.data } : { error: res.error };
+      },
 
-        return { data: res.data };
-      }
+      onQueryStarted: updateAuthCache,
     }),
 
     getAccessTk: builder.query({
       async queryFn() {
         const res = await getAccessTkAction();
 
-        if (!res.success) {
-          return {error: res.error};
-        }
-
-        return {data: res.data};
-      }
-    })
+        return res.success ? { data: res.data } : { error: res.error };
+      },
+      keepUnusedDataFor: 900,
+    }),
   }),
 });
 
-export const { useSignUpMutation, useSignInMutation, useGetAccessTkQuery } = authApi;
+/**
+ * After a sign-up or sign-in mutation succeeds, this helper updates the
+ * `refreshAccessTk` cache entry with the returned auth data so the access
+ * token is immediately available without triggering a separate request.
+ */
+async function updateAuthCache(arg: any, { dispatch, queryFulfilled }: any) {
+  try {
+    const { data } = await queryFulfilled;
+    dispatch(
+      authApi.util.updateQueryData("getAccessTk", undefined, (draft: any) => {
+        Object.assign(draft, data);
+      }),
+    );
+  } catch (err) {}
+}
+
+export const { useSignUpMutation, useSignInMutation, useGetAccessTkQuery } =
+  authApi;

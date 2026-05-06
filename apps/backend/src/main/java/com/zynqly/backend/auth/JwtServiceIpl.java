@@ -10,7 +10,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -125,7 +124,7 @@ public class JwtServiceIpl implements JwtService {
 		// Role
 		.setSubject(username)
 		.setIssuedAt(new Date(System.currentTimeMillis()))
-		.claim("type_jwt", tkExpiry)
+		.claim("type_tk", tkExpiry)
 		.setExpiration(new Date(System.currentTimeMillis() + expiryMs)) // Date needed for the server
 		.signWith(getSigningKey(), SignatureAlgorithm.HS256) // Our checksum
 		.compact(); // Creates the xxxxx.yyyyy.zzzzz String

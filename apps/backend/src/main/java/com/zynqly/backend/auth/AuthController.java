@@ -1,6 +1,5 @@
 package com.zynqly.backend.auth;
 
-import com.zynqly.backend.auth.domain.dto.SignUpAccountResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.zynqly.backend.auth.domain.dto.AuthResponseDto;
-import com.zynqly.backend.auth.domain.dto.SignInAccountRequestDto;
-import com.zynqly.backend.auth.domain.dto.SignUpAccountRequestDto;
+import com.zynqly.backend.auth.dto.requests.SignInAccountRequestDto;
+import com.zynqly.backend.auth.dto.requests.SignUpAccountRequestDto;
+import com.zynqly.backend.auth.dto.responses.AuthResponseDto;
 import com.zynqly.backend.common.entities.User;
 
 import jakarta.servlet.http.Cookie;

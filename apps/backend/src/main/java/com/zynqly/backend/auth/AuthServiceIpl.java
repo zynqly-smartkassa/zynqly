@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.zynqly.backend.auth.domain.dto.SignUpAccountRequestDto;
+import com.zynqly.backend.auth.dto.requests.SignUpAccountRequestDto;
 import com.zynqly.backend.common.entities.User;
 import com.zynqly.backend.common.exception.ApiError;
 import com.zynqly.backend.common.exception.OwnException;

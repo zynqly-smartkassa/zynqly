@@ -2,7 +2,7 @@ package com.zynqly.backend.common.entities;
 
 import java.util.UUID;
 
-import com.zynqly.backend.auth.domain.dto.SignUpAccountRequestDto.Role;
+import com.zynqly.backend.auth.dto.requests.SignUpAccountRequestDto.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,8 +1,7 @@
-"use server"
+"use server";
 
 import { SignInFormValues } from "@/app/sign-in/page";
 import { SignUpFormValues } from "@/app/sign-up/page";
-import { AuthResponseDto } from "@/types/AuthResponseDto";
 import axios from "axios";
 import { cookies } from "next/headers";
 
@@ -19,7 +18,7 @@ export const signUpAction = async (signUpData: SignUpFormValues) => {
 
     const setCookieHeader = res.headers["set-cookie"];
 
-     if (setCookieHeader) {
+    if (setCookieHeader) {
       await setRefreshCookie(setCookieHeader);
     }
 
@@ -42,9 +41,9 @@ export const signInAction = async (signInData: SignInFormValues) => {
   try {
     const res = await authFetch.post("sign-in", signInData);
 
-     const setCookieHeader = res.headers["set-cookie"];
+    const setCookieHeader = res.headers["set-cookie"];
 
-     if (setCookieHeader) {
+    if (setCookieHeader) {
       await setRefreshCookie(setCookieHeader);
     }
 
@@ -65,7 +64,21 @@ export const signInAction = async (signInData: SignInFormValues) => {
 
 export const getAccessTkAction = async () => {
   try {
-    const res = await authFetch.get("access-tk");
+    const cookieStore = await cookies();
+    const refreshTk = cookieStore.get("refresh_tk");
+
+    if (!refreshTk) {
+      return { success: false, error: "No refresh token found" };
+    }
+
+    const res = await authFetch.get(`access-tk`, {
+      headers: {
+        Cookie: `refresh_tk=${refreshTk.value}`,
+      },
+      withCredentials: true,
+    });
+
+    console.log(res);
 
     return { success: true, data: res.data };
   } catch (error: any) {
@@ -85,9 +98,9 @@ export const getAccessTkAction = async () => {
 async function setRefreshCookie(setCookieHeader: string[]) {
   const cookieStore = await cookies();
 
-  // find this cookie: Set-Cookie: refresh_jwt=abc123...; HttpOnly; Path=/
+  // find this cookie: Set-Cookie: refresh_tk=abc123...; HttpOnly; Path=/
   const refreshTokenCookie = Array.isArray(setCookieHeader)
-    ? setCookieHeader.find(c => c.startsWith("refresh_tk="))
+    ? setCookieHeader.find((c) => c.startsWith("refresh_tk="))
     : setCookieHeader;
 
   if (refreshTokenCookie) {
@@ -101,7 +114,13 @@ async function setRefreshCookie(setCookieHeader: string[]) {
       secure: false,
       path: "/",
       maxAge: 30 * 24 * 60 * 60,
-      sameSite: "lax"
+      sameSite: "lax",
     });
   }
 }
+
+export const deleteRefreshCookie = async () => {
+  const cookieStore = await cookies();
+
+  cookieStore.delete("refresh_tk");
+};
