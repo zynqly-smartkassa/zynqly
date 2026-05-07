@@ -85,15 +85,25 @@ export default function SignUpPage() {
 
   // Called only when all Zod validations pass
   const onSubmit = async (values: SignUpFormValues) => {
+    const toastId = toast.loading("Creating Account...", {
+      className: "toast-loading",
+    });
+
     try {
       console.log(values);
       const res = await signUp(values).unwrap();
-      toast.success("You've successfully created a new account!");
+      toast.success("You've successfully created a new account!", {
+        id: toastId,
+        className: "toast-success",
+      });
       console.log(res);
     } catch (error: any) {
       const errorMessage =
         error?.message || "An error occured while signing you up!";
-      toast.error(errorMessage);
+      toast.error(errorMessage, {
+        id: toastId,
+        className: "toast-error",
+      });
       console.log(errorMessage, error);
 
       if (error?.errors) {
@@ -259,8 +269,9 @@ export default function SignUpPage() {
                       <Input
                         {...field}
                         id="name"
+                        data-testid="name-field"
                         type="text"
-                        placeholder="Mehmet Kaya"
+                        placeholder="Mario Kaya"
                         autoComplete="name"
                         aria-invalid={fieldState.invalid}
                         className="flex-1 h-auto py-3 border-0 bg-transparent rounded-none text-sm placeholder:text-[var(--z-text-muted)] focus-visible:ring-0 focus-visible:border-0"
@@ -307,6 +318,7 @@ export default function SignUpPage() {
                       <Input
                         {...field}
                         id="email"
+                        data-testid="email-field"
                         type="email"
                         placeholder="name@example.com"
                         autoComplete="email"
@@ -357,6 +369,7 @@ export default function SignUpPage() {
                       <Input
                         {...field}
                         id="phone"
+                        data-testid="phone-field"
                         type="tel"
                         placeholder="+4369912345678"
                         autoComplete="tel"
@@ -407,6 +420,7 @@ export default function SignUpPage() {
                       <Input
                         {...field}
                         id="password"
+                        data-testid="password-field"
                         type={showPassword ? "text" : "password"}
                         placeholder="Mindestens 8 Zeichen"
                         autoComplete="new-password"
@@ -524,6 +538,7 @@ export default function SignUpPage() {
                   >
                     <Checkbox
                       id="terms"
+                      data-testid="terms-checkbox"
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       aria-invalid={fieldState.invalid}
@@ -562,6 +577,7 @@ export default function SignUpPage() {
             {/* ── Submit ── */}
             <Button
               type="submit"
+              data-testid="register-button"
               className="flex items-center justify-center gap-2 w-full h-auto py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:opacity-90 active:scale-[0.98] mt-1"
               style={{ background: "var(--z-color-main)" }}
             >

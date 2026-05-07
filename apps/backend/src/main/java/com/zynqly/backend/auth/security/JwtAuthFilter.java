@@ -39,7 +39,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
         try {
             String tk = jwtService.extractAccesTk(request);
-
+        
             if (tk != null) {
 
                 UserDetails userDetails = jwtService.validateTk(tk);
@@ -56,12 +56,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 // After this we are able to directly access this attribute to get a user f.e,
                 // resulting in less code
                 if (userDetails instanceof CustomUserDetails) {
-                    request.setAttribute("userId", ((CustomUserDetails) userDetails).getId());
+                    request.setAttribute("email", ((CustomUserDetails) userDetails).getUsername());
                 }
 
             }
         } catch (Exception ex) {
-            log.warn("Received invalid auth token");
+            log.warn("Received invalid access token");
         }
 
         // Calls the next filter in the chain
