@@ -1,68 +1,95 @@
 name: CI/CD & Security Pipeline
 
 on:
-    push:
-        branches: ["main", "master"]
-    pull_request:
-        branches: ["main", "master"]
+  push:
+    branches: ["main", "develop", "feature/cidc"]
+  pull_request:
+    branches: ["main", "develop"]
+  workflow_dispatch:
 
 jobs:
-    # BUILD & TEST
-    build-and-test:
-        name: Build & Test
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@v4
+  # WEB: Lint + Unit-Tests
+  web:
+    name: Web - Lint & Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-                  cache: "npm"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: apps/web/package-lock.json
 
-            - name: Install Dependencies
-              run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-            - name: Run Linter & Tests
-              run: |
-                  npm run lint --if-present
-                  npm test --if-present
+      - name: Lint
+        run: npm run lint
 
-            - name: Build Project
-              run: npm run build --if-present
+      - name: Unit Tests
+        run: npx vitest run
 
-    # SECURITY SCANS (Dependencies)
-    security-scans:
-        name: Security Scans
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@v4
+  # BACKEND: Tests
+  backend:
+    name: Backend - Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-            #  Deprecated / unsave Dependencies
-            - name: Dependency Vulnerability Scan (npm audit)
-              run: npm audit --audit-level=high || true
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
 
-            # Static Code Analysis
-            - name: Run Trivy Vulnerability & Secret Scanner
-              uses: aquasecurity/trivy-action@master
-              with:
-                  scan-type: "fs"
-                  ignore-unfixed: true
-                  severity: "CRITICAL,HIGH"
-                  exit-code: "0"
+      - name: Run Tests
+        run: |
+          chmod +x mvnw
+          ./mvnw test
 
-    #  DEPLOYMENT
-    deploy:
-        name: Deployment
-        needs: [build-and-test, security-scans]
-        runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@v4
+  # SECURITY SCANS
+  security-scans:
+    name: Security Scans
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-            - name: Deploy Step
-              run: |
-                  echo "Deployment in progress... pray for success!"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Dependency Scan (npm audit)
+        working-directory: apps/web
+        run: npm audit --audit-level=high || true
+
+      - name: Trivy Vulnerability & Secret Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: "fs"
+          scanners: "vuln,secret"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"
+          exit-code: "0"
+
+  # DEPLOYMENT (Dry Run)
+  deploy:
+    name: Deployment
+    needs: [web, backend, security-scans]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy Step
+        run: echo "Deployment in progress... pray for success!"
