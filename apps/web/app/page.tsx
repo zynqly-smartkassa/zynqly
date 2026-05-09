@@ -105,6 +105,7 @@ export default function Home() {
               asChild
               className="text-sm font-semibold px-5 py-2 rounded-full text-white shadow-sm hover:opacity-90"
               style={{ background: "var(--z-color-main)" }}
+              data-testid="get-started"
             >
               <Link href="/sign-up">Get Started</Link>
             </Button>

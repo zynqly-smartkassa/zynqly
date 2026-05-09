@@ -97,9 +97,10 @@ const Header = () => {
             {/* User dropdown */}
             <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
               <DropdownMenuTrigger asChild>
-                <button
+                <Button
                   className="flex items-center gap-2 ml-1 pl-1 pr-2 py-1 rounded-full border transition-colors hover:bg-[var(--z-neutral-100)] dark:hover:bg-[var(--z-neutral-800)]"
                   style={{ borderColor: "var(--z-border)" }}
+                  data-testid="menu"
                 >
                   <Avatar className="w-7 h-7">
                     <AvatarFallback
@@ -128,12 +129,13 @@ const Header = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                </button>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem>Profil</DropdownMenuItem>
                 <DropdownMenuItem>Einstellungen</DropdownMenuItem>
                 <DropdownMenuItem
+                  data-testid="sign-out-button"
                   className="text-red-500"
                   onClick={() => {
                     deleteRefreshCookie();

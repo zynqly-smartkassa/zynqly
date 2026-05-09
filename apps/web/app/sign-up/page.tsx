@@ -577,7 +577,7 @@ export default function SignUpPage() {
             {/* ── Submit ── */}
             <Button
               type="submit"
-              data-testid="register-button"
+              data-testid="sign-up-button"
               className="flex items-center justify-center gap-2 w-full h-auto py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:opacity-90 active:scale-[0.98] mt-1"
               style={{ background: "var(--z-color-main)" }}
             >
@@ -605,6 +605,7 @@ export default function SignUpPage() {
             Bereits registriert?{" "}
             <Link
               href="/sign-in"
+              data-testid="sign-in-link"
               className="font-semibold hover:opacity-70 transition-opacity"
               style={{ color: "var(--z-color-main)" }}
             >
