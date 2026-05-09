@@ -37,7 +37,7 @@ import com.zynqly.backend.auth.dto.requests.SignInAccountRequestDto;
 import com.zynqly.backend.auth.dto.requests.SignUpAccountRequestDto;
 import com.zynqly.backend.auth.security.CustomUserDetails;
 import com.zynqly.backend.auth.security.JwtAuthFilter;
-import com.zynqly.backend.auth.config.SecurityConfig;
+import com.zynqly.backend.auth.security.config.SecurityConfig;
 import com.zynqly.backend.common.entities.User;
 import com.zynqly.backend.common.exception.ApiError;
 import com.zynqly.backend.common.exception.OwnException;

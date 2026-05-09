@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.zynqly.backend.common.entities.User;
@@ -19,20 +20,19 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of();
+		return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
 	}
 
 	@Override
 	public @Nullable String getPassword() {
 		return user.getPassword();
-		
+
 	}
 
 	@Override
 	public String getUsername() {
 		return user.getEmail();
 	}
-
 
 	public String getEmail() {
 		return user.getEmail();
