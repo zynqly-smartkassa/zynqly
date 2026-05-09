@@ -208,7 +208,7 @@ export default function SignInPage() {
                       <Input
                         {...field}
                         id="email"
-                        data-testid="email-field"
+                        data-testid="sign-in-email-input"
                         type="email"
                         placeholder="name@example.com"
                         autoComplete="email"
@@ -217,7 +217,7 @@ export default function SignInPage() {
                       />
                     </div>
                     {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]} fieldName="sign-in-email"/>
                     )}
                   </Field>
                 )}
@@ -266,7 +266,7 @@ export default function SignInPage() {
                       <Input
                         {...field}
                         id="password"
-                        data-testid="password-field"
+                        data-testid="sign-in-password-input"
                         type={showPassword ? "text" : "password"}
                         placeholder="Mindestens 8 Zeichen"
                         autoComplete="current-password"
@@ -314,7 +314,7 @@ export default function SignInPage() {
                       </Button>
                     </div>
                     {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]} fieldName="sign-in-password"/>
                     )}
                   </Field>
                 )}
@@ -323,7 +323,7 @@ export default function SignInPage() {
 
             <Button
               type="submit"
-              data-testid="sign-in-button"
+              data-testid="sign-in-submit-button"
               className="flex items-center justify-center gap-2 w-full h-auto py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:opacity-90 active:scale-[0.98] mt-1"
               style={{ background: "var(--z-color-main)" }}
             >

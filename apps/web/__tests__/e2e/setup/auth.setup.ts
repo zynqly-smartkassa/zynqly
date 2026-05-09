@@ -16,13 +16,13 @@ setup("authenticate", async ({ page, baseURL, browserName }) => {
   await page.goto(`${baseURL}/sign-up`);
   await expect(page).toHaveURL(`${baseURL}/sign-up`);
 
-  await page.getByTestId("name-field").fill(name);
-  await page.getByTestId("email-field").fill(email);
-  await page.getByTestId("phone-field").fill(phone);
-  await page.getByTestId("password-field").fill(password);
+  await page.getByTestId("sign-up-name-input").fill(name);
+  await page.getByTestId("sign-up-email-input").fill(email);
+  await page.getByTestId("sign-up-phone-input").fill(phone);
+  await page.getByTestId("sign-up-password-input").fill(password);
 
-  await page.getByTestId("terms-checkbox").check();
-  await page.getByTestId("sign-up-button").click();
+  await page.getByTestId("sign-up-terms-checkbox").check();
+  await page.getByTestId("sign-up-submit-button").click();
 
   await expect(page.locator(".toast-success")).toBeVisible();
 

@@ -269,7 +269,7 @@ export default function SignUpPage() {
                       <Input
                         {...field}
                         id="name"
-                        data-testid="name-field"
+                        data-testid="sign-up-name-input"
                         type="text"
                         placeholder="Mario Kaya"
                         autoComplete="name"
@@ -280,7 +280,7 @@ export default function SignUpPage() {
                     </div>
                     {/* Renders the Zod error message for this field */}
                     {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]} fieldName="sign-up-name" />
                     )}
                   </Field>
                 )}
@@ -318,7 +318,7 @@ export default function SignUpPage() {
                       <Input
                         {...field}
                         id="email"
-                        data-testid="email-field"
+                        data-testid="sign-up-email-input"
                         type="email"
                         placeholder="name@example.com"
                         autoComplete="email"
@@ -328,7 +328,7 @@ export default function SignUpPage() {
                       />
                     </div>
                     {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]} fieldName="sign-up-email" />
                     )}
                   </Field>
                 )}
@@ -369,7 +369,7 @@ export default function SignUpPage() {
                       <Input
                         {...field}
                         id="phone"
-                        data-testid="phone-field"
+                        data-testid="sign-up-phone-input"
                         type="tel"
                         placeholder="+4369912345678"
                         autoComplete="tel"
@@ -379,7 +379,7 @@ export default function SignUpPage() {
                       />
                     </div>
                     {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]} fieldName="sign-up-phone" />
                     )}
                   </Field>
                 )}
@@ -420,7 +420,7 @@ export default function SignUpPage() {
                       <Input
                         {...field}
                         id="password"
-                        data-testid="password-field"
+                        data-testid="sign-up-password-input"
                         type={showPassword ? "text" : "password"}
                         placeholder="Mindestens 8 Zeichen"
                         autoComplete="new-password"
@@ -470,7 +470,7 @@ export default function SignUpPage() {
                       </Button>
                     </div>
                     {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]} fieldName="sign-up-password"/>
                     )}
                   </Field>
                 )}
@@ -538,7 +538,7 @@ export default function SignUpPage() {
                   >
                     <Checkbox
                       id="terms"
-                      data-testid="terms-checkbox"
+                      data-testid="sign-up-terms-checkbox"
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       aria-invalid={fieldState.invalid}
@@ -577,7 +577,7 @@ export default function SignUpPage() {
             {/* ── Submit ── */}
             <Button
               type="submit"
-              data-testid="sign-up-button"
+              data-testid="sign-up-submit-button"
               className="flex items-center justify-center gap-2 w-full h-auto py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:opacity-90 active:scale-[0.98] mt-1"
               style={{ background: "var(--z-color-main)" }}
             >
@@ -605,7 +605,7 @@ export default function SignUpPage() {
             Bereits registriert?{" "}
             <Link
               href="/sign-in"
-              data-testid="sign-in-link"
+              data-testid="sign-up-sign-in-link"
               className="font-semibold hover:opacity-70 transition-opacity"
               style={{ color: "var(--z-color-main)" }}
             >

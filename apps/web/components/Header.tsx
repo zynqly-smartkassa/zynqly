@@ -100,7 +100,7 @@ const Header = () => {
                 <Button
                   className="flex items-center gap-2 ml-1 pl-1 pr-2 py-1 rounded-full border transition-colors hover:bg-[var(--z-neutral-100)] dark:hover:bg-[var(--z-neutral-800)]"
                   style={{ borderColor: "var(--z-border)" }}
-                  data-testid="menu"
+                  data-testid="header-menu-trigger"
                 >
                   <Avatar className="w-7 h-7">
                     <AvatarFallback
@@ -135,7 +135,7 @@ const Header = () => {
                 <DropdownMenuItem>Profil</DropdownMenuItem>
                 <DropdownMenuItem>Einstellungen</DropdownMenuItem>
                 <DropdownMenuItem
-                  data-testid="sign-out-button"
+                  data-testid="header-sign-out-button"
                   className="text-red-500"
                   onClick={() => {
                     deleteRefreshCookie();
