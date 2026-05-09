@@ -23,7 +23,8 @@ public class ReceiptServiceIpl implements ReceiptService {
 
     private final ReceiptRepository receiptRepository;
 
-    // TODO change sortBy Parameter to use Enum of keys instead of String, and add filtering feature using same enum
+    // TODO change sortBy Parameter to use Enum of keys instead of String, and add
+    // filtering feature using same enum
     @Override
     public Page<@NonNull ReceiptListDto> getAllReceipts(int page, int size, String sortBy, boolean ascending) {
         Sort sorting;
@@ -38,13 +39,14 @@ public class ReceiptServiceIpl implements ReceiptService {
             size = 50;
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).and(sorting));
+        Pageable pageable = PageRequest.of(page, size, sorting);
         return receiptRepository.findAllAsDto(pageable);
     }
 
     @Override
     public Receipt getReceiptById(int id) {
-        return receiptRepository.findById((long) id).orElseThrow(() -> new EntityNotFoundException("Receipt with ID: %d not found".formatted(id)));
+        return receiptRepository.findById((long) id)
+                .orElseThrow(() -> new EntityNotFoundException("Receipt with ID: %d not found".formatted(id)));
     }
 
     @Override
@@ -54,9 +56,8 @@ public class ReceiptServiceIpl implements ReceiptService {
         BigDecimal taxAmount = ReceiptCalculator.calculateTaxAmount(subtotal, taxRate);
         BigDecimal discountAmount = dto.getDiscountAmount() != null ? dto.getDiscountAmount() : BigDecimal.ZERO;
         BigDecimal tip = dto.getTip() != null ? dto.getTip() : BigDecimal.ZERO;
-        BigDecimal total = ReceiptCalculator.calculateTotal(subtotal, taxAmount, discountAmount);
+        BigDecimal total = ReceiptCalculator.calculateTotal(subtotal, taxAmount, discountAmount, tip);
         BigDecimal change = ReceiptCalculator.calculateChange(total, dto.getAmountPaid());
-
         String receiptNumber = Receipt.createReceiptNumber();
 
         Receipt receipt = Receipt.builder()

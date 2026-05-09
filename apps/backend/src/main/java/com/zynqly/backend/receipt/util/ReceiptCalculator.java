@@ -15,7 +15,7 @@ public class ReceiptCalculator {
                 return new BigDecimal("0.10");
             }
             case null, default ->
-                    throw new IllegalArgumentException("Provide a type of Ride to calculate the tax rate");
+                throw new IllegalArgumentException("Provide a type of Ride to calculate the tax rate");
         }
     }
 
@@ -30,11 +30,15 @@ public class ReceiptCalculator {
 
     public static BigDecimal calculateTotal(BigDecimal subtotal, RideType rideType, BigDecimal discountAmount) {
         BigDecimal taxAmount = calculateTaxAmount(subtotal, rideType);
-        return calculateTotal(subtotal, taxAmount, discountAmount);
+        return calculateTotal(subtotal, taxAmount, discountAmount, BigDecimal.ZERO);
     }
 
-    public static BigDecimal calculateTotal(BigDecimal subtotal, BigDecimal taxAmount, BigDecimal discountAmount) {
-        return subtotal.add(taxAmount).subtract(discountAmount);
+    public static BigDecimal calculateTotal(
+            BigDecimal subtotal,
+            BigDecimal taxAmount,
+            BigDecimal discountAmount,
+            BigDecimal tip) {
+        return subtotal.add(taxAmount).subtract(discountAmount).add(tip);
     }
 
     public static BigDecimal calculateChange(BigDecimal total, BigDecimal amountPaid) {

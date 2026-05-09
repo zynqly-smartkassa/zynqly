@@ -50,7 +50,7 @@ public class ServiceTest {
         // another values to check using chaining ReceiptCalculator Methods
         BigDecimal expectedTaxRate = ReceiptCalculator.calculateTaxRate(dto.getRideType());
         BigDecimal expectedTaxAmount = ReceiptCalculator.calculateTaxAmount(dto.getSubtotal(), ReceiptCalculator.calculateTaxRate(dto.getRideType()));
-        BigDecimal expectedTotal = ReceiptCalculator.calculateTotal(dto.getSubtotal(), expectedTaxAmount, dto.getDiscountAmount());
+        BigDecimal expectedTotal = ReceiptCalculator.calculateTotal(dto.getSubtotal(), expectedTaxAmount, dto.getDiscountAmount(), new BigDecimal("0.00"));
 
 
         assertThat(receiptCreated.getRideType()).isEqualTo(dto.getRideType());
