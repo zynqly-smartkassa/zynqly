@@ -1,4 +1,4 @@
-package com.zynqly.backend.config;
+package com.zynqly.backend.auth.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

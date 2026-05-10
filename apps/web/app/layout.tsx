@@ -3,6 +3,7 @@ import "./globals.css";
 import { JetBrains_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/components/providers";
+import { Toaster } from "sonner";
 
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang="de" className={cn("h-full antialiased", "font-mono", jetbrainsMono.variable)} suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
         <Providers>
+          <Toaster position="top-right" closeButton/>
             {children}
         </Providers>
       </body>

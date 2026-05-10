@@ -98,6 +98,7 @@ export default function Home() {
               variant="ghost"
               className="hidden sm:inline-flex text-sm font-medium px-4 py-1.5 rounded-full hover:opacity-60"
               style={{ color: "var(--z-text-main)" }}
+              data-testid="landing-sign-in-link"
             >
               <Link href="/sign-in">Sign In</Link>
             </Button>
@@ -105,6 +106,7 @@ export default function Home() {
               asChild
               className="text-sm font-semibold px-5 py-2 rounded-full text-white shadow-sm hover:opacity-90"
               style={{ background: "var(--z-color-main)" }}
+              data-testid="landing-get-started-link"
             >
               <Link href="/sign-up">Get Started</Link>
             </Button>

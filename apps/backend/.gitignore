@@ -42,3 +42,5 @@ mysql_data/
 *.sql
 *.log
 .dbvis/
+
+application-local.properties

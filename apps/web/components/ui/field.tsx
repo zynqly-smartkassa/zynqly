@@ -177,9 +177,11 @@ function FieldError({
   className,
   children,
   errors,
+  fieldName,
   ...props
 }: React.ComponentProps<"div"> & {
-  errors?: Array<{ message?: string } | undefined>
+  errors?: Array<{ message?: string } | undefined>,
+  fieldName?: string; // The field
 }) {
   const content = useMemo(() => {
     if (children) {
@@ -216,6 +218,7 @@ function FieldError({
     <div
       role="alert"
       data-slot="field-error"
+      data-testid={fieldName ? `${fieldName}-error` : undefined}
       className={cn("text-xs font-normal text-destructive", className)}
       {...props}
     >

@@ -13,16 +13,32 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "chromium",
+      name: "auth-initial-chromium",
+      testMatch: /auth\.setup\.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
     {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+      name: "features-chromium",
+      testIgnore: [/auth\.setup\.ts/],
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "playwright/.auth/chromium.json",
+      },
+      // Runs only after the Chromium auth smoke tests succeeded
+      dependencies: ["auth-initial-chromium"],
     },
+    // {
+    //   name: "features-chromium",
+    //   testIgnore: [/auth\.spec\.ts/, /auth\.setup\.ts/],
+    //   use: {
+    //     ...devices["Desktop Chrome"],
+    //     storageState: "playwright/.auth/chromium.json",
+    //   },
+    //   dependencies: ["auth-initial-chromium"],
+    // },
   ],
   webServer: {
-    command: "npm run dev",
+    command: "npm run test",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
   },
