@@ -7,9 +7,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+/**
+ * Jackson configuration shared by the entire auth module.
+ *
+ * Registers the {@link JavaTimeModule} so the {@code java.time} types used by
+ * the JWT payloads and DTOs are serialised as ISO-8601 strings instead of
+ * numeric timestamps.
+ */
 @Configuration
 public class JacksonConfig {
 
+    /**
+     * Builds the application's primary {@link ObjectMapper}.
+     *
+     * @return an object mapper with the Java time module registered and
+     *         timestamp-style date serialisation disabled
+     */
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper()

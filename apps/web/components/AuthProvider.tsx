@@ -4,6 +4,16 @@ import { useGetAccessTkQuery } from "@/redux/api/apis/auth";
 import { useGetDashboardQuery } from "@/redux/api/apis/dashboard";
 import React, { useEffect } from "react";
 
+/**
+ * Gate that defers rendering of the authenticated app shell until an access
+ * token has been resolved.
+ *
+ * On mount it kicks off `getAccessTk`, which exchanges the refresh-token
+ * cookie for a fresh access token via a server action. Once a token exists it
+ * also prefetches the dashboard so the first authenticated route is ready by
+ * the time the children render. A simple loading placeholder is shown while
+ * either request is in flight.
+ */
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { isLoading: isLoadingTk, isSuccess: hasTk } =
     useGetAccessTkQuery(undefined);
@@ -11,6 +21,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const {data, isLoading: isLoadingDashboard} = useGetDashboardQuery(undefined, {skip: !hasTk})
 
   if (isLoadingTk || (hasTk && isLoadingDashboard) ) {
+    {/* Loading placeholder shown while the access token or dashboard data is being fetched */}
     return <h2>Loading</h2>;
   }
 

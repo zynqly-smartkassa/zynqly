@@ -65,6 +65,15 @@ export type SignUpFormValues = z.infer<typeof signUpSchema>;
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
+/**
+ * Sign-up page rendered at `/sign-up`.
+ *
+ * Owns a Zod-validated react-hook-form, submits via the `useSignUpMutation`
+ * RTK endpoint and forwards backend field errors (e.g. "email already taken")
+ * back onto the matching form inputs so the user sees them inline. On success
+ * the mutation also seeds the cached access token so the user is signed in
+ * immediately after registration.
+ */
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -83,7 +92,13 @@ export default function SignUpPage() {
     },
   });
 
-  // Called only when all Zod validations pass
+  /**
+   * Called only when all Zod validations pass.
+   *
+   * Triggers the sign-up mutation, surfaces success or failure through a
+   * Sonner toast, and replays backend `errors[]` entries onto the matching
+   * form fields via `form.setError`.
+   */
   const onSubmit = async (values: SignUpFormValues) => {
     const toastId = toast.loading("Creating Account...", {
       className: "toast-loading",

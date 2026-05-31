@@ -16,6 +16,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { deleteRefreshCookie } from "@/actions/auth-action";
 import { useRouter } from "next/navigation";
 
+/**
+ * Top-bar rendered on every authenticated page.
+ *
+ * Hosts the sidebar toggle, the search field, the theme switch, the
+ * notification bell and the user-account dropdown. The "Abmelden" action
+ * deletes the refresh-token cookie via a server action and then redirects
+ * back to the hero page; because the backend is stateless, removing the
+ * cookie is enough to terminate the session.
+ */
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -134,6 +143,7 @@ const Header = () => {
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem>Profil</DropdownMenuItem>
                 <DropdownMenuItem>Einstellungen</DropdownMenuItem>
+                {/* Sign-out: drop the refresh cookie and bounce to the hero page */}
                 <DropdownMenuItem
                   data-testid="header-sign-out-button"
                   className="text-red-500"

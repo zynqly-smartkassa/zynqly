@@ -16,9 +16,17 @@ import com.zynqly.backend.auth.JwtService;
 import java.io.IOException;
 
 /**
- * JWT authentication filter that intercepts HTTP requests to validate JWT tokens.
- * Extends OncePerRequestFilter to ensure single execution per request.
- * Validates access tokens from the Authorization header and sets the security context.
+ * Servlet filter that authenticates each request based on its bearer JWT.
+ *
+ * Extracts the access token from the {@code Authorization} header, validates
+ * it through {@link JwtService}, and on success places an authenticated
+ * {@link UsernamePasswordAuthenticationToken} (with the user's authorities)
+ * into the security context for the remainder of the request. Invalid or
+ * missing tokens are silently ignored so that downstream Spring Security
+ * rules can decide whether to allow or reject the request.
+ *
+ * @see JwtService
+ * @see com.zynqly.backend.auth.security.config.SecurityConfig
  */
 @RequiredArgsConstructor
 @Slf4j
@@ -27,11 +35,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     /**
-     * Filters incoming HTTP requests to validate JWT tokens and set authentication context.
-     * Extracts and validates the access token, then sets the user's authentication in the security context.
+     * Inspects the incoming request for a bearer token, validates it, and
+     * publishes the resulting authentication into the security context before
+     * invoking the next filter in the chain.
      *
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * When a {@link CustomUserDetails} is produced, the user's email is also
+     * exposed as the request attribute {@code "email"} so controllers can read
+     * it directly without re-parsing the security context.
+     *
+     * @throws ServletException when the downstream chain raises a servlet error
+     * @throws IOException when the downstream chain raises an I/O error
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -39,7 +52,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
         try {
             String tk = jwtService.extractAccesTk(request);
-        
+
             if (tk != null) {
 
                 UserDetails userDetails = jwtService.validateTk(tk);

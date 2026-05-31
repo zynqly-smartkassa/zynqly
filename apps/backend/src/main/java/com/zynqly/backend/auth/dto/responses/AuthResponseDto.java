@@ -6,8 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Data Transfer Object for authentication responses.
- * Contains the access token and its expiration information.
+ * Response payload returned by every successful auth endpoint.
+ *
+ * Exposes only the short-lived access token (the refresh token travels in a
+ * separate HTTP-only cookie) and its remaining lifetime in seconds so the
+ * client can schedule a silent refresh before expiry.
  */
 @Data
 @NoArgsConstructor

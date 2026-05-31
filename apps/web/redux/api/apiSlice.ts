@@ -1,5 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+/**
+ * Root RTK Query slice used by every feature-specific API module.
+ *
+ * The shared `prepareHeaders` reads the access token straight from the
+ * cached `getAccessTk` query so any authenticated request automatically
+ * carries an up-to-date `Authorization: Bearer <tk>` header without callers
+ * having to inject it manually.
+ */
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({

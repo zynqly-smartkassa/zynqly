@@ -21,6 +21,18 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Service layer responsible for JWT issuance, validation and extraction.
+ *
+ * Centralises the secret-key handling, the access/refresh-token lifetimes and
+ * the conventions for reading tokens from the inbound HTTP request (the
+ * {@code Authorization: Bearer ...} header for access tokens and the
+ * {@code refresh_tk} cookie for refresh tokens). The signing secret is read
+ * from the {@code jwt.secret} property.
+ *
+ * @see AuthController
+ * @see com.zynqly.backend.auth.security.JwtAuthFilter
+ */
 @Service
 @RequiredArgsConstructor
 public class JwtService {
@@ -34,19 +46,44 @@ public class JwtService {
 	private final long ACCESS_TK = 1000L * 60 * 15;
 	private final UserDetailsService userDetailsService;
 
+	/**
+	 * Parses the supplied JWT, validates its signature and expiry, and loads
+	 * the associated {@link UserDetails}.
+	 *
+	 * @return the user details of the subject encoded in the token
+	 * @throws io.jsonwebtoken.JwtException when the token is malformed, expired
+	 *         or signed with a different key
+	 */
 	public UserDetails validateTk(String tk) {
 		String email = extractEmail(tk);
 		return userDetailsService.loadUserByUsername(email);
 	}
 
+	/**
+	 * Creates a short-lived access token for the supplied email.
+	 *
+	 * @return the signed access JWT
+	 */
 	public String createAccessTk(String email) {
 		return createTk(email, TkName.ACCESS);
 	}
 
+	/**
+	 * Creates a long-lived refresh token for the supplied email.
+	 *
+	 * @return the signed refresh JWT
+	 */
 	public String createRefreshTk(String email) {
 		return createTk(email, TkName.REFRESH);
 	}
 
+	/**
+	 * Extracts the bearer access token from the request's
+	 * {@code Authorization} header.
+	 *
+	 * @return the raw token string, or {@code null} when the header is missing
+	 *         or does not start with the {@code Bearer } prefix
+	 */
 	public String extractAccesTk(HttpServletRequest request) {
 
 		String bearerTk = request.getHeader("Authorization");
@@ -57,6 +94,12 @@ public class JwtService {
 		return null;
 	}
 
+	/**
+	 * Extracts the refresh token from the {@code refresh_tk} cookie.
+	 *
+	 * @return the cookie value, or {@code null} when the request carries no
+	 *         cookies or no cookie with that name
+	 */
 	public String extractRefreshTk(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies == null) {
@@ -70,6 +113,16 @@ public class JwtService {
 				.orElse(null);
 	}
 
+	/**
+	 * Builds and signs a JWT for the supplied subject with the lifetime
+	 * matching the given token type.
+	 *
+	 * The token carries the subject (the user's email), an issued-at timestamp,
+	 * the expiration timestamp and a {@code type_tk} claim that distinguishes
+	 * access tokens from refresh tokens.
+	 *
+	 * @return the compact, signed JWT string
+	 */
 	private String createTk(String email, TkName tkExpiry) {
 
 		long expiryMs;
@@ -91,11 +144,23 @@ public class JwtService {
 				.compact(); // Creates the xxxxx.yyyyy.zzzzz String
 	}
 
+	/**
+	 * Derives the HMAC signing key from the configured secret.
+	 *
+	 * @return the HMAC-SHA key used for signing and verification
+	 */
 	private Key getSigningKey() {
 		byte[] keyBytes = secretKey.getBytes();
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
 
+	/**
+	 * Parses the JWT and returns its subject claim (the user's email).
+	 *
+	 * @return the email encoded as the token's subject
+	 * @throws io.jsonwebtoken.JwtException when the token cannot be parsed or
+	 *         the signature is invalid
+	 */
 	private String extractEmail(String tk) {
 		Claims claims = Jwts.parserBuilder()
 				.setSigningKey(getSigningKey())

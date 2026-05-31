@@ -1,22 +1,180 @@
 openapi: 3.0.0
 info:
-  title: Taxi Cash Register API
-  description: API for managing rides and dashboard statistics for a taxi company.
+  title: Zynqly Backend API
+  description: |
+    REST API for the Zynqly taxi cash-register platform.
+
+    All routes are served under the `/api/v1` servlet context path (configured
+    via `server.servlet.context-path` in `application.properties`).
+    Authentication uses JWT: clients obtain a short-lived access token from
+    `/auth/sign-in` (sent as `Authorization: Bearer <token>`) and a long-lived
+    refresh token that the backend writes into an HTTP-only `refresh_tk`
+    cookie. New access tokens can be obtained via `GET /auth/access-tk`.
   version: 1.0.0
 
 servers:
-  - url: http://localhost:3000
-    description: Local Backend-Server (Java/Spring)
-  - url: https://smart-kassa.vercel.app/
+  - url: http://localhost:8080/api/v1
+    description: Local Backend-Server (Java/Spring Boot)
+  - url: https://smart-kassa.vercel.app/api/v1
     description: Production Server
 
 security:
   - bearerAuth: [ ]
 
+tags:
+  - name: Auth
+    description: Sign-up, sign-in and JWT refresh endpoints
+  - name: Dashboard
+    description: Aggregated KPI data shown on the dashboard
+  - name: Rides
+    description: Raw ride data
+  - name: Ride History
+    description: Paginated history of completed rides
+  - name: Receipts
+    description: Receipts created from rides
+
 paths:
-  /ride:
+  # =========================================================================
+  # AUTH
+  # =========================================================================
+  /auth/sign-up:
+    post:
+      tags: [Auth]
+      summary: Register a new account
+      description: |
+        Creates a new user, hashes the supplied password, and returns an
+        access token. The matching long-lived refresh token is set as the
+        HTTP-only `refresh_tk` cookie via the `Set-Cookie` response header.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpAccountRequestDto'
+      responses:
+        '201':
+          description: Account created
+          headers:
+            Set-Cookie:
+              description: HTTP-only refresh token cookie (`refresh_tk`)
+              schema:
+                type: string
+                example: "refresh_tk=eyJhbGciOi...; Path=/; HttpOnly; Max-Age=2592000"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseDto'
+        '400':
+          description: Validation error or email/phone already taken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/sign-in:
+    post:
+      tags: [Auth]
+      summary: Authenticate an existing user
+      description: |
+        Verifies the supplied credentials and returns a fresh access token.
+        The long-lived refresh token is set as the HTTP-only `refresh_tk`
+        cookie via the `Set-Cookie` response header.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInAccountRequestDto'
+      responses:
+        '200':
+          description: Authenticated
+          headers:
+            Set-Cookie:
+              description: HTTP-only refresh token cookie (`refresh_tk`)
+              schema:
+                type: string
+                example: "refresh_tk=eyJhbGciOi...; Path=/; HttpOnly; Max-Age=2592000"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseDto'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/access-tk:
     get:
-      summary: Retrieve list of all rides
+      tags: [Auth]
+      summary: Exchange the refresh-token cookie for a fresh access token
+      description: |
+        Reads the HTTP-only `refresh_tk` cookie from the request, validates
+        it, and returns a new access token. The refresh cookie itself is not
+        rotated.
+      security: []
+      parameters:
+        - in: cookie
+          name: refresh_tk
+          required: true
+          description: Refresh token previously issued by sign-up or sign-in
+          schema:
+            type: string
+      responses:
+        '200':
+          description: New access token issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseDto'
+        '401':
+          description: Refresh token missing or invalid
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "The refresh token is missing"
+
+  # =========================================================================
+  # DASHBOARD
+  # =========================================================================
+  /dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Retrieve aggregated dashboard data
+      description: |
+        Returns the KPI cards, monthly and weekly chart data, settlement
+        breakdown and top-drivers table rendered on the dashboard.
+      responses:
+        '200':
+          description: Dashboard payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardDto'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # =========================================================================
+  # RIDES
+  # =========================================================================
+  /ride/:
+    get:
+      tags: [Rides]
+      summary: Retrieve the list of all rides
       responses:
         '200':
           description: A list of rides
@@ -25,52 +183,61 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Ride'
-    post:
-      summary: Save a new ride
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RideInput'
-      responses:
-        '201':
-          description: Ride successfully created
+                  $ref: '#/components/schemas/Rides'
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Ride'
+                $ref: '#/components/schemas/ErrorResponse'
 
-  /ride/{id}:
+  # =========================================================================
+  # RIDE HISTORY
+  # =========================================================================
+  /ride-history:
     get:
-      summary: Retrieve details of a specific ride
+      tags: [Ride History]
+      summary: Retrieve paginated ride history
+      description: |
+        Returns a Spring Data `Page` of completed rides. Use the standard
+        Spring pagination query parameters (`page`, `size`, `sort`).
       parameters:
-        - $ref: '#/components/parameters/id'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 6
+        - name: sort
+          in: query
+          description: Comma-separated `property,(asc|desc)` pairs
+          schema:
+            type: string
+            example: "dateTime,desc"
       responses:
         '200':
-          description: Ride details
+          description: A paginated list of rides
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Ride'
-        '404':
-          description: Ride not found
-
-  /dashboard:
-    get:
-      summary: Retrieve statistics for the dashboard
-      description: Provides aggregated data such as total revenue and number of rides.
-      responses:
-        '200':
-          description: Dashboard data
+                $ref: '#/components/schemas/RideHistoryPage'
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DashboardStats'
+                $ref: '#/components/schemas/ErrorResponse'
 
+  # =========================================================================
+  # RECEIPTS
+  # =========================================================================
   /receipts:
     get:
+      tags: [Receipts]
       summary: Retrieve paginated list of all receipts (overview)
       description: Provides a paginated list of receipts with key data for tables or list views.
       parameters:
@@ -109,6 +276,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     post:
+      tags: [Receipts]
       summary: Create a new receipt
       description: Generates an official receipt based on a ride ID.
       requestBody:
@@ -135,6 +303,7 @@ paths:
 
   /receipts/{id}:
     get:
+      tags: [Receipts]
       summary: Retrieve receipt by its unique ID
       parameters:
         - name: id
@@ -161,87 +330,322 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+# =========================================================================
 # COMPONENTS
+# =========================================================================
 components:
 
   parameters:
     id:
       name: id
       in: path
-      description: Unique ID of specific Collection
+      description: Unique ID of specific resource
       required: true
       schema:
         type: string
-
 
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: "Enter your JWT token here. Format: Bearer <token>"
+      description: |
+        JWT access token issued by `/auth/sign-in` or `/auth/access-tk`.
+        Format: `Bearer <token>`.
 
   schemas:
-    Ride:
+
+    # ---------------------------------------------------------------
+    # AUTH SCHEMAS
+    # ---------------------------------------------------------------
+    SignUpAccountRequestDto:
+      type: object
+      required: [name, email, phone, password, role]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          example: "Mario Kaya"
+        email:
+          type: string
+          format: email
+          example: "mario@example.com"
+        phone:
+          type: string
+          minLength: 10
+          example: "+4369912345678"
+        password:
+          type: string
+          minLength: 6
+          example: "supersecret"
+        role:
+          $ref: '#/components/schemas/Role'
+
+    SignInAccountRequestDto:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          minLength: 3
+          maxLength: 20
+          example: "mario@example.com"
+        password:
+          type: string
+          minLength: 6
+          example: "supersecret"
+
+    AuthResponseDto:
+      type: object
+      properties:
+        accessTk:
+          type: string
+          description: Short-lived JWT access token
+          example: "eyJhbGciOiJIUzI1NiJ9..."
+        expiresIn:
+          type: integer
+          description: Remaining lifetime of the access token, in seconds
+          example: 900
+
+    Role:
+      type: string
+      enum: [ UNTERNEHMER, FAHRER, BUCHHALTER ]
+      example: "UNTERNEHMER"
+
+    # ---------------------------------------------------------------
+    # ERROR SCHEMAS
+    # ---------------------------------------------------------------
+    ApiError:
+      type: object
+      description: |
+        Structured error envelope used for validation and authentication
+        failures. The `errors` array carries one entry per offending field
+        so the frontend can attach the message to the right input.
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "There are 2 errors"
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldError'
+
+    FieldError:
+      type: object
+      properties:
+        field:
+          type: string
+          example: "email"
+        message:
+          type: string
+          example: "The used email is already taken."
+
+    ErrorResponse:
+      type: object
+      description: Generic error envelope returned for 404 and 500 responses.
+      properties:
+        status:
+          type: integer
+          example: 500
+        error:
+          type: string
+          example: "Internal Server Error"
+        message:
+          type: string
+          example: "Failed to load receipts data"
+        path:
+          type: string
+          example: "/api/v1/receipts"
+
+    # ---------------------------------------------------------------
+    # DASHBOARD
+    # ---------------------------------------------------------------
+    DashboardDto:
+      type: object
+      properties:
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardStat'
+        monthlyData:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyData'
+        weeklyData:
+          type: array
+          items:
+            $ref: '#/components/schemas/WeeklyData'
+        settlementData:
+          type: array
+          items:
+            $ref: '#/components/schemas/Settlement'
+        topDrivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopDriver'
+
+    DashboardStat:
+      type: object
+      properties:
+        label:
+          type: string
+          example: "Total Revenue"
+        value:
+          type: string
+          example: "11.340,00 €"
+        rawValue:
+          type: number
+          format: double
+          example: 11340.0
+        change:
+          type: string
+          example: "+14,9% vs last month"
+        changePercent:
+          type: number
+          format: double
+          nullable: true
+          example: 14.9
+        positive:
+          type: boolean
+        icon:
+          type: string
+          enum: [revenue, rides, drivers, fare]
+
+    MonthlyData:
+      type: object
+      properties:
+        month:
+          type: string
+          example: "Jan"
+        revenue:
+          type: integer
+        rides:
+          type: integer
+
+    WeeklyData:
+      type: object
+      properties:
+        day:
+          type: string
+          example: "Mo"
+        brutto:
+          type: integer
+        netto:
+          type: integer
+
+    Settlement:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Card"
+        value:
+          type: integer
+          description: Percentage share
+          example: 62
+
+    TopDriver:
+      type: object
+      properties:
+        name:
+          type: string
+        rides:
+          type: integer
+        revenue:
+          type: string
+          example: "2.430 €"
+        revenueRaw:
+          type: number
+          format: double
+        rating:
+          type: number
+          format: double
+
+    # ---------------------------------------------------------------
+    # RIDES
+    # ---------------------------------------------------------------
+    Rides:
+      type: object
+      properties:
+        ride_id:
+          type: integer
+        vehicle_id:
+          type: integer
+        user_id:
+          type: integer
+        start_address:
+          type: string
+        start_time:
+          type: string
+        end_address:
+          type: string
+        end_time:
+          type: string
+        duration:
+          type: string
+        distance:
+          type: integer
+        ride_type:
+          type: string
+        whole_ride:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/WholeRide'
+
+    WholeRide:
+      type: object
+      description: Single waypoint inside a ride. Exact shape is data-driven.
+      additionalProperties: true
+
+    # ---------------------------------------------------------------
+    # RIDE HISTORY
+    # ---------------------------------------------------------------
+    RideHistoryEntry:
       type: object
       properties:
         id:
           type: string
-          example: "123-abc-456"
-        timestamp:
+          example: "R-1042"
+        dateTime:
           type: string
           format: date-time
-          example: "2024-05-20T14:30:00Z"
-        distance_km:
-          type: number
-          format: float
-          example: 12.5
-        duration_min:
-          type: integer
-          example: 20
-
-    RideInput:
-      type: object
-      required:
-        - distance_km
-        - total_amount
-        - payment_method
-      properties:
-        distance_km:
-          type: number
-          example: 12.5
-        duration_min:
-          type: integer
-          example: 20
-        total_amount:
-          type: number
-          example: 35.50
-        payment_method:
+          example: "2026-04-11T08:15:00"
+        type:
           type: string
-          enum: [ cash, card, app ]
+          enum: [Passagier, Boten]
+        from:
+          type: string
+        to:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        settlement:
+          type: string
+          enum: [card, cash]
+        status:
+          type: string
+          enum: [completed, cancelled, pending]
 
-    DashboardStats:
+    RideHistoryPage:
       type: object
       properties:
-        total_revenue:
-          type: number
-          example: 1540.80
-        total_rides:
-          type: integer
-          example: 42
-        average_ride_value:
-          type: number
-          example: 36.68
-        revenue_by_payment_method:
-          type: object
-          properties:
-            cash:
-              type: number
-            card:
-              type: number
-            app:
-              type: number
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/RideHistoryEntry'
+        page:
+          $ref: '#/components/schemas/PageMetadata'
 
+    # ---------------------------------------------------------------
+    # RECEIPTS
+    # ---------------------------------------------------------------
     Receipt:
       type: object
       properties:
@@ -375,22 +779,6 @@ components:
           example: 35.20
         currency:
           $ref: '#/components/schemas/Currency'
-
-    ErrorResponse:
-      type: object
-      properties:
-        status:
-          type: integer
-          example: 500
-        error:
-          type: string
-          example: "Internal Server Error"
-        message:
-          type: string
-          example: "Failed to load receipts data"
-        path:
-          type: string
-          example: "/api/v1/receipts"
 
     ReceiptListPage:
       type: object

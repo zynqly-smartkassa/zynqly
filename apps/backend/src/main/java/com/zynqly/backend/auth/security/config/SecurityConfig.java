@@ -25,6 +25,19 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.zynqly.backend.auth.JwtService;
 import com.zynqly.backend.auth.security.JwtAuthFilter;
 
+/**
+ * Central Spring Security configuration for the application.
+ *
+ * Wires the stateless JWT-based authentication setup: CSRF is disabled because
+ * the API does not rely on session cookies, the {@link JwtAuthFilter} runs
+ * before the standard {@link UsernamePasswordAuthenticationFilter}, and the
+ * {@code /auth/**} routes are publicly reachable so unauthenticated clients
+ * can sign up, sign in and refresh tokens. CORS is opened up for the
+ * configured frontend origin(s).
+ *
+ * @see JwtAuthFilter
+ * @see CorsConfig
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -33,11 +46,28 @@ public class SecurityConfig {
     @Value("${FRONTEND_URL:http://localhost:3000}")
     private String frontendUrl;
 
+    /**
+     * Produces the JWT authentication filter as a managed bean.
+     *
+     * @return the configured {@link JwtAuthFilter}
+     */
     @Bean
     public JwtAuthFilter jwtAuthenticationFilter(JwtService jwtService) {
         return new JwtAuthFilter(jwtService);
     }
 
+    /**
+     * Assembles the application's primary security filter chain.
+     *
+     * Disables CSRF, opts in to CORS using the bean defined below, makes all
+     * {@code /auth/**} routes public, leaves every other route open at the
+     * Spring Security level (so the JWT filter alone decides authentication),
+     * declares the session policy as stateless and inserts the JWT filter
+     * ahead of the username/password filter.
+     *
+     * @return the built security filter chain
+     * @throws Exception when {@link HttpSecurity#build()} fails
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
         JwtAuthFilter jwtAuthenticationFilter) throws Exception {
@@ -55,11 +85,24 @@ public class SecurityConfig {
     }
 
 
+    /**
+     * Exposes a delegating password encoder so existing hashes with different
+     * algorithm prefixes can still be matched.
+     *
+     * @return the configured {@link PasswordEncoder}
+     */
     @Bean
     public PasswordEncoder encoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
+    /**
+     * Exposes the Spring-managed {@link AuthenticationManager} so the service
+     * layer can trigger username/password authentication.
+     *
+     * @return the auto-configured authentication manager
+     * @throws Exception when the underlying configuration cannot be resolved
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -67,11 +110,16 @@ public class SecurityConfig {
 
 
     /**
-     * Configures Cross-Origin Resource Sharing (CORS) settings.
-     * Allows requests from localhost:3000 with credentials and specified HTTP
-     * methods.
+     * Configures Cross-Origin Resource Sharing (CORS) for every route.
      *
-     * @return the CORS configuration source
+     * Reads {@code FRONTEND_URL} (a comma-separated list of patterns) and
+     * registers it via {@code setAllowedOriginPatterns}, which is required when
+     * {@code allowCredentials} is enabled and supports wildcards such as
+     * {@code https://*.vercel.app}. The configuration permits the standard
+     * REST verbs and allows credentials so that the refresh-token cookie can
+     * round-trip between the browser and the API.
+     *
+     * @return the CORS configuration source registered for {@code /**}
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

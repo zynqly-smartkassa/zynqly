@@ -8,8 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Data Transfer Object for user sign-in requests.
- * Contains credentials required for user authentication.
+ * Request payload for the {@code POST /auth/sign-in} endpoint.
+ *
+ * Carries the credentials a returning user submits to obtain a fresh
+ * access/refresh-token pair. Both fields are validated server-side via Jakarta
+ * Bean Validation; failed validation is surfaced as HTTP 400 with field-level
+ * error messages.
  */
 @Data
 @NoArgsConstructor
