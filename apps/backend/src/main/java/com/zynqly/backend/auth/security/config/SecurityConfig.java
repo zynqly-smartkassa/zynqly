@@ -1,5 +1,6 @@
 package com.zynqly.backend.auth.security.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -124,10 +125,20 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         // Split by comma to support multiple origins, trim whitespace from each entry
-        List<String> allowedOrigins = Stream.of(frontendUrl.split(","))
+        List<String> allowedOrigins = new ArrayList<>(Stream.of(frontendUrl.split(","))
         .map(String::trim)
         .filter(s -> !s.isEmpty())
-        .toList();
+        .toList());
+
+        // Always permit the local development clients (Next.js, Flutter, Swagger UI)
+        // so tools like Swagger "Try it out" work out of the box, regardless of FRONTEND_URL.
+        allowedOrigins.addAll(List.of(
+            "http://localhost:3000", // Next.js web
+            "http://localhost:3001", // Next.js test
+            "http://localhost:9100", // Flutter
+            "app://localhost",       // Flutter
+            "http://localhost:8082"  // Swagger UI
+        ));
 
         CorsConfiguration configuration = new CorsConfiguration();
         // setAllowedOriginPatterns works correctly with allowCredentials(true)

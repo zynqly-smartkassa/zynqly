@@ -6,7 +6,7 @@
 
 This document targets the engineers who maintain the backend and the
 frontends. The endpoint contracts themselves live in
-[`openapi.yaml`](./openapi.yaml) and are browsable via the Swagger container
+[`openapi.yaml`](../openapi.yaml) and are browsable via the Swagger container
 (`docker compose up swagger-ui`, then open <http://localhost:8082>).
 
 ---

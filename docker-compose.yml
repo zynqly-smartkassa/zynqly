@@ -16,9 +16,11 @@ services:
     ports:
       - "8082:8080"
     volumes:
+      # openapi.yaml is served from /docs ...
       - ./docs:/usr/share/nginx/html/docs
-    environment:
-      - SWAGGER_JSON=/usr/share/nginx/html/docs/openapi.yaml
+      # ... and our custom dark-themed page replaces the default index
+      # (loads ./docs/openapi.yaml itself, so SWAGGER_JSON is no longer needed).
+      - ./docs/swagger/index.html:/usr/share/nginx/html/index.html:ro
     restart: unless-stopped
 
 volumes:

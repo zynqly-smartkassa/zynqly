@@ -32,7 +32,7 @@ Tests are written with **Playwright** and live in `apps/web/new/__tests__/e2e/`.
 
 ## `npm run dev` vs. `npm run test`
 
-Both commands start Next.js, but they load **different secrets** via [Infisical](./README-INFISICAL.md):
+Both commands start Next.js, but they load **different secrets** via [Infisical](../setup/INFISICAL.md):
 
 ```jsonc
 // apps/web/new/package.json
@@ -208,4 +208,4 @@ npx playwright test --ui
 | Node.js 20+ | Next.js + Playwright |
 | Infisical CLI | Loading secrets for `npm run test` |
 
-Make sure the Infisical CLI is authenticated before running E2E tests. See [README-INFISICAL.md](./README-INFISICAL.md) for setup instructions.
+Make sure the Infisical CLI is authenticated before running E2E tests. See [INFISICAL.md](../setup/INFISICAL.md) for setup instructions.

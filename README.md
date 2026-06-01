@@ -24,9 +24,13 @@ In the future, the system will be expanded and adapted for other business sector
 
 ## Project Documentation
 
+All project documentation lives centrally under [`docs/`](docs/README.md) —
+see that index for the full list. Quick links:
+
 | File | Description |
 |------|-------------|
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Git branching strategy, commit conventions, and general contribution workflow |
-| [DATABASE_GUIDE.md](DATABASE_GUIDE.md) | How to start the PostgreSQL database via Docker and connect with DBeaver or Spring Boot |
-| [README-INFISICAL.md](README-INFISICAL.md) | Secret management setup using Infisical — replaces local `.env` files |
-| [E2E_TESTING.md](E2E_TESTING.md) | Full end-to-end test infrastructure: setup, services involved, and how to run Playwright tests |
+| [docs/](docs/README.md) | Central documentation index (API, backend, frontend, testing, setup) |
+| [docs/backend/DATABASE_GUIDE.md](docs/backend/DATABASE_GUIDE.md) | How to start the PostgreSQL database via Docker and connect with DBeaver or Spring Boot |
+| [docs/setup/INFISICAL.md](docs/setup/INFISICAL.md) | Secret management setup using Infisical — replaces local `.env` files |
+| [docs/testing/E2E_TESTING.md](docs/testing/E2E_TESTING.md) | Full end-to-end test infrastructure: setup, services involved, and how to run Playwright tests |
