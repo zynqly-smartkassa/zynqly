@@ -23,7 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+// addFilters = false skips the JWT security filter chain so these tests can
+// exercise the receipt endpoints directly. They verify receipt CRUD behaviour,
+// not authentication, which is covered separately by the auth test suite.
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @Transactional
 public class IntegrationTest {

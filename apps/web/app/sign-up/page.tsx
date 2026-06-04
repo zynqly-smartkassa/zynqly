@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Spinner } from "@/components/ui/loader";
 import { useSignUpMutation } from "@/redux/api/apis/auth";
 import { toast } from "sonner";
 
@@ -77,7 +78,7 @@ export type SignUpFormValues = z.infer<typeof signUpSchema>;
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
 
-  const [signUp] = useSignUpMutation();
+  const [signUp, { isLoading: isSigningUp }] = useSignUpMutation();
   // Initialise react-hook-form with the Zod resolver and sensible defaults
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -593,22 +594,27 @@ export default function SignUpPage() {
             <Button
               type="submit"
               data-testid="sign-up-submit-button"
-              className="flex items-center justify-center gap-2 w-full h-auto py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:opacity-90 active:scale-[0.98] mt-1"
+              disabled={isSigningUp}
+              className="flex items-center justify-center gap-2 w-full h-auto py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:opacity-90 active:scale-[0.98] mt-1 disabled:opacity-70 disabled:cursor-not-allowed"
               style={{ background: "var(--z-color-main)" }}
             >
-              Registrieren
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-4 h-4"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              {isSigningUp ? "Registrierung läuft …" : "Registrieren"}
+              {isSigningUp ? (
+                <Spinner className="w-4 h-4 text-white" />
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              )}
             </Button>
           </form>
 

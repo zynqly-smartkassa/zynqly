@@ -44,7 +44,7 @@ public class DashboardControllerTest {
     when(dashboardService.getDashboard()).thenReturn(dashboardDto);
 
     // 3. Trigger the controller and assert
-    mockMvc.perform(get("/api/v1/dashboard"))
+    mockMvc.perform(get("/dashboard"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.stats").isArray())
         .andExpect(jsonPath("$.stats[0].label").value("Total Revenue"))

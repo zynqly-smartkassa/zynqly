@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/loader";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
 import { useGetRideHistoryQuery } from "@/redux/api/apis/ride-history";
@@ -27,8 +28,9 @@ import type { Ride } from "@/types/RideHistory";
 
 import ResetFiltersButton from "@/components/ResetFiltersButton";
 import { PaginationBar } from "@/components/PaginationBar";
-import { TypeBadge, SettlementBadge, StatusBadge, formatDateTime } from "./_components/badges";
+import { TypeBadge, SettlementBadge, StatusBadge, formatDateTime, shortId } from "./_components/badges";
 import { TableSkeletonRows, MobileSkeletonCards } from "./_components/skeletons";
+import { RideDetailDialog } from "./_components/RideDetailDialog";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -44,8 +46,8 @@ function exportToCSV(rides: Ride[]) {
     r.id,
     r.dateTime,
     r.type,
-    r.from,
-    r.to,
+    r.fromLocation,
+    r.toLocation,
     r.amount.toFixed(2),
     r.settlement === "card" ? "Karte" : "Bar",
     r.status === "completed" ? "Abgeschlossen" : r.status === "cancelled" ? "Storniert" : "Ausstehend",
@@ -73,6 +75,9 @@ export default function RideHistoryPage() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Selected ride opens the detail dialog (null = closed)
+  const [selectedRideId, setSelectedRideId] = useState<string | null>(null);
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -92,7 +97,7 @@ export default function RideHistoryPage() {
     return rides.filter(
       (ride) => {
 
-        // This if statement will check wether the select is not "all" and if the 
+        // This if statement will check wether the select is not "all" and if the
         // selection matches with the field of the current ride
 
         if (filterType !== "all" && ride.type !== filterType) return false;
@@ -106,8 +111,8 @@ export default function RideHistoryPage() {
 
           // Is there a match in any field?
           const matchesId = ride.id.toLowerCase().includes(searchTerm);
-          const matchesFrom = ride.from.toLowerCase().includes(searchTerm);
-          const matchesTo = ride.to.toLowerCase().includes(searchTerm);
+          const matchesFrom = ride.fromLocation.toLowerCase().includes(searchTerm);
+          const matchesTo = ride.toLocation.toLowerCase().includes(searchTerm);
           const matchesDate = ride.dateTime.includes(searchTerm);
 
           // If at least one is not true, then sort the result out
@@ -130,12 +135,11 @@ export default function RideHistoryPage() {
 
   const handleSearch = (v: string) => { setSearch(v); setCurrentPage(1); };
 
-  // Pagination page numbers with ellipsis
   return (
     <div className="max-w-[1440px] mx-auto">
 
       {/* ── Header row: title + export ── */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-2">
         <PageHeader
           title="Fahrtenverlauf"
           subtitle="Vollständiges Protokoll aller Fahrten (Fahrtenbuch)"
@@ -143,7 +147,7 @@ export default function RideHistoryPage() {
 
         <Button
           size="sm"
-          className="gap-1.5 h-9 px-3 text-sm shrink-0 bg-z-violet-500 hover:bg-z-violet-600 text-white dark:bg-z-violet-500 dark:hover:bg-z-violet-600"
+          className="gap-1.5 h-9 px-3 text-sm self-start sm:self-auto shrink-0 bg-z-violet-500 hover:bg-z-violet-600 text-white dark:bg-z-violet-500 dark:hover:bg-z-violet-600"
           onClick={() => exportToCSV(filtered)}
           disabled={showSkeleton || filtered.length === 0}
         >
@@ -151,15 +155,14 @@ export default function RideHistoryPage() {
             <path d="M8.75 2.75a.75.75 0 0 0-1.5 0v5.69L5.03 6.22a.75.75 0 0 0-1.06 1.06l3.5 3.5a.75.75 0 0 0 1.06 0l3.5-3.5a.75.75 0 0 0-1.06-1.06L8.75 8.44V2.75Z" />
             <path d="M3.5 9.75a.75.75 0 0 0-1.5 0v1.5A2.75 2.75 0 0 0 4.75 14h6.5A2.75 2.75 0 0 0 14 11.25v-1.5a.75.75 0 0 0-1.5 0v1.5c0 .69-.56 1.25-1.25 1.25h-6.5c-.69 0-1.25-.56-1.25-1.25v-1.5Z" />
           </svg>
-          <span className="hidden sm:inline">CSV exportieren</span>
-          <span className="sm:hidden">CSV</span>
+          <span>CSV exportieren</span>
         </Button>
       </div>
 
-      {/* ── Toolbar: search full-width on mobile, then filters in 3-col grid on mobile / inline on desktop ── */}
-      <div className="flex flex-col lg:flex-row lg:items-center gap-2 mb-6">
-        {/* Search — full width on mobile, flex-1 on desktop */}
-        <div className="relative w-full lg:flex-1">
+      {/* ── Toolbar: search on its own row, filters wrap below ── */}
+      <div className="flex flex-col gap-2 mb-6">
+        {/* Search — always full width */}
+        <div className="relative w-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
@@ -172,34 +175,22 @@ export default function RideHistoryPage() {
               clipRule="evenodd"
             />
           </svg>
-          <div className="flex flex-row items-center gap-2">
-             <Input
+          <Input
             placeholder="Fahrten nach ID, Route oder Datum suchen ..."
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
             data-testid="ride-history-search-input"
-            className="pl-9 h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200 
-            dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50 
+            className="pl-9 h-9 text-sm bg-white dark:bg-z-neutral-800 border-z-neutral-200
+            dark:border-z-neutral-700 text-z-neutral-900 dark:text-z-neutral-50
             placeholder:text-z-neutral-400 dark:placeholder:text-z-neutral-500"
           />
-            <ResetFiltersButton
-            setFilterType={setFilterType}
-            setFilterSettlement={setFilterSettlement}
-            setSearch={setSearch}
-            setFilterStatus={setFilterStatus}
-            classNames="lg:hidden"
-          />
-          </div>
         </div>
 
-        {/* Separator — desktop only */}
-        <div className="h-5 w-px bg-z-neutral-200 dark:bg-z-neutral-700 hidden lg:block" />
-
-        {/* Filters — equal-width 3-col grid on mobile, inline row on desktop */}
-        <div className="grid grid-cols-3 lg:flex lg:items-center gap-2">
+        {/* Filters — 2-col grid on mobile, 3-col on sm, inline row on lg */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-wrap lg:items-center gap-2">
           {/* Type filter */}
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px] 
+            <SelectTrigger className="h-9 text-sm w-full lg:w-[150px]
             bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200"
             data-testid="ride-history-filter-type-trigger">
               <SelectValue placeholder="Typ" />
@@ -213,7 +204,7 @@ export default function RideHistoryPage() {
 
           {/* Settlement filter */}
           <Select value={filterSettlement} onValueChange={setFilterSettlement}>
-            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px]
+            <SelectTrigger className="h-9 text-sm w-full lg:w-[150px]
              bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200"
              data-testid="ride-history-filter-settlement-trigger">
               <SelectValue placeholder="Zahlung" />
@@ -227,7 +218,7 @@ export default function RideHistoryPage() {
 
           {/* Status filter */}
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="h-9 text-sm w-full lg:w-auto lg:min-w-[130px]
+            <SelectTrigger className="h-9 text-sm w-full lg:w-[150px]
              bg-white dark:bg-z-neutral-800 border-z-neutral-200 dark:border-z-neutral-700 text-z-neutral-700 dark:text-z-neutral-200"
              data-testid="ride-history-filter-status-trigger">
               <SelectValue placeholder="Status" />
@@ -245,19 +236,16 @@ export default function RideHistoryPage() {
             setFilterSettlement={setFilterSettlement}
             setSearch={setSearch}
             setFilterStatus={setFilterStatus}
-            classNames="hidden lg:flex"
+            classNames="col-span-2 sm:col-span-1 w-full lg:w-auto"
           />
         </div>
       </div>
 
-      {/* ── Mobile card list (sm: and above hidden) ── */}
-      <div className="relative sm:hidden rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+      {/* ── Mobile + tablet card list (hidden on desktop) ── */}
+      <div className="relative lg:hidden rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
         {isPaginating && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 dark:bg-z-neutral-800/70 rounded-lg">
-            <svg className="animate-spin w-6 h-6 text-z-violet-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-            </svg>
+            <Spinner className="w-6 h-6" />
           </div>
         )}
         {showSkeleton ? (
@@ -275,7 +263,12 @@ export default function RideHistoryPage() {
                 : ride.dateTime.split(" ");
               const time = timePart?.slice(0, 5) ?? "";
               return (
-                <div key={ride.id} className="flex items-center gap-3 py-3.5 px-4">
+                <button
+                  key={ride.id}
+                  type="button"
+                  onClick={() => setSelectedRideId(ride.id)}
+                  className="w-full text-left flex items-center gap-3 py-3.5 px-4 transition-colors hover:bg-z-neutral-50 dark:hover:bg-z-neutral-700/40"
+                >
                   {/* Type icon */}
                   <div
                     className={cn(
@@ -296,41 +289,36 @@ export default function RideHistoryPage() {
                     )}
                   </div>
 
-                  {/* Route + meta */}
+                  {/* Route + meta + badges */}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-z-neutral-900 dark:text-z-neutral-50 truncate">
-                      {ride.from} → {ride.to}
+                      {ride.fromLocation} → {ride.toLocation}
                     </p>
                     <p className="text-xs text-z-neutral-400 dark:text-z-neutral-500 mt-0.5">
-                      {date}&nbsp;&nbsp;{time}
+                      {date}&nbsp;&nbsp;{time}&nbsp;&nbsp;·&nbsp;&nbsp;#{shortId(ride.id)}
                     </p>
-                  </div>
-
-                  {/* Amount + badges */}
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className="text-sm font-semibold text-z-neutral-900 dark:text-z-neutral-50">
-                      {ride.amount.toFixed(2)} €
-                    </span>
-                    <div className="flex items-center gap-1 flex-wrap justify-end">
+                    <div className="flex items-center gap-1 flex-wrap mt-1.5">
                       <SettlementBadge method={ride.settlement as Settlement} />
                       <StatusBadge status={ride.status as RideStatus} />
                     </div>
                   </div>
-                </div>
+
+                  {/* Amount */}
+                  <span className="shrink-0 text-sm font-semibold text-z-neutral-900 dark:text-z-neutral-50">
+                    {ride.amount.toFixed(2)} €
+                  </span>
+                </button>
               );
             })}
           </div>
         )}
       </div>
 
-      {/* ── Desktop table (hidden on mobile) ── */}
-      <div className="relative hidden sm:block rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+      {/* ── Desktop table (hidden below lg) ── */}
+      <div className="relative hidden lg:block rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
         {isPaginating && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 dark:bg-z-neutral-800/70 rounded-lg">
-            <svg className="animate-spin w-6 h-6 text-z-violet-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-            </svg>
+            <Spinner className="w-6 h-6" />
           </div>
         )}
         <Table>
@@ -356,15 +344,16 @@ export default function RideHistoryPage() {
               filtered.map((ride, idx) => (
                 <TableRow
                   key={ride.id}
+                  onClick={() => setSelectedRideId(ride.id)}
                   className={cn(
-                    "transition-colors hover:bg-z-neutral-50 dark:hover:bg-z-neutral-700/40",
+                    "cursor-pointer transition-colors hover:bg-z-neutral-50 dark:hover:bg-z-neutral-700/40",
                     idx < filtered.length - 1
                       ? "border-b border-z-neutral-200 dark:border-z-neutral-700"
                       : "border-none"
                   )}
                 >
-                  <TableCell className="py-4 px-4 font-medium text-sm text-z-neutral-900 dark:text-z-neutral-100">
-                    {ride.id}
+                  <TableCell className="py-4 px-4 font-mono text-sm text-z-neutral-900 dark:text-z-neutral-100" title={ride.id}>
+                    #{shortId(ride.id)}
                   </TableCell>
                   <TableCell className="py-4 px-4 text-sm text-z-neutral-600 dark:text-z-neutral-300">
                     {formatDateTime(ride.dateTime)}
@@ -373,10 +362,10 @@ export default function RideHistoryPage() {
                     <TypeBadge type={ride.type as RideType} />
                   </TableCell>
                   <TableCell className="py-4 px-4 text-sm text-z-neutral-900 dark:text-z-neutral-100">
-                    {ride.from}
+                    <div className="max-w-[180px] truncate" title={ride.fromLocation}>{ride.fromLocation}</div>
                   </TableCell>
                   <TableCell className="py-4 px-4 text-sm text-z-neutral-900 dark:text-z-neutral-100">
-                    {ride.to}
+                    <div className="max-w-[180px] truncate" title={ride.toLocation}>{ride.toLocation}</div>
                   </TableCell>
                   <TableCell className="py-4 px-4 text-sm font-medium text-z-neutral-900 dark:text-z-neutral-100">
                     {ride.amount.toFixed(2)} €
@@ -416,6 +405,9 @@ export default function RideHistoryPage() {
           />
         )}
       </div>
+
+      {/* ── Detail dialog ── */}
+      <RideDetailDialog rideId={selectedRideId} onClose={() => setSelectedRideId(null)} />
     </div>
   );
 }

@@ -17,6 +17,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Spinner } from "@/components/ui/loader";
 import { useSignInMutation } from "@/redux/api/apis/auth";
 import { toast } from "sonner";
 
@@ -49,7 +50,7 @@ export type SignInFormValues = z.infer<typeof signInSchema>;
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
 
-  const [signIn] = useSignInMutation();
+  const [signIn, { isLoading: isSigningIn }] = useSignInMutation();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -354,22 +355,27 @@ export default function SignInPage() {
             <Button
               type="submit"
               data-testid="sign-in-submit-button"
-              className="flex items-center justify-center gap-2 w-full h-auto py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:opacity-90 active:scale-[0.98] mt-1"
+              disabled={isSigningIn}
+              className="flex items-center justify-center gap-2 w-full h-auto py-3 rounded-xl text-white font-semibold text-sm shadow-md hover:opacity-90 active:scale-[0.98] mt-1 disabled:opacity-70 disabled:cursor-not-allowed"
               style={{ background: "var(--z-color-main)" }}
             >
-              Anmelden
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-4 h-4"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              {isSigningIn ? "Anmeldung läuft …" : "Anmelden"}
+              {isSigningIn ? (
+                <Spinner className="w-4 h-4 text-white" />
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              )}
             </Button>
           </form>
 

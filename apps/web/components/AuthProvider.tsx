@@ -2,7 +2,8 @@
 
 import { useGetAccessTkQuery } from "@/redux/api/apis/auth";
 import { useGetDashboardQuery } from "@/redux/api/apis/dashboard";
-import React, { useEffect } from "react";
+import { FullPageLoader } from "@/components/ui/loader";
+import React from "react";
 
 /**
  * Gate that defers rendering of the authenticated app shell until an access
@@ -21,8 +22,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const {data, isLoading: isLoadingDashboard} = useGetDashboardQuery(undefined, {skip: !hasTk})
 
   if (isLoadingTk || (hasTk && isLoadingDashboard) ) {
-    {/* Loading placeholder shown while the access token or dashboard data is being fetched */}
-    return <h2>Loading</h2>;
+    {/* Branded full-page loader shown while the access token or dashboard data is being fetched */}
+    return <FullPageLoader label="Einen Moment, wir holen deine Fahrten …" />;
   }
 
   return <>{children}</>;

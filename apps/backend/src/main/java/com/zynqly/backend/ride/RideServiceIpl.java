@@ -1,13 +1,15 @@
 package com.zynqly.backend.ride;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.zynqly.backend.common.entities.Ride;
 import com.zynqly.backend.common.repositories.RideRepository;
 import com.zynqly.backend.ride.dto.CreateRideDto;
+import com.zynqly.backend.ride.dto.RideResponseDto;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,23 +22,19 @@ public class RideServiceIpl implements RideService {
     private final RideMapper rideMapper;
 
     @Override
-    public List<Ride> getRides() {
-        return rideRepository.findAll();
+    public Page<RideResponseDto> getRides(Pageable pageable) {
+        return rideRepository.findAll(pageable).map(rideMapper::toResponseDto);
     }
 
     @Override
     public Ride getRide(UUID id) {
         return rideRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(""));
+                () -> new EntityNotFoundException("Ride not found: " + id));
     }
 
     @Override
     public void createRide(CreateRideDto createRideDto) {
-
-        Ride newRide = rideMapper.toEntity(createRideDto);
-
-        rideRepository.save(newRide);
-
+        rideRepository.save(rideMapper.toEntity(createRideDto));
     }
 
 }

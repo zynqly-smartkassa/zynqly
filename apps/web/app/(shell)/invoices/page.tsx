@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/loader";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
 import { useGetInvoicesQuery, useGetInvoicesStatsQuery } from "@/redux/api/apis/invoices";
@@ -234,7 +235,12 @@ export default function InvoicesPage() {
       </div>
 
       {/* ── Mobile card list ── */}
-      <div className="sm:hidden rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+      <div className="relative sm:hidden rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+        {isPaginating && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 dark:bg-z-neutral-800/70 rounded-lg">
+            <Spinner className="w-6 h-6" />
+          </div>
+        )}
         {showSkeleton ? (
           <MobileSkeletonCards />
         ) : filtered.length === 0 ? (
@@ -303,7 +309,12 @@ export default function InvoicesPage() {
       </div>
 
       {/* ── Desktop table ── */}
-      <div className="hidden sm:block rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+      <div className="relative hidden sm:block rounded-lg overflow-hidden border border-z-neutral-200 dark:border-z-neutral-700 bg-white dark:bg-z-neutral-800 mb-6">
+        {isPaginating && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 dark:bg-z-neutral-800/70 rounded-lg">
+            <Spinner className="w-6 h-6" />
+          </div>
+        )}
         <Table>
           <TableHeader>
             <TableRow className="border-b border-z-neutral-200 dark:border-z-neutral-700 bg-z-neutral-100 dark:bg-z-neutral-800 hover:bg-z-neutral-100 dark:hover:bg-z-neutral-800">

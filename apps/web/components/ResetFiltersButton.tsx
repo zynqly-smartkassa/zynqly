@@ -15,7 +15,7 @@ interface ResetFiltersButtonArgs {
 const ResetFiltersButton = ({ setFilterType, setFilterSettlement,
   setFilterStatus, setSearch, classNames }: ResetFiltersButtonArgs) => {
   return (
-    <Button size="lg" className={`text-sm lg:w-auto ${classNames}`}
+    <Button size="sm" variant="outline" className={`h-9 text-sm gap-1.5 ${classNames}`}
     data-testid="ride-history-reset-button"
       onClick={() => {
         setFilterType("all");
@@ -23,10 +23,8 @@ const ResetFiltersButton = ({ setFilterType, setFilterSettlement,
         setFilterStatus("all");
         setSearch("");
       }}>
-      <RotateCcw></RotateCcw>
-      <span>
-        Reset Filters
-      </span>
+      <RotateCcw className="w-3.5 h-3.5" />
+      <span>Zurücksetzen</span>
     </Button>
   )
 }

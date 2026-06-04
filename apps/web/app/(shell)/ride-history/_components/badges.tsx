@@ -4,6 +4,14 @@ type RideType = "Passagier" | "Boten";
 type Settlement = "card" | "cash";
 type RideStatus = "completed" | "cancelled" | "pending";
 
+/**
+ * Shortens a UUID for display. The stored value stays a full UUID — this only
+ * affects what the user sees, e.g. "0476aa08-3619-…" → "0476aa08".
+ */
+export function shortId(id: string) {
+  return id.split("-")[0];
+}
+
 /** Handles both ISO-8601 (T separator) and space-separated dateTime strings */
 export function formatDateTime(dt: string) {
   const [date, timePart] = dt.includes("T") ? dt.split("T") : dt.split(" ");

@@ -15,17 +15,23 @@ test.describe('Search', () => {
     const typeCells = page.getByTestId('ride-history-row-type');
     await expect(typeCells.first()).toBeVisible({ timeout: 10000 });
 
-    // 2. Type a specific ride ID into the search
+    // 2. Read the first row's displayed (shortened) ID — IDs are random UUIDs,
+    //    so we derive the search term from the data instead of hardcoding it.
+    const firstIdCell = page.locator('tbody tr').first().locator('td').first();
+    const displayedId = ((await firstIdCell.textContent()) ?? '').trim().replace(/^#/, '');
+    expect(displayedId.length).toBeGreaterThan(0);
+
+    // 3. Type that ID into the search
     const search = page.getByTestId('ride-history-search-input');
     await search.click();
-    await search.pressSequentially('R-1046');
+    await search.pressSequentially(displayedId);
 
-    await expect(search).toHaveValue('R-1046', { timeout: 5000 });
+    await expect(search).toHaveValue(displayedId, { timeout: 5000 });
 
-    // 3. Exactly one row should be visible and show R-1046
+    // 4. Exactly one row should be visible and show that ID
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await expect(rows.first()).toContainText('R-1046');
+    await expect(rows.first().locator('td').first()).toContainText(displayedId);
   });
 
   test('search by city shows all rides that contain that city', async ({ page }) => {
@@ -284,7 +290,7 @@ test.describe('Filters', () => {
     test('type "Boten" + settlement "Karte" shows only matching rides', async ({ page }) => {
 
       // 1. Wait for data
-      // Data guarantee: R-1046 (Boten, card) and R-1044 (Boten, card) are on page 1
+      // Data guarantee: page 1 contains at least two Boten + Karte rides (München, Zürich)
       const typeCells = page.getByTestId('ride-history-row-type');
       const settlementCells = page.getByTestId('ride-history-row-settlement');
       await expect(typeCells.first()).toBeVisible({ timeout: 10000 });
@@ -316,7 +322,7 @@ test.describe('Filters', () => {
     test('type "Passagier" + search "Berlin" shows only matching rides', async ({ page }) => {
 
       // 1. Wait for data
-      // Data guarantee: R-1045 (Passagier, "Berlin Zentrum") is on page 1
+      // Data guarantee: page 1 contains a Passagier ride with "Berlin" in its route
       const typeCells = page.getByTestId('ride-history-row-type');
       await expect(typeCells.first()).toBeVisible({ timeout: 10000 });
 

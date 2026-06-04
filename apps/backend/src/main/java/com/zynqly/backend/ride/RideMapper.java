@@ -5,9 +5,17 @@ import org.mapstruct.Mapping;
 
 import com.zynqly.backend.common.entities.Ride;
 import com.zynqly.backend.ride.dto.CreateRideDto;
+import com.zynqly.backend.ride.dto.RideResponseDto;
 
 @Mapper(componentModel = "spring")
 public interface RideMapper {
+
     @Mapping(target = "id", ignore = true)
     Ride toEntity(CreateRideDto dto);
+
+    @Mapping(source = "startAddress", target = "fromLocation")
+    @Mapping(source = "endAddress", target = "toLocation")
+    @Mapping(source = "startTime", target = "dateTime")
+    RideResponseDto toResponseDto(Ride ride);
+
 }

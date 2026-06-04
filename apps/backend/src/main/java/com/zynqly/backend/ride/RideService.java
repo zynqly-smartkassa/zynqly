@@ -1,17 +1,20 @@
 package com.zynqly.backend.ride;
 
-import java.util.List;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.zynqly.backend.common.entities.Ride;
 import com.zynqly.backend.ride.dto.CreateRideDto;
+import com.zynqly.backend.ride.dto.RideResponseDto;
 
 public interface RideService {
 
-  List<Ride> getRides();
+    Page<RideResponseDto> getRides(Pageable pageable);
 
-  Ride getRide(UUID id);
+    Ride getRide(UUID id);
 
-  void createRide(CreateRideDto createRideDto);
+    void createRide(CreateRideDto createRideDto);
 
 }

@@ -15,29 +15,17 @@ import lombok.NoArgsConstructor;
 public class CreateRideDto {
 
     private UUID userId;
-
     private UUID vehicleId;
-
     private String type;
-
     private String startAddress;
-
     private String endAddress;
-
     private String startTime;
-
     private String endTime;
-
     private String duration;
-
     private String distance;
-
     private String route;
-
     private BigDecimal amount;
-
     private String settlement;
-
     private String status;
 
 }
