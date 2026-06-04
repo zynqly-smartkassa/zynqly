@@ -1,0 +1,50 @@
+@baseUrl = http://localhost:8080/api/v1
+@contentType = application/json
+
+### Sign In (um Token zu holen)
+# @name signIn
+POST {{baseUrl}}/auth/sign-in
+Content-Type: {{contentType}}
+
+{
+  "email": "test@zynqly.com",
+  "password": "password123"
+}
+
+###
+
+@accessToken = {{signIn.response.body.accessTk}}
+
+### GET alle Rides
+GET {{baseUrl}}/ride
+Authorization: Bearer {{accessToken}}
+
+###
+
+### GET einzelne Ride by ID
+@rideId = b407b32a-d92d-4d46-88d1-3edbfd4d9da0
+GET {{baseUrl}}/ride/{{rideId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### POST neue Ride erstellen
+POST {{baseUrl}}/ride
+Authorization: Bearer {{accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "userId": "550e8400-e29b-41d4-a716-446655440000",
+  "vehicleId": "550e8400-e29b-41d4-a716-446655440001",
+  "type": "Passagier",
+  "startAddress": "Andritz, Berlin",
+  "endAddress": "Potsdamer Platz, Berlin",
+  "startTime": "2026-04-14T09:00:00",
+  "endTime": "2026-04-14T09:15:00",
+  "duration": "00:15:00",
+  "distance": "3.2",
+  "route": "[[52.5219,13.4132],[52.5162,13.3777]]",
+  "amount": 18.50,
+  "settlement": "card",
+  "status": "pending"
+}

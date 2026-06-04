@@ -1,34 +1,42 @@
 package com.zynqly.backend.ride;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import com.zynqly.backend.common.domain.Rides;
+import com.zynqly.backend.common.entities.Ride;
+import com.zynqly.backend.common.repositories.RideRepository;
+import com.zynqly.backend.ride.dto.CreateRideDto;
 
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class RideServiceIpl implements RideService {
 
-  @Override
-  public List<Rides> getRides() {
-    ObjectMapper mapper = new ObjectMapper();
-    try {
-        // Path relative to resources folder
-        ClassPathResource resource = new ClassPathResource("data/rides.json");
-        
-        // Gets the data and converts it directly to List
-        return mapper.readValue(resource.getInputStream(), new TypeReference<List<Rides>>() {});
-        
-    } catch (IOException e) {
-        e.printStackTrace();
-        return new ArrayList<>();
+    private final RideRepository rideRepository;
+    private final RideMapper rideMapper;
+
+    @Override
+    public List<Ride> getRides() {
+        return rideRepository.findAll();
     }
-  }
-  
+
+    @Override
+    public Ride getRide(UUID id) {
+        return rideRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(""));
+    }
+
+    @Override
+    public void createRide(CreateRideDto createRideDto) {
+
+        Ride newRide = rideMapper.toEntity(createRideDto);
+
+        rideRepository.save(newRide);
+
+    }
+
 }

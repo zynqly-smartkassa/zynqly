@@ -15,7 +15,6 @@ import com.zynqly.backend.common.domain.mappers.JsonMapper;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
 @RequiredArgsConstructor
 public class RideHistorySerivceJsonIpl implements RideHistoryService {
 
