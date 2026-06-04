@@ -116,7 +116,7 @@ export default function InvoicesPage() {
   const fmt = (n: number) => `${n.toFixed(2)} €`;
 
   return (
-    <div className="max-w-[1440px] mx-auto">
+    <div>
 
       {/* ── Header ── */}
       <div className="flex items-start justify-between gap-4">

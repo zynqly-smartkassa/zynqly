@@ -69,7 +69,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 // After this we are able to directly access this attribute to get a user f.e,
                 // resulting in less code
                 if (userDetails instanceof CustomUserDetails) {
-                    request.setAttribute("email", ((CustomUserDetails) userDetails).getUsername());
+                    request.setAttribute("userId", ((CustomUserDetails) userDetails).getId());
                 }
 
             }

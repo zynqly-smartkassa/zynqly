@@ -87,7 +87,7 @@ export default function DashboardPage() {
     <div className="min-h-screen" style={{ background: "var(--z-bg-page)" }}>
 
       {/* ── Main content ─────────────────────────────────── */}
-      <div className="max-w-[1440px] mx-auto">
+      <div>
         {/* Heading */}
         <PageHeader title="Dashboard" subtitle="Übersicht über diesen Monat" />
 

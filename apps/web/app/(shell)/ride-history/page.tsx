@@ -81,7 +81,28 @@ export default function RideHistoryPage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const { data: rideHistory, isLoading, isFetching } = useGetRideHistoryQuery(currentPage - 1);
+  // Page size adapts to the layout: the compact card list (below the `lg`
+  // breakpoint, where the desktop table is hidden) shows fewer rides so the
+  // pagination stays reachable without long scrolling on phones.
+  const [isCompact, setIsCompact] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 1023px)");
+    const onChange = () => setIsCompact(mql.matches);
+    onChange();
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+
+  const pageSize = isCompact ? 4 : 12;
+
+  // Switching layouts changes how many rides fit on a page, so jump back to the
+  // first page to keep the current page index valid.
+  useEffect(() => setCurrentPage(1), [pageSize]);
+
+  const { data: rideHistory, isLoading, isFetching } = useGetRideHistoryQuery({
+    page: currentPage - 1,
+    size: pageSize,
+  });
 
   // isFetching is true on every request (including page changes); isLoading only on initial
   const isPaginating = isFetching && !isLoading;
@@ -136,7 +157,7 @@ export default function RideHistoryPage() {
   const handleSearch = (v: string) => { setSearch(v); setCurrentPage(1); };
 
   return (
-    <div className="max-w-[1440px] mx-auto">
+    <div>
 
       {/* ── Header row: title + export ── */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-2">
@@ -249,7 +270,7 @@ export default function RideHistoryPage() {
           </div>
         )}
         {showSkeleton ? (
-          <MobileSkeletonCards />
+          <MobileSkeletonCards count={pageSize} />
         ) : filtered.length === 0 ? (
           <p className="text-center py-12 text-sm text-z-neutral-400 dark:text-z-neutral-500">
             Keine Fahrten gefunden.
@@ -333,7 +354,7 @@ export default function RideHistoryPage() {
           </TableHeader>
           <TableBody>
             {showSkeleton ? (
-              <TableSkeletonRows />
+              <TableSkeletonRows count={pageSize} />
             ) : filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-12 text-sm text-z-neutral-400 dark:text-z-neutral-500">

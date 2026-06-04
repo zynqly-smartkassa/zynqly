@@ -43,7 +43,7 @@ const Header = () => {
       }}
     >
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="max-w-[1440px] mx-auto flex h-14 items-center justify-between gap-4">
+        <div className="flex h-14 items-center justify-between gap-4">
           {/* Search */}
           <div className="flex flex-row gap-1 items-center">
             <SidebarTrigger
@@ -104,7 +104,15 @@ const Header = () => {
             </Button>
 
             {/* User dropdown */}
-            <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+            {/*
+              modal={false} disables Radix' react-remove-scroll scroll lock.
+              In modal mode Radix sets `overflow: hidden` on <body> and adds a
+              scrollbar-width padding-right to compensate; on some viewport
+              sizes that compensation is miscalculated, shifting the content
+              left and introducing a spurious scrollbar. The account menu does
+              not need to trap page scroll, so non-modal avoids the layout jump.
+            */}
+            <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen} modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button
                   className="flex items-center gap-2 ml-1 pl-1 pr-2 py-1 rounded-full border transition-colors hover:bg-[var(--z-neutral-100)] dark:hover:bg-[var(--z-neutral-800)]"

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,8 +46,8 @@ public class RideController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createRide(@RequestBody CreateRideDto createRideDto) {
-        rideService.createRide(createRideDto);
+    public ResponseEntity<Void> createRide(@RequestAttribute UUID userId,  @RequestBody CreateRideDto createRideDto) {
+        rideService.createRide(userId, createRideDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

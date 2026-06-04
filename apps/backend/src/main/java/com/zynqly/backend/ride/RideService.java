@@ -15,6 +15,6 @@ public interface RideService {
 
     Ride getRide(UUID id);
 
-    void createRide(CreateRideDto createRideDto);
+    void createRide(UUID userId, CreateRideDto createRideDto);
 
 }

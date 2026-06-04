@@ -33,8 +33,12 @@ public class RideServiceIpl implements RideService {
     }
 
     @Override
-    public void createRide(CreateRideDto createRideDto) {
-        rideRepository.save(rideMapper.toEntity(createRideDto));
+    public void createRide(UUID userId, CreateRideDto createRideDto) {
+
+        Ride ride = rideMapper.toEntity(createRideDto);
+        ride.setUserId(userId);
+        rideRepository.save(ride);
+        
     }
 
 }

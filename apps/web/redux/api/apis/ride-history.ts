@@ -5,8 +5,8 @@ import { Page } from '@/types/Page';
 
 const rideHistory = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getRideHistory: builder.query<Page<Ride>, number>({
-      query: (page) => `/ride?page=${page}`
+    getRideHistory: builder.query<Page<Ride>, { page: number; size: number }>({
+      query: ({ page, size }) => `/ride?page=${page}&size=${size}`
     }),
     getRide: builder.query<RideDetail, string>({
       query: (id) => `/ride/${id}`

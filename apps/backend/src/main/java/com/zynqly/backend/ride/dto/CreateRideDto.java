@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateRideDto {
 
-    private UUID userId;
     private UUID vehicleId;
     private String type;
     private String startAddress;
