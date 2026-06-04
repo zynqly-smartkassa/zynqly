@@ -10,6 +10,25 @@ info:
     `/auth/sign-in` (sent as `Authorization: Bearer <token>`) and a long-lived
     refresh token that the backend writes into an HTTP-only `refresh_tk`
     cookie. New access tokens can be obtained via `GET /auth/access-tk`.
+
+    ---
+
+    ## Getting started
+
+    **1. Create an account**
+    Call `POST /auth/sign-up` with email and password.
+    If you already have an account skip this step — sign-up returns an error when the email is already taken, which is expected.
+
+    **2. Sign in**
+    Call `POST /auth/sign-in` with your credentials.
+    Copy the `accessTk` value from the response body.
+
+    **3. Authorize**
+    Click the **Authorize 🔒** button at the top of this page.
+    Paste **only the token** — no `Bearer` prefix needed, it is added automatically.
+
+    **4. Test routes**
+    All endpoints marked with 🔒 now send the `Authorization` header automatically.
   version: 1.0.0
 
 servers:
@@ -45,6 +64,9 @@ paths:
         Creates a new user, hashes the supplied password, and returns an
         access token. The matching long-lived refresh token is set as the
         HTTP-only `refresh_tk` cookie via the `Set-Cookie` response header.
+
+        If the email is already taken the request returns an error (400) — this is expected.
+        In that case simply use `POST /auth/sign-in` instead.
       security: []
       requestBody:
         required: true
@@ -113,36 +135,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
-  /auth/access-tk:
-    get:
-      tags: [Auth]
-      summary: Exchange the refresh-token cookie for a fresh access token
-      description: |
-        Reads the HTTP-only `refresh_tk` cookie from the request, validates
-        it, and returns a new access token. The refresh cookie itself is not
-        rotated.
-      security: []
-      parameters:
-        - in: cookie
-          name: refresh_tk
-          required: true
-          description: Refresh token previously issued by sign-up or sign-in
-          schema:
-            type: string
-      responses:
-        '200':
-          description: New access token issued
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponseDto'
-        '401':
-          description: Refresh token missing or invalid
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: "The refresh token is missing"
 
   # =========================================================================
   # DASHBOARD
@@ -352,7 +344,7 @@ components:
       bearerFormat: JWT
       description: |
         JWT access token issued by `/auth/sign-in` or `/auth/access-tk`.
-        Format: `Bearer <token>`.
+        Paste only the token — no `Bearer` prefix needed, it is added automatically.
 
   schemas:
 
@@ -824,6 +816,5 @@ components:
 
     RideType:
       type: string
-      enum: [ BOTENFAHRT,
-              PERSONENFAHRT ]
-      example: "PERSONENFAHRT"
+      enum: [ ERRANDTRIP, PASSENGERTRIP ]
+      example: "PASSENGERTRIP"

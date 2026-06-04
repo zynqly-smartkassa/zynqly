@@ -1,5 +1,6 @@
 package com.zynqly.backend.auth.dto.requests;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -21,8 +22,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SignInAccountRequestDto {
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 20, message = "Username must be between {min} and {max} characters.")
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
     private String email;
 
     @NotBlank(message = "password is required")

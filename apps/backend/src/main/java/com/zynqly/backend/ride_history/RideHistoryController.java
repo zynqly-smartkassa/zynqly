@@ -1,5 +1,7 @@
 package com.zynqly.backend.ride_history;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +16,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 
+@Tag(name = "Ride History")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping(path = "/ride-history")
 @RequiredArgsConstructor

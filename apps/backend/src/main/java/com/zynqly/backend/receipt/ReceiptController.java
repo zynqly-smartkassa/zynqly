@@ -3,6 +3,8 @@ package com.zynqly.backend.receipt;
 import com.zynqly.backend.receipt.domain.Receipt;
 import com.zynqly.backend.receipt.domain.dto.ReceiptCreateDto;
 import com.zynqly.backend.receipt.domain.dto.ReceiptListDto;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Receipts")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping(path = "/receipts")
 @RequiredArgsConstructor

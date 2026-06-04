@@ -23,6 +23,6 @@ public class Rides {
   private String duration;
   private int distance;
   private String ride_type;
-  private List<List<WholeRide>> whole_ride;
+  private List<WholeRide> whole_ride;
 
 }

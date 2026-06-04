@@ -14,6 +14,8 @@ import com.zynqly.backend.auth.dto.requests.SignUpAccountRequestDto;
 import com.zynqly.backend.auth.dto.responses.AuthResponseDto;
 import com.zynqly.backend.common.entities.User;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +34,7 @@ import lombok.RequiredArgsConstructor;
  * @see AuthService
  * @see JwtService
  */
+@Tag(name = "Auth", description = "Sign-up, sign-in and token refresh — no authentication required")
 @RestController
 @RequestMapping(path = "/auth")
 @RequiredArgsConstructor
@@ -50,6 +53,11 @@ public class AuthController {
 	 * @return the authentication response containing the access token and its
 	 *         lifetime, with HTTP status 201 (Created)
 	 */
+	@Operation(
+		summary = "Create a new account",
+		description = "Registers a new user and returns an access token. " +
+			"Returns an error (e.g. 409) if the email is already taken — in that case use sign-in instead."
+	)
 	@PostMapping(path = "/sign-up")
 	public ResponseEntity<AuthResponseDto> signUp(@Valid @RequestBody SignUpAccountRequestDto signUpAccountRequestDto,
             HttpServletRequest request,

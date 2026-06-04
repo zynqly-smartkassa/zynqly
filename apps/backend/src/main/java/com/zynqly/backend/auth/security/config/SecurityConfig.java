@@ -60,11 +60,10 @@ public class SecurityConfig {
     /**
      * Assembles the application's primary security filter chain.
      *
-     * Disables CSRF, opts in to CORS using the bean defined below, makes all
-     * {@code /auth/**} routes public, leaves every other route open at the
-     * Spring Security level (so the JWT filter alone decides authentication),
-     * declares the session policy as stateless and inserts the JWT filter
-     * ahead of the username/password filter.
+     * Disables CSRF, opts in to CORS using the bean defined below, makes
+     * {@code /auth/**} and the Swagger UI paths public, requires authentication
+     * for every other route, declares the session policy as stateless and
+     * inserts the JWT filter ahead of the username/password filter.
      *
      * @return the built security filter chain
      * @throws Exception when {@link HttpSecurity#build()} fails
@@ -77,9 +76,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
 
             .authorizeHttpRequests(
-                auth -> auth.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                auth -> auth
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .anyRequest().permitAll())
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
