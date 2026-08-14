@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({super.key});
+class AllRidesScreen extends StatefulWidget {
+  const AllRidesScreen({super.key});
 
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
+  State<AllRidesScreen> createState() => _AllRidesScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
+class _AllRidesScreenState extends State<AllRidesScreen> {
   // Placeholder data for rides
   final List<Map<String, dynamic>> rides = [
     {

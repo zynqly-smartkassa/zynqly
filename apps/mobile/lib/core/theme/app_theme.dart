@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-
-class AppColors {
-  static const Color brandColor = Color(0xFFD97706);
-  static const Color deepBlack = Color(0xFF121212);
-  static const Color successGreen = Color(0xFF4CAF50);
-}
+import 'package:zynqly_mobile/core/theme/app_colors.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
