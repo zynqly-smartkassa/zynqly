@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zynqly_mobile/app/app.dart';
 
 void main() {
-  runApp(const ZynqlyApp());
+  runApp(const ProviderScope(child: ZynqlyApp()));
 }
