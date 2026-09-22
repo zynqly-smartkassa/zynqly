@@ -26,7 +26,9 @@ final devCredentialsProvider = Provider<DevCredentials>((ref) {
 ///
 /// Features that need the backend `await ref.watch(devSessionProvider.future)`
 /// first. This is replaced by the real login flow later.
-final devSessionProvider = FutureProvider<void>((ref) async {
+final devSessionProvider = FutureProvider<void>(retry: (_, _) => null, (
+  ref,
+) async {
   final credentials = ref.read(devCredentialsProvider);
   if (!credentials.isConfigured) {
     throw StateError(

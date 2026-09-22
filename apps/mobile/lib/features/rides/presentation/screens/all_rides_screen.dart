@@ -1,173 +1,160 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zynqly_mobile/core/theme/app_spacing.dart';
+import 'package:zynqly_mobile/features/auth/application/dev_session_provider.dart';
+import 'package:zynqly_mobile/features/rides/application/rides_controller.dart';
+import 'package:zynqly_mobile/features/rides/presentation/widgets/ride_card.dart';
 
-class AllRidesScreen extends StatefulWidget {
+class AllRidesScreen extends ConsumerStatefulWidget {
   const AllRidesScreen({super.key});
 
   @override
-  State<AllRidesScreen> createState() => _AllRidesScreenState();
+  ConsumerState<AllRidesScreen> createState() => _AllRidesScreenState();
 }
 
-class _AllRidesScreenState extends State<AllRidesScreen> {
-  // Placeholder data for rides
-  final List<Map<String, dynamic>> rides = [
-    {
-      'route': 'Hauptbahnhof nach Flugh...',
-      'price': '42.50 €',
-      'date': '2026-04-11',
-      'time': '08:15',
-      'status': 'completed',
-      'type': 'taxi',
-    },
-    {
-      'route': 'Friedrichstr. 12 nach Alex...',
-      'price': '18.90 €',
-      'date': '2026-04-11',
-      'time': '08:15',
-      'status': 'completed',
-      'type': 'delivery',
-    },
-    {
-      'route': 'Potsdamer Platz nach Char...',
-      'price': '28.60 €',
-      'date': '2026-04-10',
-      'time': '19:45',
-      'status': 'completed',
-      'type': 'taxi',
-    },
-    {
-      'route': 'Neukölln nach Prenzlauer ...',
-      'price': '22.80 €',
-      'date': '2026-04-09',
-      'time': '22:10',
-      'status': 'cancelled',
-      'type': 'taxi',
-    },
-  ];
+class _AllRidesScreenState extends ConsumerState<AllRidesScreen> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_loadMoreNearEnd);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _loadMoreNearEnd() {
+    if (_scrollController.position.extentAfter < 300) {
+      ref.read(ridesControllerProvider.notifier).loadMore();
+    }
+  }
+
+  /// Signs in again and reloads the first page.
+  Future<void> _reload() async {
+    ref.invalidate(devSessionProvider);
+    try {
+      await ref.read(ridesControllerProvider.future);
+    } catch (_) {
+      // The error state of the controller is shown by the screen itself.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final rides = ref.watch(ridesControllerProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fahrtenbuch'),
         actions: [
-          // Simulates the "This Week" dropdown button
+          // Placeholder for the "This Week" filter, not wired up yet.
           TextButton.icon(
             onPressed: () {},
-            icon: const Icon(Icons.expand_more, color: Colors.black),
-            label: const Text(
+            icon: Icon(Icons.expand_more, color: colorScheme.onSurface),
+            label: Text(
               'This Week',
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: colorScheme.onSurface),
             ),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: ListView.builder(
-          itemCount: rides.length,
-          itemBuilder: (context, index) {
-            final ride = rides[index];
-            return _buildRideCard(ride);
-          },
-        ),
+      body: rides.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) =>
+            _ErrorView(message: _errorMessage(error), onRetry: _reload),
+        data: (state) {
+          if (state.rides.isEmpty) {
+            return const Center(child: Text('Keine Fahrten vorhanden'));
+          }
+          final showFooter = state.hasNext || state.loadMoreFailed;
+          return RefreshIndicator(
+            onRefresh: _reload,
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(AppSpacing.md),
+              itemCount: state.rides.length + (showFooter ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index < state.rides.length) {
+                  return RideCard(ride: state.rides[index]);
+                }
+                return _Footer(
+                  failed: state.loadMoreFailed,
+                  onRetry: () =>
+                      ref.read(ridesControllerProvider.notifier).loadMore(),
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }
 
-  // Helper function to build a single ride item
-  Widget _buildRideCard(Map<String, dynamic> ride) {
-    bool isCancelled = ride['status'] == 'cancelled';
-    bool isDelivery = ride['type'] == 'delivery';
+  static String _errorMessage(Object error) {
+    if (error is StateError) return error.message;
+    if (error is DioException) {
+      if (error.response?.statusCode == 401) {
+        return 'Anmeldung fehlgeschlagen oder abgelaufen.';
+      }
+      if (error.type == DioExceptionType.connectionError ||
+          error.type == DioExceptionType.connectionTimeout) {
+        return 'Server nicht erreichbar.';
+      }
+    }
+    return 'Die Fahrten konnten nicht geladen werden.';
+  }
+}
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-        side: BorderSide(color: Colors.grey.shade500), // Light border
-      ),
-      margin: const EdgeInsets.symmetric(vertical: 8),
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Icon Circle
-            CircleAvatar(
-              backgroundColor: isDelivery
-                  ? Colors.teal.shade50
-                  : Colors.orange.shade50,
-              child: Icon(
-                isDelivery
-                    ? Icons.inventory_2_outlined
-                    : Icons.local_taxi_outlined,
-                color: isDelivery ? Colors.teal : Colors.orange,
-              ),
+            Text(message, textAlign: TextAlign.center),
+            const SizedBox(height: AppSpacing.lg),
+            FilledButton(
+              onPressed: onRetry,
+              child: const Text('Erneut versuchen'),
             ),
-            const SizedBox(width: 16),
-
-            // Text Column (Route, Date, Status)
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        ride['route'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        ride['price'],
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        '${ride['date']}  ${ride['time']}',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 13,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      // Status Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isCancelled
-                              ? Colors.red.shade50
-                              : Colors.orange.shade100,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          ride['status'],
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: isCancelled
-                                ? Colors.red
-                                : Colors.orange.shade800,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // Detail View Icon
-            const Icon(Icons.chevron_right, color: Colors.grey),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _Footer extends StatelessWidget {
+  const _Footer({required this.failed, required this.onRetry});
+
+  final bool failed;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+      child: Center(
+        child: failed
+            ? TextButton(
+                onPressed: onRetry,
+                child: const Text('Erneut versuchen'),
+              )
+            : const CircularProgressIndicator(),
       ),
     );
   }

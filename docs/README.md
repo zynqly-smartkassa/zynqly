@@ -9,6 +9,7 @@ can tell at a glance what each one covers.
 | **API** | [openapi.yaml](openapi.yaml) | OpenAPI 3 contract for every endpoint (rendered by the Swagger UI container) |
 | **Backend** | [backend/HOW_TO_BUILD_A_FEATURE.md](backend/HOW_TO_BUILD_A_FEATURE.md) | Step-by-step guide for adding a new backend feature |
 | **Backend** | [backend/DATABASE_GUIDE.md](backend/DATABASE_GUIDE.md) | Starting PostgreSQL via Docker and connecting with DBeaver or Spring Boot |
+| **Mobile** | [mobile/HOW_TO_RUN_ON_EMULATOR.md](mobile/HOW_TO_RUN_ON_EMULATOR.md) | Running the Flutter app on an Android emulator against the local backend |
 | **Frontend** | [frontend/DATA_TESTID_CONVENTION.md](frontend/DATA_TESTID_CONVENTION.md) | Naming convention for `data-testid` attributes |
 | **Testing** | [testing/E2E_TESTING.md](testing/E2E_TESTING.md) | End-to-end test infrastructure: setup, services, and running Playwright |
 | **Testing** | [testing/TEST_STRATEGY.md](testing/TEST_STRATEGY.md) | Overall testing strategy and conventions |
