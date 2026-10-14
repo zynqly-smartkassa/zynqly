@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-
-class AppColors {
-  static const Color brandColor = Color(0xFFD97706);
-  static const Color deepBlack = Color(0xFF121212);
-  static const Color successGreen = Color(0xFF4CAF50);
-}
+import 'package:zynqly_mobile/core/theme/app_colors.dart';
+import 'package:zynqly_mobile/core/theme/ride_colors.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
+      extensions: const [RideColors.light],
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.brandColor,
         primary: AppColors.brandColor,

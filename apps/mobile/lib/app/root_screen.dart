@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zynqly_mobile/screens/history_screen.dart';
+import 'package:zynqly_mobile/features/rides/presentation/screens/all_rides_screen.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
@@ -14,7 +14,7 @@ class _RootScreenState extends State<RootScreen> {
   final List<Widget> _pages = [
     Center(child: Text('Home')),
     Center(child: Text('New Ride')),
-    const HistoryScreen(),
+    const AllRidesScreen(),
     Center(child: Text('Invoices')),
     Center(child: Text('Settings')),
   ];
@@ -34,10 +34,19 @@ class _RootScreenState extends State<RootScreen> {
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.local_taxi), label: 'New Ride'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_taxi),
+            label: 'New Ride',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
-          BottomNavigationBarItem(icon: Icon(Icons.note_add_rounded), label: 'Invoices'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.note_add_rounded),
+            label: 'Invoices',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ],
       ),
     );
