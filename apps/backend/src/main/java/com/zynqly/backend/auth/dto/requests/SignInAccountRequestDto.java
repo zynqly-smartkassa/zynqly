@@ -1,5 +1,6 @@
 package com.zynqly.backend.auth.dto.requests;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -8,8 +9,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Data Transfer Object for user sign-in requests.
- * Contains credentials required for user authentication.
+ * Request payload for the {@code POST /auth/sign-in} endpoint.
+ *
+ * Carries the credentials a returning user submits to obtain a fresh
+ * access/refresh-token pair. Both fields are validated server-side via Jakarta
+ * Bean Validation; failed validation is surfaced as HTTP 400 with field-level
+ * error messages.
  */
 @Data
 @NoArgsConstructor
@@ -17,8 +22,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SignInAccountRequestDto {
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 20, message = "Username must be between {min} and {max} characters.")
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
     private String email;
 
     @NotBlank(message = "password is required")

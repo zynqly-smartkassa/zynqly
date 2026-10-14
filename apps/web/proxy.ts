@@ -2,15 +2,21 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * Middleware function to handle authentication and routing based on refresh token.
- * Redirects unauthenticated users to the homepage and authenticated users away from it.
+ * Next.js middleware that gates the app on the presence of a refresh-token
+ * cookie.
+ *
+ * Unauthenticated visits to protected routes are redirected to `/sign-in`,
+ * and authenticated visits to `/sign-in` or `/sign-up` are bounced to
+ * `/dashboard`. The hero page (`/`) and the auth pages themselves are
+ * publicly reachable so a logged-out user can still land on the marketing
+ * site without an infinite redirect loop.
  */
 // If the user visits the website, we will first check if the user has an refresh token
 export async function proxy(request: NextRequest) {
 
   const token = request.cookies.get('refresh_tk')?.value;
 
-  const isAuthPage = request.nextUrl.pathname === "/sign-in" || 
+  const isAuthPage = request.nextUrl.pathname === "/sign-in" ||
   request.nextUrl.pathname === "/sign-up";
 
   const isHeroPage = request.nextUrl.pathname === "/";
@@ -28,8 +34,8 @@ export async function proxy(request: NextRequest) {
 }
 
 /**
- * Configuration object defining which routes the middleware should apply to.
- * Excludes API routes, static files, and Next.js internal paths.
+ * Next.js middleware matcher that excludes assets and API routes so the gate
+ * only runs on actual page navigations.
  */
 export const config = {
   matcher: [

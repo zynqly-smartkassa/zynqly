@@ -7,6 +7,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Structured error envelope returned for validation and business-rule
+ * failures.
+ *
+ * Contains the HTTP status code, a human-readable summary message and the
+ * per-field validation errors that the frontend can map onto individual form
+ * inputs.
+ *
+ * @see OwnException
+ * @see GlobalExceptionHandler
+ */
 @Builder
 @Data
 @AllArgsConstructor
@@ -18,6 +29,13 @@ public class ApiError {
 	private List<FieldError> errors;
 
 
+	/**
+	 * Single field-level validation error.
+	 *
+	 * Used by the sign-up flow to report problems such as
+	 * {@code "email already taken"} so the web client can attach the message
+	 * to the right input.
+	 */
 	@Builder
 	@Data
 	@AllArgsConstructor
@@ -26,7 +44,7 @@ public class ApiError {
 
 		private String field;
 		private String message;
-		
+
 
 	}
 

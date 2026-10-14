@@ -14,12 +14,27 @@ import com.zynqly.backend.auth.dto.requests.SignUpAccountRequestDto;
 import com.zynqly.backend.auth.dto.responses.AuthResponseDto;
 import com.zynqly.backend.common.entities.User;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * REST controller responsible for handling authentication endpoints.
+ *
+ * Exposes the public sign-up, sign-in and access-token-refresh routes. On a
+ * successful sign-up or sign-in a short-lived access token is returned in the
+ * response body while the long-lived refresh token is written into an HTTP-only
+ * cookie. The refresh endpoint reads that cookie to issue a fresh access token
+ * without re-prompting the user for credentials.
+ *
+ * @see AuthService
+ * @see JwtService
+ */
+@Tag(name = "Auth", description = "Sign-up, sign-in and token refresh — no authentication required")
 @RestController
 @RequestMapping(path = "/auth")
 @RequiredArgsConstructor
@@ -27,7 +42,22 @@ public class AuthController {
 
 	private final AuthService authService;
 	private final JwtService jwtService;
-	
+
+	/**
+	 * Handles user registration requests.
+	 *
+	 * Persists a new user from the supplied payload, then issues an access token
+	 * and attaches a refresh-token cookie to the response so the client is
+	 * authenticated immediately after sign-up.
+	 *
+	 * @return the authentication response containing the access token and its
+	 *         lifetime, with HTTP status 201 (Created)
+	 */
+	@Operation(
+		summary = "Create a new account",
+		description = "Registers a new user and returns an access token. " +
+			"Returns an error (e.g. 409) if the email is already taken — in that case use sign-in instead."
+	)
 	@PostMapping(path = "/sign-up")
 	public ResponseEntity<AuthResponseDto> signUp(@Valid @RequestBody SignUpAccountRequestDto signUpAccountRequestDto,
             HttpServletRequest request,
@@ -40,14 +70,15 @@ public class AuthController {
 		return new ResponseEntity<>(authResponseDto, HttpStatus.CREATED);
 	}
 
-	/**null
+    /**
      * Handles user sign-in requests.
-     * Authenticates user credentials and returns authentication tokens.
      *
-     * @param signUpAccountRequestDto the payload containing sign-in details
-     * @param request                 the HTTP request
-     * @param response                the HTTP response to attach the refresh token cookie
-     * @return ResponseEntity containing the authentication response with the access token
+     * Authenticates the supplied credentials against the configured
+     * {@code AuthenticationManager}; on success a new access token is issued and
+     * the refresh-token cookie is attached to the response.
+     *
+     * @return the authentication response containing the access token and its
+     *         lifetime
      */
     @PostMapping(path = "/sign-in")
     public ResponseEntity<AuthResponseDto> signIn(
@@ -65,12 +96,14 @@ public class AuthController {
     }
 
     /**
-     * Creates a new access token using a valid refresh token.
-     * Validates the refresh token from cookies and generates a new access token.
+     * Issues a fresh access token from a valid refresh token cookie.
      *
-     * @param request  the HTTP request containing the refresh token cookie
-     * @param response the HTTP response
-     * @return ResponseEntity containing the authentication response with a new access token or an error status
+     * Reads the {@code refresh_tk} cookie from the request, validates it via
+     * {@link JwtService#validateTk(String)} and returns a new access token for
+     * the same subject. The refresh cookie itself is not rotated.
+     *
+     * @return the authentication response containing the new access token, or
+     *         HTTP 401 (Unauthorized) when the refresh cookie is missing
      */
     @GetMapping(path = "/access-tk")
     public ResponseEntity<?> createAccessTk(HttpServletRequest request, HttpServletResponse response) {
@@ -90,12 +123,14 @@ public class AuthController {
     }
 
     /**
-     * Creates an authentication response DTO with access and refresh tokens.
-     * Generates an access token and optionally creates a refresh token cookie.
+     * Builds the standard authentication response and, when a response is
+     * supplied, attaches the refresh-token cookie.
      *
-     * @param username the username for which tokens are generated
-     * @param response pass {@code null} to skip cookie creation (e.g., for access-token-only refresh)
-     * @return AuthResponseDto containing the access token and expiration time
+     * Pass {@code null} for the response argument to skip cookie creation, which
+     * is what the refresh endpoint does because the client already holds a valid
+     * cookie at that point.
+     *
+     * @return the populated {@link AuthResponseDto}
      */
     private AuthResponseDto createAuthResponseDto(String username, HttpServletResponse response) {
 

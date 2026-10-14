@@ -17,8 +17,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.zynqly.backend.auth.JwtService;
-
 import jakarta.servlet.http.Cookie;
 
 import static org.mockito.Mockito.mock;

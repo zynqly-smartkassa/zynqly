@@ -5,6 +5,16 @@ import {
   signUpAction,
 } from "@/actions/auth-action";
 
+/**
+ * RTK Query endpoints for the auth flow.
+ *
+ * The endpoints intentionally call into Next.js server actions (instead of
+ * RTK's built-in baseQuery) so the refresh-token cookie can be read and
+ * written on the server side, where it is never exposed to client JavaScript.
+ * Sign-up and sign-in are modelled as mutations because they change server
+ * state; the access-token refresh is a query so RTK caches the result for
+ * `keepUnusedDataFor` seconds and shares it across the app.
+ */
 const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     signUp: builder.mutation({
@@ -40,7 +50,7 @@ const authApi = apiSlice.injectEndpoints({
 
 /**
  * After a sign-up or sign-in mutation succeeds, this helper updates the
- * `refreshAccessTk` cache entry with the returned auth data so the access
+ * `getAccessTk` cache entry with the returned auth data so the access
  * token is immediately available without triggering a separate request.
  */
 async function updateAuthCache(arg: any, { dispatch, queryFulfilled }: any) {

@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 import java.util.Objects;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;

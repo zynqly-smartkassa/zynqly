@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Tell the browser we ship our own dark theme: stops Chrome's
+         "Auto Dark Mode for Web Contents" from re-darkening (and mangling) the page. -->
+    <meta name="color-scheme" content="dark" />
+    <title>Zynqly Backend API</title>
+
+    <!-- Assets bundled inside the swaggerapi/swagger-ui image (served from the web root). -->
+    <link rel="stylesheet" type="text/css" href="./swagger-ui.css" />
+    <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+
+    <style>
+      /* ------------------------------------------------------------------ *
+       * Zynqly dark theme for Swagger UI.
+       * The important bit is the inline-code rule further down: it gives
+       * `code` spans a normal weight and a proper line-height so they no
+       * longer overlap the surrounding text.
+       * ------------------------------------------------------------------ */
+      :root { color-scheme: dark; }
+
+      body,
+      .swagger-ui {
+        background: #0f1117;
+        color: #d7dae0;
+      }
+
+      /* Headings + general text */
+      .swagger-ui .info .title,
+      .swagger-ui .info h1,
+      .swagger-ui .info h2,
+      .swagger-ui .info h3,
+      .swagger-ui .opblock-tag,
+      .swagger-ui .opblock .opblock-summary-operation-id,
+      .swagger-ui .opblock .opblock-summary-path,
+      .swagger-ui .opblock .opblock-summary-path__deprecated,
+      .swagger-ui table thead tr td,
+      .swagger-ui table thead tr th,
+      .swagger-ui .parameter__name,
+      .swagger-ui .parameter__type,
+      .swagger-ui .response-col_status,
+      .swagger-ui .response-col_description,
+      .swagger-ui label,
+      .swagger-ui .tab li,
+      .swagger-ui .opblock-description-wrapper p,
+      .swagger-ui .opblock-external-docs-wrapper p,
+      .swagger-ui .opblock-title_normal p,
+      .swagger-ui .renderedMarkdown p,
+      .swagger-ui .markdown p,
+      .swagger-ui .model-title,
+      .swagger-ui .model,
+      .swagger-ui .info li,
+      .swagger-ui .info p,
+      .swagger-ui .info table td {
+        color: #d7dae0;
+      }
+
+      .swagger-ui .info a,
+      .swagger-ui a.nostyle,
+      .swagger-ui .opblock-summary-path a {
+        color: #7aa2f7;
+      }
+
+      /* ---- THE FIX: inline code in descriptions ---- */
+      .swagger-ui code,
+      .swagger-ui .renderedMarkdown code,
+      .swagger-ui .markdown code,
+      .swagger-ui .info code,
+      .swagger-ui .info p code,
+      .swagger-ui .info li code {
+        background: rgba(122, 162, 247, 0.14);
+        color: #c0a7f0;          /* softer violet, not garish */
+        font-weight: 400;         /* was effectively bold -> overlap */
+        padding: 1px 5px;
+        border-radius: 5px;
+        line-height: 1.5;         /* keep within the text line height */
+        white-space: normal;      /* allow wrapping instead of pushing */
+        font-size: 0.85em;
+        border: none;
+      }
+      /* Give the surrounding paragraphs breathing room so wrapped code
+         spans never collide vertically. */
+      .swagger-ui .info .markdown p,
+      .swagger-ui .renderedMarkdown p,
+      .swagger-ui .info p,
+      .swagger-ui .info li {
+        line-height: 1.75;
+      }
+
+      /* Top server/auth bar */
+      .swagger-ui .scheme-container {
+        background: #161922;
+        box-shadow: none;
+        border-bottom: 1px solid #2a2f3a;
+      }
+
+      /* Operation blocks */
+      .swagger-ui .opblock {
+        background: #161922;
+        border: 1px solid #2a2f3a;
+        box-shadow: none;
+      }
+      .swagger-ui .opblock .opblock-section-header {
+        background: #1b1f2a;
+        box-shadow: none;
+      }
+      .swagger-ui .opblock .opblock-section-header h4,
+      .swagger-ui .opblock .opblock-section-header > label {
+        color: #d7dae0;
+      }
+
+      /* Tag section dividers */
+      .swagger-ui section.models,
+      .swagger-ui .opblock-tag {
+        border-color: #2a2f3a;
+      }
+      .swagger-ui section.models .model-container {
+        background: #161922;
+      }
+
+      /* Tables */
+      .swagger-ui table tbody tr td {
+        border-color: #2a2f3a;
+        color: #c5c9d1;
+      }
+
+      /* Inputs / textareas */
+      .swagger-ui input,
+      .swagger-ui textarea,
+      .swagger-ui select {
+        background: #0f1117;
+        color: #d7dae0;
+        border: 1px solid #2a2f3a;
+      }
+
+      /* Code/response samples */
+      .swagger-ui .highlight-code,
+      .swagger-ui .microlight,
+      .swagger-ui .responses-inner pre,
+      .swagger-ui .body-param pre {
+        background: #0b0d12 !important;
+        color: #d7dae0;
+      }
+
+      /* Models */
+      .swagger-ui .model-box,
+      .swagger-ui .models {
+        background: #161922;
+      }
+      .swagger-ui .prop-type { color: #7aa2f7; }
+    </style>
+  </head>
+
+  <body>
+    <div id="swagger-ui"></div>
+
+    <script src="./swagger-ui-bundle.js" charset="UTF-8"></script>
+    <script src="./swagger-ui-standalone-preset.js" charset="UTF-8"></script>
+    <script>
+      window.onload = function () {
+        window.ui = SwaggerUIBundle({
+          // openapi.yaml is mounted at /docs by docker-compose.yml
+          url: "./docs/openapi.yaml",
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset,
+          ],
+          plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+          layout: "StandaloneLayout",
+        });
+      };
+    </script>
+  </body>
+</html>

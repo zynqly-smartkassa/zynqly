@@ -20,13 +20,32 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useSignInMutation } from "@/redux/api/apis/auth";
 import { toast } from "sonner";
 
+/**
+ * Zod schema describing the shape and validation rules for the sign-in form.
+ *
+ * Keeps the email check loose (any RFC-valid address) so the backend stays
+ * the source of truth for unknown accounts, and requires a non-empty
+ * password.
+ */
 const signInSchema = z.object({
   email: z.string().email("Bitte gib eine gültige E-Mail-Adresse ein."),
   password: z.string().min(1, "Passwort ist erforderlich."),
 });
 
+/**
+ * Form values inferred from {@link signInSchema}; shared with the
+ * `signInAction` server action so request and form stay in sync.
+ */
 export type SignInFormValues = z.infer<typeof signInSchema>;
 
+/**
+ * Sign-in page rendered at `/sign-in`.
+ *
+ * Wires a Zod-validated react-hook-form to the `useSignInMutation` RTK
+ * endpoint and surfaces success/error toasts. On success the mutation also
+ * populates the cached access token so the rest of the app is authenticated
+ * immediately without a follow-up request.
+ */
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -40,6 +59,10 @@ export default function SignInPage() {
     },
   });
 
+  /**
+   * Submits validated credentials to the backend and reports the outcome
+   * through Sonner toasts.
+   */
   const onSubmit = async (values: SignInFormValues) => {
     const toastId = toast.loading("Signing you in...", {
       className: "toast-loading",
@@ -64,11 +87,14 @@ export default function SignInPage() {
   };
 
   return (
+    /* Page root: split layout with form on the left and brand panel on the right */
     <div
       className="min-h-screen flex relative"
       style={{ background: "var(--z-bg-page)" }}
     >
+      {/* Section: form column */}
       <main className="flex flex-col justify-center w-full lg:w-1/2 px-6 py-12 sm:px-12 md:px-20 lg:px-16 xl:px-24">
+        {/* Back-to-home link, positioned absolutely in the top-left corner */}
         <Link
           href="/"
           className="absolute top-6 left-6 flex items-center gap-1.5 text-sm font-medium hover:opacity-60 transition-opacity"
@@ -122,6 +148,7 @@ export default function SignInPage() {
             </p>
           </div>
 
+          {/* Google SSO button — visual only, not wired up yet */}
           <Button
             type="button"
             variant="outline"
@@ -172,11 +199,13 @@ export default function SignInPage() {
             />
           </div>
 
+          {/* Sign-in form — Zod-validated, RTK-driven submission */}
           <form
             className="flex flex-col gap-5"
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <FieldGroup>
+              {/* Email field */}
               <Controller
                 name="email"
                 control={form.control}
@@ -223,6 +252,7 @@ export default function SignInPage() {
                 )}
               />
 
+              {/* Password field with show/hide toggle */}
               <Controller
                 name="password"
                 control={form.control}
@@ -377,6 +407,7 @@ export default function SignInPage() {
           100% { transform: translate(0px, 0px); }
         }
       `}</style>
+      {/* Section: brand panel (desktop only) */}
       <aside
         className="hidden lg:flex flex-col items-center justify-center w-1/2 px-16 text-white relative overflow-hidden"
         style={{ background: "var(--z-color-main)" }}

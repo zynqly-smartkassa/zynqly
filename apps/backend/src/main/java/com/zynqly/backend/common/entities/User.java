@@ -17,6 +17,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * JPA entity representing an application user.
+ *
+ * Stored in the {@code users} table; the password column always holds the
+ * encoded hash produced by the configured {@code PasswordEncoder}, never the
+ * raw value. The role is persisted as a string so the column remains readable
+ * and refactors of the enum do not silently shift ordinals.
+ *
+ * @see com.zynqly.backend.common.repositories.UserRepository
+ * @see com.zynqly.backend.auth.security.CustomUserDetails
+ */
 @Entity
 @Table(name = "users")
 @Builder
@@ -24,7 +35,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
@@ -37,7 +48,7 @@ public class User {
 
 	@Column(nullable = false)
 	private String phone;
-	
+
 	@Column(nullable = false)
 	private String password;
 

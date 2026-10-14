@@ -9,8 +9,14 @@ import com.zynqly.backend.common.entities.User;
 import com.zynqly.backend.common.repositories.UserRepository;
 
 /**
- * Custom UserDetailsService implementation for loading user-specific data.
- * Integrates with Spring Security's authentication mechanism.
+ * Service layer responsible for resolving Spring Security principals from the
+ * application's user store.
+ *
+ * Plugs the {@link UserRepository} into Spring Security's standard user lookup
+ * contract by wrapping the loaded {@link User} entity in a
+ * {@link CustomUserDetails} adapter.
+ *
+ * @see CustomUserDetails
  */
 @Service
 @RequiredArgsConstructor
@@ -19,10 +25,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     /**
-     * Loads user details by username for authentication.
+     * Loads a user by email (the value Spring Security treats as the username).
      *
-     * @return CustomUserDetails containing user information
-     * @throws UsernameNotFoundException if user is not found
+     * @return a {@link CustomUserDetails} that adapts the persisted user entity
+     * @throws UsernameNotFoundException when no user with that email exists
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
