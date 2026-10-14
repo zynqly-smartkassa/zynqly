@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zynqly_mobile/features/receipts/presentation/screens/all_receipts_screen.dart';
 import 'package:zynqly_mobile/features/rides/presentation/screens/all_rides_screen.dart';
 
 class RootScreen extends StatefulWidget {
@@ -15,7 +16,7 @@ class _RootScreenState extends State<RootScreen> {
     Center(child: Text('Home')),
     Center(child: Text('New Ride')),
     const AllRidesScreen(),
-    Center(child: Text('Invoices')),
+    const AllReceiptsScreen(),
     Center(child: Text('Settings')),
   ];
 
