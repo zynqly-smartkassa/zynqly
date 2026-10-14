@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../features/dashboard/presentation/screens/ride_start_screen.dart';
 import 'package:zynqly_mobile/screens/history_screen.dart';
 
 class RootScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class _RootScreenState extends State<RootScreen> {
 
   final List<Widget> _pages = [
     Center(child: Text('Home')),
-    Center(child: Text('New Ride')),
+    const RideStartScreen(),
     const HistoryScreen(),
     Center(child: Text('Invoices')),
     Center(child: Text('Settings')),
