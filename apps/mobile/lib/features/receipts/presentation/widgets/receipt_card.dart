@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zynqly_mobile/core/theme/app_spacing.dart';
 import 'package:zynqly_mobile/features/receipts/data/models/receipt_list_dto.dart';
+import 'package:zynqly_mobile/features/receipts/presentation/receipt_formatters.dart';
+import 'package:zynqly_mobile/features/receipts/presentation/screens/receipt_detail_screen.dart';
+import 'package:zynqly_mobile/features/receipts/presentation/widgets/payment_method_style.dart';
 import 'package:zynqly_mobile/features/receipts/presentation/widgets/payment_status_badge.dart';
 
 class ReceiptCard extends StatelessWidget {
@@ -26,8 +29,8 @@ class ReceiptCard extends StatelessWidget {
             CircleAvatar(
               backgroundColor: theme.colorScheme.secondaryContainer,
               child: Icon(
-                _paymentIcon(receipt.paymentMethod),
-                color: theme.colorScheme.onSecondaryContainer,
+                receipt.paymentMethod.icon,
+                color: receipt.paymentMethod.color,
               ),
             ),
             const SizedBox(width: AppSpacing.lg),
@@ -36,7 +39,7 @@ class ReceiptCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _formatAmount(receipt.total, receipt.currency),
+                    formatAmount(receipt.total, receipt.currency),
                     style: TextStyle(
                       fontSize: 26,
                       color: Colors.black,
@@ -55,7 +58,7 @@ class ReceiptCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        _formatDateTime(receipt.issuedAt),
+                        formatDateTime(receipt.issuedAt),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -67,31 +70,21 @@ class ReceiptCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: theme.colorScheme.outline,
-              size: 32,
+            IconButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => ReceiptDetailScreen(receiptId: receipt.id),
+                ),
+              ),
+              icon: Icon(
+                Icons.chevron_right,
+                color: theme.colorScheme.outline,
+                size: 32,
+              ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  static IconData _paymentIcon(PaymentMethod method) => switch (method) {
-    PaymentMethod.cash => Icons.payments_outlined,
-    PaymentMethod.card => Icons.credit_card_outlined,
-    PaymentMethod.app => Icons.smartphone_outlined,
-    PaymentMethod.other => Icons.receipt_long_outlined,
-  };
-
-  static String _formatAmount(double amount, Currency currency) =>
-      '${amount.toStringAsFixed(2)} ${currency.symbol}';
-
-  static String _formatDateTime(DateTime dateTime) {
-    final local = dateTime.toLocal();
-    String two(int value) => value.toString().padLeft(2, '0');
-    return '${local.year}-${two(local.month)}-${two(local.day)}  '
-        '${two(local.hour)}:${two(local.minute)}';
   }
 }
