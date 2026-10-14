@@ -109,21 +109,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        ride['route'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        ride['price'],
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                  Text(
+                    ride['route'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      overflow: TextOverflow.ellipsis,
+                      color: Colors.black
+                    ),
+                  ),
+                  Text(
+                    ride['price'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Row(
